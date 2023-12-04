@@ -3,5 +3,10 @@
     "spellright.documentTypes": [
         "latex",
         "plaintext"
-    ]
+    ],
+    "workbench.colorCustomizations": {
+    "diffEditor.removedTextBackground": "#FF000055",
+    "diffEditor.insertedTextBackground": "#ffff0055"
+}
+
 }

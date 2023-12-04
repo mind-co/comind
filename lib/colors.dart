@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ComindColors {
   // Old version
@@ -8,10 +9,10 @@ class ComindColors {
 
   // New version that intializes the colors to the
   // above but can be modified
-  static const Color primaryColor = const Color.fromRGBO(0, 136, 200, 1.0);
-  static const Color secondaryColor = const Color.fromRGBO(207, 94, 74, 1.0);
-  static const Color tertiaryColor = const Color.fromRGBO(0, 152, 118, 1.0);
-  static ColorScheme colorScheme = ColorScheme(
+  static const Color primaryColor = Color.fromRGBO(0, 136, 200, 1.0);
+  static const Color secondaryColor = Color.fromRGBO(207, 94, 74, 1.0);
+  static const Color tertiaryColor = Color.fromRGBO(0, 152, 118, 1.0);
+  static ColorScheme colorScheme = const ColorScheme(
     primary: primaryColor,
     secondary: secondaryColor,
     surface: tertiaryColor,
@@ -25,11 +26,11 @@ class ComindColors {
     brightness: Brightness.light,
   );
 
-  static ColorScheme darkColorScheme = ColorScheme(
+  static ColorScheme darkColorScheme = const ColorScheme(
     primary: primaryColor,
     secondary: secondaryColor,
     surface: tertiaryColor,
-    background: const Color.fromRGBO(34, 34, 34, 1),
+    background: Color.fromRGBO(34, 34, 34, 1),
     error: secondaryColor,
     onPrimary: darkTextColor,
     onSecondary: darkTextColor,
@@ -39,8 +40,15 @@ class ComindColors {
     brightness: Brightness.dark,
   );
 
+  // Add text theme
+  static TextTheme textTheme = TextTheme(
+      bodyMedium: GoogleFonts.ibmPlexSans(
+    // fontWeight: FontWeight.w300,
+    fontSize: 18,
+  ));
+
   static const Color textColor = Colors.black;
-  static const Color darkTextColor = Colors.white;
+  static const Color darkTextColor = Color.fromARGB(255, 193, 193, 193);
 
   // Add color setting method
   // static void setColors(Color primary, Color secondary, Color tertiary) {

@@ -27,7 +27,6 @@ Future<void> saveThought(Thought thought) async {
   // If the thought has an ID, we're updating an existing thought.
   // By default empty thoughts have and ID of length 0.
   // First l
-  print("Saving thought, id: ${thought.id}");
   if (thought.id.isEmpty) {
     final headers = {
       'ComindUsername': 'cameron',
