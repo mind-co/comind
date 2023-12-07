@@ -26,7 +26,7 @@ class _ComindDivState extends State<ComindDiv>
       vsync: this,
     );
 
-    _animation1 = Tween<double>(begin: 2, end: 20).animate(
+    _animation1 = Tween<double>(begin: 2, end: 4).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeInOut,

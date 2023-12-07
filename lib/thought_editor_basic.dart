@@ -45,46 +45,46 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
     _textEditingController.text = widget.thought.body;
     _originalContent = widget.thought.body;
 
-    // Autosave every n_sec seconds
-    const nSec = 5;
+    // // Autosave every n_sec seconds
+    // const nSec = 5;
 
-    _timer = Timer.periodic(const Duration(seconds: nSec), (timer) async {
-      if (_textEditingController.text != _originalContent) {
-        // Save the thought
-        widget.thought.body = _textEditingController.text;
-        await saveThought(widget.thought);
+    // _timer = Timer.periodic(const Duration(seconds: nSec), (timer) async {
+    //   if (_textEditingController.text != _originalContent) {
+    //     // Save the thought
+    //     widget.thought.body = _textEditingController.text;
+    //     await saveThought(widget.thought);
 
-        // Handle the time since last save
-        // timeSinceLastSave += nSec;
+    //     // Handle the time since last save
+    //     // timeSinceLastSave += nSec;
 
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Text("{",
-                    style: TextStyle(
-                        fontFamily: "Bungee Pop",
-                        fontSize: 46,
-                        color: ComindColors.primaryColor)),
-                Text("O",
-                    style: TextStyle(
-                        fontFamily: "Bungee Pop",
-                        fontSize: 46,
-                        color: ComindColors.secondaryColor)),
-                Text("}",
-                    style: TextStyle(
-                        fontFamily: "Bungee Pop",
-                        fontSize: 46,
-                        color: ComindColors.tertiaryColor)),
-              ],
-            ),
-            backgroundColor: Theme.of(context).colorScheme.background,
-          ),
-        );
-        _originalContent = _textEditingController.text;
-      }
-    });
+    //     // ignore: use_build_context_synchronously
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(
+    //         content: const Row(
+    //           children: [
+    //             Text("{",
+    //                 style: TextStyle(
+    //                     fontFamily: "Bungee Pop",
+    //                     fontSize: 46,
+    //                     color: ComindColors.primaryColor)),
+    //             Text("O",
+    //                 style: TextStyle(
+    //                     fontFamily: "Bungee Pop",
+    //                     fontSize: 46,
+    //                     color: ComindColors.secondaryColor)),
+    //             Text("}",
+    //                 style: TextStyle(
+    //                     fontFamily: "Bungee Pop",
+    //                     fontSize: 46,
+    //                     color: ComindColors.tertiaryColor)),
+    //           ],
+    //         ),
+    //         backgroundColor: Theme.of(context).colorScheme.background,
+    //       ),
+    //     );
+    //     _originalContent = _textEditingController.text;
+    //   }
+    // });
   }
 
   @override
@@ -112,6 +112,15 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
               // ScaffoldMessenger.of(context).showSnackBar(
               //   SnackBar(content: Text('Note saved')),
               // );
+              Navigator.pop(context, widget.thought);
+            },
+          ),
+          // Add a delete button
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () async {
+              // Delete the thought
+              await deleteThought(widget.thought.id);
               Navigator.pop(context, widget.thought);
             },
           ),
@@ -194,7 +203,7 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
                   width: 600, // Set your desired maximum width here
                   child: TextField(
                     // style: Theme.of(context).textTheme.bodyMedium,
-                    style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w300),
+                    // style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w300),
                     controller: _textEditingController,
                     maxLines:
                         null, // Allows the text field to expand to multiple lines

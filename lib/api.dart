@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:comind/types/thought.dart';
 
-// Future<String> fetchThoughts() async {
 Future<List<Thought>> fetchThoughts() async {
   final url =
       Uri.parse('http://nimbus.pfiffer.org:8000/api/user-thoughts/cameron/');
@@ -26,7 +25,6 @@ Future<void> saveThought(Thought thought) async {
 
   // If the thought has an ID, we're updating an existing thought.
   // By default empty thoughts have and ID of length 0.
-  // First l
   if (thought.id.isEmpty) {
     final headers = {
       'ComindUsername': 'cameron',
@@ -45,8 +43,17 @@ Future<void> saveThought(Thought thought) async {
       body: body,
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to save thought');
+    String rawData = await response.bodyBytes.toString();
+    print(rawData);
+
+    // Try to parse the response as json
+    try {
+      final jsonResponse = json.decode(response.body);
+      print(Thought.fromJson(jsonResponse));
+    } catch (e) {
+      print(e);
+      print("Failed to parse response as JSON, printing response body.");
+      print(response.body);
     }
   } else {
     // Otherwise, we are updating an existing thought.
@@ -72,5 +79,40 @@ Future<void> saveThought(Thought thought) async {
     if (response.statusCode != 200) {
       throw Exception('Failed to save thought');
     }
+
+    // Try to parse the response as json
+    try {
+      final jsonResponse = json.decode(response.body);
+      print(Thought.fromJson(jsonResponse));
+    } catch (e) {
+      print(e);
+      print("Failed to parse response as JSON, printing response body.");
+      print(response.body);
+    }
+  }
+}
+
+Future<void> deleteThought(String thoughtId) async {
+  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
+  final headers = {
+    'ComindUsername': 'cameron',
+    'ComindThoughtId': thoughtId,
+  };
+
+  final response = await http.delete(url, headers: headers);
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to delete thought');
+  }
+  print(response.body);
+
+  // Try to parse the response as json
+  try {
+    final jsonResponse = json.decode(response.body);
+    print(Thought.fromJson(jsonResponse));
+  } catch (e) {
+    print(e);
+    print("Failed to parse response as JSON, printing response body.");
+    print(response.body);
   }
 }

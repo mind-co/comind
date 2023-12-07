@@ -13,8 +13,9 @@ class ComindColors {
   static const Color secondaryColor = Color.fromRGBO(207, 94, 74, 1.0);
   static const Color tertiaryColor = Color.fromRGBO(0, 152, 118, 1.0);
   static ColorScheme colorScheme = const ColorScheme(
-    primary: primaryColor,
+    primary: Color.fromARGB(255, 200, 163, 0),
     secondary: secondaryColor,
+    tertiary: tertiaryColor,
     surface: tertiaryColor,
     background: Colors.white,
     error: secondaryColor,
@@ -24,11 +25,13 @@ class ComindColors {
     onBackground: textColor,
     onError: textColor,
     brightness: Brightness.light,
+    surfaceVariant: Color.fromRGBO(239, 239, 239, 1),
   );
 
   static ColorScheme darkColorScheme = const ColorScheme(
-    primary: primaryColor,
+    primary: Color.fromARGB(255, 0, 136, 200),
     secondary: secondaryColor,
+    tertiary: tertiaryColor,
     surface: tertiaryColor,
     background: Color.fromRGBO(34, 34, 34, 1),
     error: secondaryColor,
@@ -38,17 +41,18 @@ class ComindColors {
     onBackground: darkTextColor,
     onError: darkTextColor,
     brightness: Brightness.dark,
+    surfaceVariant: Color.fromRGBO(52, 52, 52, 1),
   );
 
   // Add text theme
   static TextTheme textTheme = TextTheme(
       bodyMedium: GoogleFonts.ibmPlexSans(
-    // fontWeight: FontWeight.w300,
+    fontWeight: FontWeight.w400,
     fontSize: 18,
   ));
 
   static const Color textColor = Colors.black;
-  static const Color darkTextColor = Color.fromARGB(255, 193, 193, 193);
+  static const Color darkTextColor = Color.fromARGB(255, 220, 220, 220);
 
   // Add color setting method
   // static void setColors(Color primary, Color secondary, Color tertiary) {
