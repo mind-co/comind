@@ -21,18 +21,6 @@ class _ComindDivState extends State<ComindDiv>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    );
-
-    _animation1 = Tween<double>(begin: 2, end: 4).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-        // curve: const Interval(0.0, 0.33),
-      ),
-    );
 
     // _animation2 = Tween<double>(begin: 2, end: 4).animate(
     //   CurvedAnimation(
@@ -59,31 +47,27 @@ class _ComindDivState extends State<ComindDiv>
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return Row(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width / 3,
-                height: _animation1.value,
-                color: ComindColors.primaryColor,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width / 3,
-                height: _animation1.value,
-                color: ComindColors.secondaryColor,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width / 3,
-                height: _animation1.value,
-                color: ComindColors.tertiaryColor,
-              ),
-            ],
-          );
-        },
-      ),
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            height: _animation1.value,
+            color: ComindColors.primaryColor,
+          ),
+        ),
+        Expanded(
+          child: Container(
+            height: _animation1.value,
+            color: ComindColors.secondaryColor,
+          ),
+        ),
+        Expanded(
+          child: Container(
+            height: _animation1.value,
+            color: ComindColors.tertiaryColor,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -53,26 +53,27 @@ String formatTimestamp(String timestamp) {
 //         ),
 comindAppBar(BuildContext context) {
   return AppBar(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      // backgroundColor: Colors.white,
-      title: ComindLogo(key: UniqueKey()),
-      centerTitle: true,
-      // elevation: 100,
-      scrolledUnderElevation: 0,
-      // Add toolbar
-      toolbarHeight: 100,
-      actions: [
-        // Add dark mode toggle
-        IconButton(
-          icon: const Icon(Icons.dark_mode),
-          onPressed: () {
-            Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-          },
-        ),
-      ],
-      bottom: const PreferredSize(
-        // Make this no wider than 600 pixels with a height of 4
-        preferredSize: Size.fromHeight(4.0),
-        child: ComindDiv(),
-      ));
+    backgroundColor: Theme.of(context).colorScheme.background,
+    // backgroundColor: Colors.white,
+    title: ComindLogo(key: UniqueKey()),
+    centerTitle: true,
+    // elevation: 100,
+    scrolledUnderElevation: 0,
+    // Add toolbar
+    toolbarHeight: 100,
+    actions: [
+      // Add dark mode toggle
+      IconButton(
+        icon: const Icon(Icons.dark_mode),
+        onPressed: () {
+          Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+        },
+      ),
+    ],
+    // bottom: const PreferredSize(
+    //   // Make this no wider than 600 pixels with a height of 4
+    //   preferredSize: Size.fromHeight(4.0),
+    //   child: ComindDiv(),
+    // )
+  );
 }

@@ -1,5 +1,6 @@
 import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 //
 // Widget get ComindLogo {
@@ -54,35 +55,84 @@ class ComindLogo extends StatelessWidget {
     return (const Row(
       mainAxisAlignment: mainAxisAlignment,
       children: [
+        // Text(
+        //   '∙',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: ComindColors.primaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   'co',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: ComindColors.secondaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   'mind',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: ComindColors.tertiaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   '∙',
+        //   style: TextStyle(
+        //       decoration: TextDecoration.underline,
+        //       decorationThickness: 2,
+        //       decorationColor: ComindColors.primaryColor,
+        //       fontFamily: "Bungee",
+        //       fontSize: size),
+        // ),
+
+        // Short version
         Text(
-          '{',
+          '∙',
           style: TextStyle(
-            color: ComindColors.primaryColor,
-            fontFamily: "Bungee Shade",
+            decorationThickness: 2,
+            decoration: TextDecoration.underline,
+            decorationColor: ComindColors.primaryColor,
+            fontFamily: "Bungee",
             fontSize: size,
           ),
         ),
         Text(
-          'co',
+          'c',
           style: TextStyle(
-            color: ComindColors.secondaryColor,
-            fontFamily: "Bungee Shade",
+            decorationThickness: 2,
+            decoration: TextDecoration.underline,
+            decorationColor: ComindColors.secondaryColor,
+            fontFamily: "Bungee",
             fontSize: size,
           ),
         ),
         Text(
-          'mind',
+          'o',
           style: TextStyle(
-            color: ComindColors.tertiaryColor,
-            fontFamily: "Bungee Shade",
+            decorationThickness: 2,
+            decoration: TextDecoration.underline,
+            decorationColor: ComindColors.tertiaryColor,
+            fontFamily: "Bungee",
             fontSize: size,
           ),
         ),
         Text(
-          '}',
+          '∙',
           style: TextStyle(
-              color: ComindColors.primaryColor,
-              fontFamily: "Bungee Shade",
+              decoration: TextDecoration.underline,
+              decorationThickness: 2,
+              decorationColor: ComindColors.primaryColor,
+              fontFamily: "Bungee",
               fontSize: size),
         ),
       ],
@@ -176,12 +226,10 @@ class _ComindIsLoadingState extends State<ComindIsLoading>
                 children: [
                   Transform.translate(
                     offset: Offset(_animation.value, 0),
-                    child: const Text(
+                    child: Text(
                       '{',
-                      style: TextStyle(
+                      style: GoogleFonts.bungeeShade(
                         fontSize: size,
-                        fontFamily: "Bungee Pop",
-                        fontWeight: FontWeight.normal,
                         color: ComindColors.primaryColor,
                       ),
                     ),
@@ -192,7 +240,7 @@ class _ComindIsLoadingState extends State<ComindIsLoading>
                     'O',
                     style: TextStyle(
                       fontSize: size,
-                      fontFamily: "Bungee Pop",
+                      fontFamily: "Bungee",
                       fontWeight: FontWeight.normal,
                       color: ComindColors.secondaryColor,
                     ),
@@ -204,7 +252,7 @@ class _ComindIsLoadingState extends State<ComindIsLoading>
                         '}',
                         style: TextStyle(
                           fontSize: size,
-                          fontFamily: "Bungee Pop",
+                          fontFamily: "Bungee",
                           fontWeight: FontWeight.normal,
                           color: ComindColors.tertiaryColor,
                         ),

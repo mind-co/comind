@@ -20,6 +20,49 @@ Future<List<Thought>> fetchThoughts() async {
   }
 }
 
+// Method to save a quick thought that has only
+// body, isPublic, and an optional parentThoughtId
+Future<void> saveQuickThought(
+    String body, bool isPublic, String? parentThoughtId) async {
+  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
+
+  final headers = {
+    'ComindUsername': 'cameron',
+  };
+
+  final bodyJson = <String, dynamic>{
+    'body': body,
+    'public': isPublic,
+    'synthetic': false,
+    'origin': "app",
+  };
+
+  // If the thought has a parentThoughtId, add it to the body
+  if (parentThoughtId != null) {
+    bodyJson['parent_thought_id'] = parentThoughtId;
+  }
+
+  final response = await http.post(
+    url,
+    headers: headers,
+    body: jsonEncode(bodyJson),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to save thought');
+  }
+
+  // Try to parse the response as json
+  try {
+    final jsonResponse = json.decode(response.body);
+    print(Thought.fromJson(jsonResponse));
+  } catch (e) {
+    print(e);
+    print("Failed to parse response as JSON, printing response body.");
+    print(response.body);
+  }
+}
+
 Future<void> saveThought(Thought thought) async {
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
 
