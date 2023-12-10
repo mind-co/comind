@@ -49,13 +49,14 @@ class ComindColors {
   static TextTheme textTheme = TextTheme(
       // Nunito is good
 
+      // bodyMedium: GoogleFonts.comfortaa(
       // bodyMedium: GoogleFonts.assistant(
-      // bodyMedium: GoogleFonts.questrial(
+      // bodyMedium: GoogleFonts.hankenGrotesk(
       bodyMedium: GoogleFonts.questrial(
-    // bodyMedium: GoogleFonts.nunito(
-    fontWeight: FontWeight.w400,
-    fontSize: 16,
-  ));
+          // bodyMedium: GoogleFonts.nunito(
+          fontWeight: FontWeight.w400,
+          fontSize: 24,
+          height: 1.2));
 
   static const Color textColor = Colors.black;
   static const Color darkTextColor = Color.fromARGB(255, 220, 220, 220);

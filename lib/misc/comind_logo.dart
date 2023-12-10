@@ -55,47 +55,6 @@ class ComindLogo extends StatelessWidget {
     return (const Row(
       mainAxisAlignment: mainAxisAlignment,
       children: [
-        // Text(
-        //   '∙',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: ComindColors.primaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   'co',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: ComindColors.secondaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   'mind',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: ComindColors.tertiaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   '∙',
-        //   style: TextStyle(
-        //       decoration: TextDecoration.underline,
-        //       decorationThickness: 2,
-        //       decorationColor: ComindColors.primaryColor,
-        //       fontFamily: "Bungee",
-        //       fontSize: size),
-        // ),
-
-        // Short version
         Text(
           '∙',
           style: TextStyle(
@@ -107,7 +66,7 @@ class ComindLogo extends StatelessWidget {
           ),
         ),
         Text(
-          'c',
+          'co',
           style: TextStyle(
             decorationThickness: 2,
             decoration: TextDecoration.underline,
@@ -117,7 +76,7 @@ class ComindLogo extends StatelessWidget {
           ),
         ),
         Text(
-          'o',
+          'mind',
           style: TextStyle(
             decorationThickness: 2,
             decoration: TextDecoration.underline,
@@ -135,6 +94,47 @@ class ComindLogo extends StatelessWidget {
               fontFamily: "Bungee",
               fontSize: size),
         ),
+
+        // Short version
+        // Text(
+        //   '∙',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: ComindColors.primaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   'c',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: ComindColors.secondaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   'o',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: ComindColors.tertiaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   '∙',
+        //   style: TextStyle(
+        //       decoration: TextDecoration.underline,
+        //       decorationThickness: 2,
+        //       decorationColor: ComindColors.primaryColor,
+        //       fontFamily: "Bungee",
+        //       fontSize: size),
+        // ),
       ],
     ));
   }

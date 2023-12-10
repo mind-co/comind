@@ -74,6 +74,10 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
 
   // List of text controllers
   List<TextEditingController> _controllers = [];
+  TextEditingController _primaryController = TextEditingController();
+
+  // Set up public/private writing mode
+  bool publicMode = false;
 
   @override
   void initState() {
@@ -154,39 +158,412 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     }
 
     // Check if we have thoughts, make a widget for each one
-    if (thoughts.isNotEmpty) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        // backgroundColor: Theme.of(context).colorScheme.background,
-        appBar: comindAppBar(context),
-        body: Scaffold(
-          // drawer: Drawer(
-          //   child: Text("abc"),
-          // ),
-          body: Column(
-            children: [
-              // ComindDiv(),
-              Expanded(
-                child: Center(
-                  child: SizedBox(
-                    width: 600, // Set your desired maximum width here
-                    child: ListView.builder(
-                      itemCount: thoughts.length,
-                      itemBuilder: (context, index) {
-                        // Non ListTile version
-                        return thoughtBox(context, index);
-                      },
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (thoughts.isNotEmpty) {
+          return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.background,
+            appBar: comindAppBar(context),
+            drawer: Drawer(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  const DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
                     ),
+                    child: Text('Drawer Header'),
                   ),
-                ),
+                  ListTile(
+                    title: const Text('Item 1'),
+                    onTap: () {
+                      // Update the state of the app.
+                      // ...
+                    },
+                  ),
+                  ListTile(
+                    title: const Text('Item 2'),
+                    onTap: () {
+                      // Update the state of the app.
+                      // ...
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        floatingActionButton: _newNoteButton(context),
-      );
-    }
+            ),
+            body: Scaffold(
+              body: Stack(
+                children: [
+                  // Center column
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Floating center column
+                      // Left column
+                      if (constraints.maxWidth > 800)
+                        SizedBox(
+                          width: constraints.maxWidth * 0.2 - 10,
+                          child: Column(
+                            children: [
+                              // Blubble bar thing (not sure what to call it)
+                              // Anyway it's just for testing rn to fill hte column
+                              Expanded(
+                                // color: Theme.of(context).colorScheme.background,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: InkWell(
+                                    child: Container(
+                                      height: 100,
+                                      // Make it a rounded rectangle
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(42),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface
+                                            .withAlpha(32),
+                                      ),
 
+                                      // color: BoxDecoration(
+                                      //     child: Theme.of(context)
+                                      //         .colorScheme
+                                      //         .surface
+                                      //         .withAlpha(32)),
+                                      child: Material(
+                                        // color: Theme.of(context).colorScheme.primary,
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: InkWell(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      2, 0, 2, 0),
+                                              child: Opacity(
+                                                opacity: 0.5,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    ///////////////
+                                                    ///YOU ARE HERE
+                                                    /// ///////////
+                                                    // Padding(
+                                                    //   padding:
+                                                    //       const EdgeInsets.all(
+                                                    //           8.0),
+                                                    //   child: Row(
+                                                    //     children: [
+                                                    //       Text(
+                                                    //         "Y",
+                                                    //         style: TextStyle(
+                                                    //             fontFamily:
+                                                    //                 "Bungee",
+                                                    //             fontSize: 36,
+                                                    //             decoration:
+                                                    //                 TextDecoration
+                                                    //                     .underline,
+                                                    //             decorationThickness:
+                                                    //                 3,
+                                                    //             decorationColor:
+                                                    //                 ComindColors
+                                                    //                     .primaryColor
+                                                    //                     .withAlpha(
+                                                    //                         200)),
+                                                    //       ),
+                                                    //       Text(
+                                                    //         "O",
+                                                    //         style: TextStyle(
+                                                    //             fontFamily:
+                                                    //                 "Bungee",
+                                                    //             fontSize: 36,
+                                                    //             decoration:
+                                                    //                 TextDecoration
+                                                    //                     .underline,
+                                                    //             decorationThickness:
+                                                    //                 3,
+                                                    //             decorationColor:
+                                                    //                 ComindColors
+                                                    //                     .secondaryColor
+                                                    //                     .withAlpha(
+                                                    //                         200)),
+                                                    //       ),
+                                                    //       Text(
+                                                    //         "U",
+                                                    //         style: TextStyle(
+                                                    //             fontFamily:
+                                                    //                 "Bungee",
+                                                    //             fontSize: 36,
+                                                    //             decoration:
+                                                    //                 TextDecoration
+                                                    //                     .underline,
+                                                    //             decorationThickness:
+                                                    //                 3,
+                                                    //             decorationColor:
+                                                    //                 ComindColors
+                                                    //                     .tertiaryColor
+                                                    //                     .withAlpha(
+                                                    //                         200)),
+                                                    //       ),
+                                                    //     ],
+                                                    //   ),
+                                                    // ),
+
+                                                    ///////////////
+                                                    ///ABOUT THIS //
+                                                    /// ///////////
+                                                    funButton(-1, onTap: () {
+                                                      // _addNote(context); // Call _addNote with the context
+                                                    },
+                                                        text: "About",
+                                                        underline: false,
+                                                        size: 24,
+                                                        color: 1),
+
+                                                    ///////////////
+                                                    ///SETTINGS ///
+                                                    /// ///////////
+                                                    funButton(-1, onTap: () {
+                                                      // _addNote(context); // Call _addNote with the context
+                                                    },
+                                                        text: "Settings",
+                                                        underline: false,
+                                                        size: 24,
+                                                        color: 2),
+
+                                                    ///////////////
+                                                    ///LOGOUT ////
+                                                    /// ///////////
+                                                    funButton(-1, onTap: () {
+                                                      // _addNote(context); // Call _addNote with the context
+                                                    },
+                                                        text: "Logout",
+                                                        underline: false,
+                                                        size: 24,
+                                                        color: 3),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      // center column
+                      Column(
+                        children: [
+                          // Show pixel width
+                          // Text(
+                          //   "${constraints.maxHeight.toInt()} × ${constraints.maxWidth.toInt()}",
+                          //   style: TextStyle(fontFamily: "", fontSize: 14),
+                          // ),
+                          // Expanded(
+                          //   child: Container(
+                          //     color: Colors.red,
+                          //   ),
+                          // ),
+                          // Expanded(
+                          //   child: Container(
+                          //     color: Colors.green,
+                          //   ),
+                          // ),
+                          Container(
+                            width: constraints.maxWidth > 800
+                                ? constraints.maxWidth > 1200
+                                    ? 800
+                                    : constraints.maxWidth * 0.6
+                                : 600,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                              child: TextField(
+                                autofocus: true,
+                                controller: _primaryController,
+                                maxLines: null,
+                                onTap: () {
+                                  // Toggle the visibility
+                                  setState(() {
+                                    editVisibilityList[0] = true;
+                                  });
+                                },
+                                cursorColor:
+                                    Theme.of(context).colorScheme.onPrimary,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      "Think somethin', interesting or not",
+                                  hintStyle: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                          fontSize: 18,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary
+                                              .withAlpha(64)),
+
+                                  contentPadding:
+                                      EdgeInsets.fromLTRB(8, 8, 8, 8),
+                                  // labelText: 'What do you think?',
+                                  // labelStyle: Theme.of(context)
+                                  //     .textTheme
+                                  //     .bodyMedium
+                                  //     ?.copyWith(
+                                  //         fontSize: 14,
+                                  //         color: Theme.of(context)
+                                  //             .colorScheme
+                                  //             .onPrimary
+                                  //             .withAlpha(128)),
+                                  enabledBorder: OutlineInputBorder(
+                                    // borderRadius: BorderRadius.circular(14),
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary
+                                          .withAlpha(32),
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    // borderRadius: BorderRadius.circular(100),
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary
+                                          .withAlpha(64),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Action row for top bar
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                /////////////////
+                                ///EDIT BUTTON //
+                                /// ///////////
+                                funButton(-1, onTap: () {
+                                  // _addNote(context); // Call _addNote with the context
+                                },
+                                    text: "",
+                                    underline: false,
+                                    size: 14,
+                                    color: 1),
+
+                                ///////////////
+                                ///PUBLIC //////
+                                /// ///////////
+                                funButton(-1, onTap: () {
+                                  publicMode = !publicMode;
+                                },
+                                    text: publicMode ? "Public" : "Private",
+                                    underline: false,
+                                    size: 14,
+                                    color: 2),
+                                ///////////////
+                                ///SEND IT ////
+                                /// ///////////
+                                funButton(-1, onTap: () {
+                                  // Save the note and send it
+                                  saveQuickThought(_primaryController.text,
+                                      publicMode, null);
+                                },
+                                    text: "Send it",
+                                    underline: true,
+                                    size: 14,
+                                    color: 2),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Center(
+                                    child: SizedBox(
+                                      width: constraints.maxWidth > 800
+                                          ? constraints.maxWidth > 1200
+                                              ? 800
+                                              : constraints.maxWidth * 0.6
+                                          : 600,
+                                      child: ListView.builder(
+                                        itemCount: thoughts.length,
+                                        itemBuilder: (context, index) {
+                                          return thoughtBox(context, index);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Right column
+                      if (constraints.maxWidth > 800)
+                        SizedBox(
+                          width: constraints.maxWidth * 0.2 - 10,
+                          child: Column(
+                            children: [
+                              // Blubble bar thing (not sure what to call it)
+                              // Anyway it's just for testing rn to fill hte column
+                              Expanded(
+                                // color: Theme.of(context).colorScheme.background,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: InkWell(
+                                    child: Container(
+                                      height: 100,
+                                      // Make it a rounded rectangle
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(42),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface
+                                            .withAlpha(32),
+                                      ),
+
+                                      // color: BoxDecoration(
+                                      //     child: Theme.of(context)
+                                      //         .colorScheme
+                                      //         .surface
+                                      //         .withAlpha(32)),
+                                      child: const Center(
+                                        child: Text(
+                                          "Blubble bar thing",
+                                          style: TextStyle(
+                                              fontFamily: "Bungee",
+                                              fontSize: 14),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            floatingActionButton: _newNoteButton(context),
+          );
+        }
+        // Add your else condition here if needed
+        return Container(); // Return an empty container if thoughts is empty
+      },
+    );
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -319,9 +696,9 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                 ),
               ),
 
-              ///////////////
-              // Action row
-              ///////////////
+              ///////////////////////
+              // Verbs (hehe vebs) //
+              ///////////////////////
               Opacity(
                 opacity: 0.9,
                 child: Padding(
@@ -351,126 +728,162 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                           ),
                         ),
                       ),
-                      Opacity(
-                        opacity: 1.0,
-                        child: Row(
-                          children: [
-                            /////////////////
-                            // EDIT BUTTON //
-                            /////////////////
-                            funButton(index, onTap: () {
-                              _editNote(context,
-                                  index); // Call _editNote with the context
-                            }, text: "Change"),
-                            ///////////////////
-                            // DELETE BUTTON //
-                            ///////////////////
-                            if (expandedVisibilityList[index])
-                              funButton(index, onTap: () async {
-                                bool? shouldDelete = await showDialog<bool>(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .background,
-                                      surfaceTintColor: Colors.black,
-                                      title: const Text(
-                                        'Delete thought',
-                                        style: TextStyle(
-                                            fontFamily: "Bungee",
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w400),
-                                      ),
-                                      content: const Text(
-                                          'You sure you wanna delete this note? Cameron is really, really bad at making undo buttons. \n\nIf you delete this it will prolly be gone forever.'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: const Text('Cancel',
-                                              style: TextStyle(
-                                                  fontFamily: "Bungee",
-                                                  fontSize: 14)),
-                                          onPressed: () {
-                                            Navigator.of(context).pop(false);
-                                          },
-                                        ),
-                                        TextButton(
-                                          child: const Text('Delete',
-                                              style: TextStyle(
-                                                  fontFamily: "Bungee",
-                                                  fontSize: 14)),
-                                          onPressed: () {
-                                            Navigator.of(context).pop(true);
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
 
-                                if (shouldDelete == true) {
-                                  deleteThought(thoughts[index].id);
+                      //////////////////////////
+                      ///GROUP SETTINGS ROW ///
+                      //////////////////////////
+                      Text("Private",
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: "Bungee",
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimary
+                                  .withAlpha(128))),
+
+                      // Divider line
+                      Visibility(
+                        // visible: !editVisibilityList[index],
+                        visible: true,
+                        child: Expanded(
+                          child: Container(
+                            height: 2,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(32),
+                          ),
+                        ),
+                      ),
+
+                      //////////////////////////
+                      /// VERB ROW BUTTONS ///
+                      //////////////////////////
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                        child: Opacity(
+                          opacity: 1.0,
+                          child: Row(
+                            children: [
+                              /////////////////
+                              // EDIT BUTTON //
+                              /////////////////
+                              funButton(index, onTap: () {
+                                _editNote(context,
+                                    index); // Call _editNote with the context
+                              }, text: "Change"),
+                              ///////////////////
+                              // DELETE BUTTON //
+                              ///////////////////
+                              if (expandedVisibilityList[index])
+                                funButton(index, onTap: () async {
+                                  bool? shouldDelete = await showDialog<bool>(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .background,
+                                        surfaceTintColor: Colors.black,
+                                        title: const Text(
+                                          'Delete thought',
+                                          style: TextStyle(
+                                              fontFamily: "Bungee",
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                        content: const Text(
+                                            'You sure you wanna delete this note? Cameron is really, really bad at making undo buttons. \n\nIf you delete this it will prolly be gone forever.'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: const Text('Cancel',
+                                                style: TextStyle(
+                                                    fontFamily: "Bungee",
+                                                    fontSize: 14)),
+                                            onPressed: () {
+                                              Navigator.of(context).pop(false);
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: const Text('Delete',
+                                                style: TextStyle(
+                                                    fontFamily: "Bungee",
+                                                    fontSize: 14)),
+                                            onPressed: () {
+                                              Navigator.of(context).pop(true);
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+
+                                  if (shouldDelete == true) {
+                                    deleteThought(thoughts[index].id);
+                                    _fetchThoughts();
+                                  }
+                                }, text: "Delete"),
+
+                              ///////////////////////
+                              // Think BUTTON //
+                              ///////////////////////
+                              MouseRegion(
+                                onEnter: (PointerEnterEvent event) {
+                                  setState(() {
+                                    hoverThink = true;
+                                  });
+                                },
+                                onExit: (PointerExitEvent event) {
+                                  setState(() {
+                                    hoverThink = false;
+                                  });
+                                },
+                                child: funButton(index, onTap: () {
+                                  setState(() {
+                                    editVisibilityList[index] =
+                                        !editVisibilityList[index];
+                                  });
+                                },
+                                    color: 2,
+                                    text: editVisibilityList[index]
+                                        ? "Close"
+                                        : "Think"),
+                              ),
+
+                              ///////////////////////
+                              /// SEND IT BUTTON ///
+                              /// ///////////////////
+                              if (editVisibilityList[index])
+                                funButton(index, onTap: () async {
+                                  // SAve a quick thought
+                                  saveQuickThought(_controllers[index].text,
+                                      publicMode, null);
+
+                                  // Push the new note to the server
+
+                                  // Refresh the thoughts
                                   _fetchThoughts();
-                                }
-                              }, text: "Delete"),
+                                  Navigator.pop(context, thoughts[index]);
+                                }, color: 2, text: "Send it"),
 
-                            ///////////////////////
-                            // Think BUTTON //
-                            ///////////////////////
-                            MouseRegion(
-                              onEnter: (PointerEnterEvent event) {
-                                setState(() {
-                                  hoverThink = true;
-                                });
-                              },
-                              onExit: (PointerExitEvent event) {
-                                setState(() {
-                                  hoverThink = false;
-                                });
-                              },
-                              child: funButton(index, onTap: () {
-                                setState(() {
-                                  editVisibilityList[index] =
-                                      !editVisibilityList[index];
-                                });
-                              },
-                                  color: 2,
-                                  text: editVisibilityList[index]
-                                      ? "Close"
-                                      : "Think"),
-                            ),
-
-                            ///////////////////////
-                            /// SEND IT BUTTON ///
-                            /// ///////////////////
-                            if (editVisibilityList[index])
-                              funButton(index, onTap: () async {
-                                // Update the thought
-                                thoughts[index].body = _controllers[index].text;
-                                await saveThought(thoughts[index]);
-                                // ScaffoldMessenger.of(context).showSnackBar(
-                                //   SnackBar(content: Text('Note saved')),
-                                // );
-                                Navigator.pop(context, thoughts[index]);
-                              }, color: 2, text: "Send it"),
-
-                            ///////////////////////////
-                            /// THINK BUTTON BUTTON ///
-                            ///////////////////////////
-                            funButton(
-                              index,
-                              onTap: () {
-                                setState(() {
-                                  expandedVisibilityList[index] =
-                                      !expandedVisibilityList[index];
-                                });
-                              },
-                              color: 3,
-                              text: expandedVisibilityList[index]
-                                  ? "Less"
-                                  : "More",
-                            ),
-                          ],
+                              ///////////////////////////
+                              /// THINK BUTTON BUTTON ///
+                              ///////////////////////////
+                              funButton(
+                                index,
+                                onTap: () {
+                                  setState(() {
+                                    expandedVisibilityList[index] =
+                                        !expandedVisibilityList[index];
+                                  });
+                                },
+                                color: 3,
+                                text: expandedVisibilityList[index]
+                                    ? "Less"
+                                    : "More",
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -482,11 +895,14 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     );
   }
 
+  // the fun hyperlink button
   MouseRegion funButton(int index,
       {void Function()? onTap,
       String text = "No clue",
       bool comma = false,
-      int color = 1}) {
+      int color = 1,
+      double size = 14,
+      bool underline = true}) {
     return MouseRegion(
       child: Material(
         // color: Theme.of(context).colorScheme.primary,
@@ -503,16 +919,19 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                   Text(
                     text,
                     style: TextStyle(
-                      fontFamily: "Bungee",
-                      fontSize: 12,
-                      decoration: TextDecoration.underline,
-                      decorationThickness: 3,
-                      decorationColor: color == 1
-                          ? ComindColors.secondaryColor.withAlpha(200)
-                          : color == 3
-                              ? ComindColors.tertiaryColor.withAlpha(200)
-                              : ComindColors.primaryColor.withAlpha(200),
-                    ),
+                        fontFamily: "Bungee",
+                        fontSize: size,
+                        decoration: underline
+                            ? TextDecoration.underline
+                            : TextDecoration.none,
+                        decorationThickness: 3,
+                        decorationColor: color == 1
+                            ? ComindColors.secondaryColor.withAlpha(200)
+                            : color == 3
+                                ? ComindColors.tertiaryColor.withAlpha(200)
+                                : color == 0
+                                    ? Colors.transparent
+                                    : ComindColors.primaryColor.withAlpha(200)),
                   ),
                   if (comma)
                     const Text(",",
@@ -548,13 +967,13 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(32, 0, 12, 0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             thoughts[index].username,
             style: const TextStyle(
               fontFamily: "Bungee",
-              fontSize: 12,
+              fontSize: 16,
             ),
           ),
           Text(
@@ -615,7 +1034,8 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
 
     // );
 
-    return FloatingActionButton(
+    return FloatingActionButton.large(
+      // Center it
       shape: RoundedRectangleBorder(
         side: BorderSide(
           color: Theme.of(context).colorScheme.onPrimary,
@@ -628,10 +1048,9 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
       },
       splashColor: ComindColors.secondaryColor,
       backgroundColor: Theme.of(context).colorScheme.background,
-      child: Icon(
-        Icons.circle_outlined,
-        color: Theme.of(context).colorScheme.onPrimary,
-      ),
+      child: funButton(-1 /*index*/, onTap: () {
+        // _addNote(context); // Call _addNote with the context
+      }, text: "New", underline: false),
     );
   }
 }
