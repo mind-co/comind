@@ -52,19 +52,19 @@ class _ComindDivState extends State<ComindDiv>
         Expanded(
           child: Container(
             height: _animation1.value,
-            color: ComindColors.primaryColor,
+            color: ComindColors().primaryColor,
           ),
         ),
         Expanded(
           child: Container(
             height: _animation1.value,
-            color: ComindColors.secondaryColor,
+            color: ComindColors().secondaryColor,
           ),
         ),
         Expanded(
           child: Container(
             height: _animation1.value,
-            color: ComindColors.tertiaryColor,
+            color: ComindColors().tertiaryColor,
           ),
         ),
       ],

@@ -66,17 +66,17 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
     //                 style: TextStyle(
     //                     fontFamily: "Bungee Pop",
     //                     fontSize: 46,
-    //                     color: ComindColors.primaryColor)),
+    //                     color: ComindColors().primaryColor)),
     //             Text("O",
     //                 style: TextStyle(
     //                     fontFamily: "Bungee Pop",
     //                     fontSize: 46,
-    //                     color: ComindColors.secondaryColor)),
+    //                     color: ComindColors().secondaryColor)),
     //             Text("}",
     //                 style: TextStyle(
     //                     fontFamily: "Bungee Pop",
     //                     fontSize: 46,
-    //                     color: ComindColors.tertiaryColor)),
+    //                     color: ComindColors().tertiaryColor)),
     //           ],
     //         ),
     //         backgroundColor: Theme.of(context).colorScheme.background,
@@ -192,7 +192,7 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
             // Text(
             //   widget.thought.id,
             //   style: TextStyle(
-            //     color: ComindColors.getTextColorBasedOnBackground(
+            //     color: ComindColors().getTextColorBasedOnBackground(
             //       Theme.of(context).colorScheme.background,
             //     ),
             //   ),

@@ -55,7 +55,13 @@ comindAppBar(BuildContext context) {
   return AppBar(
     backgroundColor: Theme.of(context).colorScheme.background,
     // backgroundColor: Colors.white,
-    title: ComindLogo(key: UniqueKey()),
+
+    // If the width of the screen is less than 550 pixels, use the
+    // ComindLogo class, otherwise use the original definition
+    title: MediaQuery.of(context).size.width > 550
+        ? ComindLogo(key: UniqueKey())
+        : ComindShortLogo(key: UniqueKey()),
+    // title: ComindLogo(key: UniqueKey()),
     centerTitle: true,
     // elevation: 100,
     scrolledUnderElevation: 0,

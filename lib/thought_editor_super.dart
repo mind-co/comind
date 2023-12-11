@@ -35,14 +35,14 @@
 //         padding: const EdgeInsets.all(16.0),
 //         child: TextField(
 //           style: TextStyle(
-//             color: ComindColors.getTextColorBasedOnBackground(
+//             color: ComindColors().getTextColorBasedOnBackground(
 //                 Theme.of(context).colorScheme.background),
 //           ),
 //           controller: _textEditingController,
 //           maxLines: null, // Allows the text field to expand to multiple lines
 //           expands: true, // Expands the text field as needed
 
-//           cursorColor: ComindColors.getTextColorBasedOnBackground(
+//           cursorColor: ComindColors().getTextColorBasedOnBackground(
 //               Theme.of(context).colorScheme.background),
 //           // cursorColor: Colors.white,
 //           decoration: const InputDecoration(
