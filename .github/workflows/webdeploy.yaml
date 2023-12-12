@@ -39,3 +39,12 @@ jobs:
 
       # Build and deploy (by default, to staging).
       - run: flutter build -v web --release --web-renderer html
+
+      - name: Save build results to 'web' branch
+        run: |
+          git config --global user.name "Cameron Pfiffer"
+          git config --global user.email "cameron@pfiffer.org"
+          git checkout -b web
+          git add build/web/ # Make sure the path is correct
+          git commit -m "Add web build results"
+          git push --set-upstream origin web
