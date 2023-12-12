@@ -9,9 +9,9 @@ class ComindColors {
 
   // New version that intializes the colors to the
   // above but can be modified
-  Color primaryColor = Color.fromRGBO(106, 130, 167, 1);
-  Color secondaryColor = Color.fromRGBO(170, 94, 81, 1);
-  Color tertiaryColor = Color.fromRGBO(96, 156, 94, 1);
+  Color primaryColor = const Color.fromRGBO(106, 130, 167, 1);
+  Color secondaryColor = const Color.fromRGBO(170, 94, 81, 1);
+  Color tertiaryColor = const Color.fromRGBO(96, 156, 94, 1);
 
   ColorScheme colorScheme = const ColorScheme(
     primary: Color.fromRGBO(0, 136, 200, 1.0),
@@ -45,6 +45,8 @@ class ComindColors {
     surfaceVariant: Color.fromRGBO(52, 52, 52, 1),
   );
 
+  get primary => null;
+
   // Init method and set the color scheme
   void init() {
     colorScheme = ColorScheme(
@@ -60,7 +62,7 @@ class ComindColors {
       onBackground: textColor,
       onError: textColor,
       brightness: Brightness.light,
-      surfaceVariant: Color.fromRGBO(239, 239, 239, 1),
+      surfaceVariant: const Color.fromRGBO(239, 239, 239, 1),
     );
   }
 

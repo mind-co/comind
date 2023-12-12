@@ -1,3 +1,4 @@
+import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
 
 class ComindTextButton extends StatefulWidget {
@@ -8,6 +9,7 @@ class ComindTextButton extends StatefulWidget {
   final double opacity;
   final int colorIndex;
   final bool underline;
+  final bool lineOnly;
 
   ComindTextButton({
     required this.text,
@@ -17,6 +19,7 @@ class ComindTextButton extends StatefulWidget {
     this.opacity = 0.5,
     this.colorIndex = 1, // 1 = primary, 2 = secondary, 3 = tertiary
     this.underline = true,
+    this.lineOnly = false,
   });
 
   @override
@@ -90,26 +93,42 @@ class _ComindTextButtonState extends State<ComindTextButton> {
                   ),
                 ),
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
+              child: widget.lineOnly
+                  ? Container(
+                      height: 21,
+                      width: 36,
                       color: colorIndex == 0
-                          ? Colors.red
+                          ? Colors.transparent
                           : colorIndex == 1
-                              ? Colors.blue
+                              ? ComindColors().tertiaryColor
                               : colorIndex == 2
-                                  ? Colors.red
-                                  : Colors.green,
-                      width: _isHovered ? 6.0 : 3.0,
-                    ),
-                  ),
-                ),
-                child: Text(
-                  widget.text,
-                  style: widget.textStyle,
-                ),
-              ),
+                                  ? ComindColors().primaryColor
+                                  : ComindColors().secondaryColor,
+                    )
+                  : Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: colorIndex == 0
+                                ? Colors.transparent
+                                : colorIndex == 1
+                                    ? ComindColors().tertiaryColor
+                                    : colorIndex == 2
+                                        ? ComindColors().primaryColor
+                                        : ComindColors().secondaryColor,
+                            width: _isHovered ? 6.0 : 3.0,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        widget.text,
+                        style: widget.textStyle,
+                      )
+                      // child: Text(
+                      //   widget.text,
+                      //   style: widget.textStyle,
+                      // ),
+                      ),
             ),
           ),
         ),

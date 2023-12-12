@@ -61,9 +61,7 @@ comindAppBar(BuildContext context) {
     title: MediaQuery.of(context).size.width > 550
         ? ComindLogo(key: UniqueKey())
         : ComindShortLogo(key: UniqueKey()),
-    // title: ComindLogo(key: UniqueKey()),
     centerTitle: true,
-    // elevation: 100,
     scrolledUnderElevation: 0,
     // Add toolbar
     toolbarHeight: 100,
@@ -76,10 +74,5 @@ comindAppBar(BuildContext context) {
         },
       ),
     ],
-    // bottom: const PreferredSize(
-    //   // Make this no wider than 600 pixels with a height of 4
-    //   preferredSize: Size.fromHeight(4.0),
-    //   child: ComindDiv(),
-    // )
   );
 }
