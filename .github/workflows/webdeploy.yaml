@@ -26,11 +26,11 @@ jobs:
           channel: master
       - run: flutter doctor -v
 
-      - name: Install web dependencies
-        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
-        with:
-          node-version: "14"
-      - run: npm install -g firebase-tools@11.0.1
+      # - name: Install web dependencies
+      #   uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+      #   with:
+      #     node-version: "14"
+      # - run: npm install -g firebase-tools@11.0.1
 
       # Checkout gallery code and get packages.
       - name: Checkout gallery code
@@ -38,7 +38,4 @@ jobs:
       - run: flutter pub get
 
       # Build and deploy (by default, to staging).
-      - run: flutter build -v web --release
-      - run: firebase deploy --only hosting:${{ github.event.inputs.environment || 'staging' }}
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - run: flutter build -v web --release --web-renderer html
