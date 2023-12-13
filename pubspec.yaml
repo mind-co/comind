@@ -10,15 +10,20 @@ environment:
   sdk: ">=3.1.0 <4.0.0"
 
 dependencies:
+  # firebase_auth: ^4.15.3
+  # firebase_core: ^2.24.2
+  # firebase_ui_auth: ^1.11.0
+  email_validator: ^2.1.17
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  flutter_markdown: ^0.6.18+2
+  flutter_markdown: ^0.6.0+1
   flutter_quill: ^8.1.1
   google_fonts: ^6.1.0
   http: ^1.1.2
   intl: ^0.18.1
+  # markdown: ^7.1.1
   provider: ^6.1.1
   shelf: ^1.4.1
 

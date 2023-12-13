@@ -159,3 +159,64 @@ Future<void> deleteThought(String thoughtId) async {
     print(response.body);
   }
 }
+
+// The basic version of authentication
+// 1. Alice hashes her password.
+// 2. Alice sends the hashed password to Bob.
+// 3. Bob hits it with bcrypt and checks if the password is valid.
+// 4. If valid, Bob sends a JWT to Alice so they can use the page.
+// 5. Alice parties.
+
+Future<bool> newUser(String username, String email, String password) async {
+  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/new-user/');
+  final headers = {
+    'ComindUsername': username,
+    'ComindHashedPassword': password,
+    'ComindEmail': email,
+  };
+
+  print(headers);
+
+  final response = await http.post(url, headers: headers);
+
+  print(response.body);
+
+  // if (response.statusCode != 200) {
+  //   return false;
+  //   throw Exception('Failed to create user');
+  // }
+
+  return true;
+}
+
+Future<bool> userExists(String username) async {
+  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/user-exists/');
+  final headers = {
+    'ComindUsername': username,
+  };
+
+  final response = await http.get(url, headers: headers);
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to check if user exists');
+  }
+
+  final jsonResponse = json.decode(response.body);
+  return jsonResponse['exists'];
+}
+
+Future<bool> emailExists(String email) async {
+  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/email-taken/');
+  final headers = {
+    'ComindEmail': email,
+  };
+
+  final response = await http.get(url, headers: headers);
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to check if email exists');
+  }
+
+  final jsonResponse = json.decode(response.body);
+  return jsonResponse['taken'];
+}

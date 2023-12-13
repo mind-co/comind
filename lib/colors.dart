@@ -3,23 +3,23 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ComindColors {
   // Old version
-  // static const Color primaryColor = Color.fromRGBO(0, 136, 200, 100);
-  // static const Color secondaryColor = Color.fromRGBO(207, 94, 74, 100);
-  // static const Color tertiaryColor = Color.fromRGBO(0, 152, 118, 100);
+  static const Color primaryColorDefault = Color.fromRGBO(0, 137, 200, 1);
+  static const Color secondaryColorDefault = Color.fromRGBO(207, 94, 74, 1);
+  static const Color tertiaryColorDefault = Color.fromRGBO(0, 152, 119, 1);
 
   // New version that intializes the colors to the
   // above but can be modified
-  Color primaryColor = const Color.fromRGBO(106, 130, 167, 1);
-  Color secondaryColor = const Color.fromRGBO(170, 94, 81, 1);
-  Color tertiaryColor = const Color.fromRGBO(96, 156, 94, 1);
+  Color primaryColor = primaryColorDefault;
+  Color secondaryColor = secondaryColorDefault;
+  Color tertiaryColor = tertiaryColorDefault;
 
   ColorScheme colorScheme = const ColorScheme(
-    primary: Color.fromRGBO(0, 136, 200, 1.0),
-    secondary: Color.fromRGBO(207, 94, 74, 1.0),
-    tertiary: Color.fromRGBO(111, 185, 109, 1),
-    surface: Color.fromRGBO(111, 185, 109, 1),
+    primary: primaryColorDefault,
+    secondary: secondaryColorDefault,
+    tertiary: tertiaryColorDefault,
+    surface: tertiaryColorDefault,
     background: Colors.white,
-    error: Color.fromRGBO(207, 94, 74, 1.0),
+    error: secondaryColorDefault,
     onPrimary: textColor,
     onSecondary: textColor,
     onSurface: textColor,
@@ -30,12 +30,12 @@ class ComindColors {
   );
 
   static ColorScheme darkColorScheme = const ColorScheme(
-    primary: Color.fromRGBO(0, 136, 200, 1.0),
-    secondary: Color.fromRGBO(207, 94, 74, 1.0),
-    tertiary: Color.fromRGBO(111, 185, 109, 1),
-    surface: Color.fromRGBO(111, 185, 109, 1),
+    primary: primaryColorDefault,
+    secondary: secondaryColorDefault,
+    tertiary: tertiaryColorDefault,
+    surface: tertiaryColorDefault,
     background: Color.fromRGBO(34, 34, 34, 1),
-    error: Color.fromRGBO(207, 94, 74, 1.0),
+    error: secondaryColorDefault,
     onPrimary: darkTextColor,
     onSecondary: darkTextColor,
     onSurface: darkTextColor,
@@ -91,11 +91,11 @@ class ComindColors {
   }
 
   // Add color reset method
-  // static void resetColors() {
-  //   primaryColor = const Color.fromRGBO(0, 136, 200, 1.0);
-  //   secondaryColor = const Color.fromRGBO(207, 94, 74, 1.0);
-  //   tertiaryColor = const Color.fromRGBO(0, 152, 118, 1.0);
-  // }
+  void resetColors() {
+    primaryColor = primaryColorDefault;
+    secondaryColor = secondaryColorDefault;
+    tertiaryColor = tertiaryColorDefault;
+  }
 
   // Add color scheme generation method
   static List<Color> generateSplitComplementaryColors(Color primaryColor) {

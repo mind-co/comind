@@ -1,25 +1,35 @@
-import 'package:comind/comind_div.dart';
-import 'package:comind/text_button.dart';
-import 'package:comind/misc/comind_logo.dart';
-// import 'package:comind/thought_editor_quill.dart';
-import 'package:comind/types/thought.dart';
-import 'package:comind/thought_editor_basic.dart';
 import 'package:flutter/material.dart';
-import 'package:comind/colors.dart';
-import 'package:comind/api.dart';
-import 'package:comind/providers.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 // import 'package:comind/comind_div.dart';
-import 'package:comind/misc/util.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:markdown/markdown.dart' as md;
 // Expand button
-import 'package:flutter/material.dart';
+
+// Firebase imports
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:comind/firebase_options.dart';
+
+// Comind imports
+import 'package:comind/colors.dart';
+import 'package:comind/api.dart';
+import 'package:comind/providers.dart';
+// import 'package:comind/comind_div.dart';
+import 'package:comind/text_button.dart';
+import 'package:comind/misc/comind_logo.dart';
+import 'package:comind/types/thought.dart';
+import 'package:comind/thought_editor_basic.dart';
+// import 'package:comind/thought_editor_super.dart';
+// import 'package:comind/thought_editor_quill.dart';
+import 'package:comind/misc/util.dart';
+import 'package:comind/login.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(ChangeNotifierProvider(
     create: (_) => ThemeProvider(),
     child: const ComindApp(),
@@ -34,7 +44,11 @@ class ComindApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-          home: const ThoughtListScreen(),
+          home: const LoginScreen(),
+          // home: ThoughtEditorScreen(
+          //   thought: Thought.basic(),
+          // ),
+          // home: const ThoughtListScreen(),
           theme: ThemeData(
             useMaterial3: true,
             colorScheme: ComindColors().colorScheme,
@@ -101,7 +115,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
       thoughts = fetchedThoughts;
       editVisibilityList = List<bool>.filled(thoughts.length, false);
       expandedVisibilityList = List<bool>.filled(thoughts.length, false);
-      verbBarHoverList = List<bool>.filled(thoughts.length, true);
+      verbBarHoverList = List<bool>.filled(thoughts.length, false);
 
       // Make a new controller for each thought
       for (var i = 0; i < thoughts.length; i++) {
@@ -171,6 +185,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     // Check if we have thoughts, make a widget for each one
     return LayoutBuilder(
       builder: (context, constraints) {
+        var smallScreen = constraints.maxWidth < 600;
         if (thoughts.isNotEmpty) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -232,6 +247,17 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                                 cursorColor:
                                     Theme.of(context).colorScheme.primary,
                                 decoration: InputDecoration(
+                                  prefixIcon: Icon(
+                                    Icons.search,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withAlpha(200),
+                                  ),
+                                  prefixIconConstraints: BoxConstraints(
+                                    minWidth: 0,
+                                    minHeight: 0,
+                                  ),
                                   prefix: searchMode
                                       ? Text("search ",
                                           style: TextStyle(
@@ -306,7 +332,9 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                                               publicMode = !publicMode;
                                             });
                                           },
-                                          text: publicMode ? "We" : "You",
+                                          text: publicMode
+                                              ? "Public mode"
+                                              : "Private mode",
                                           opacity: 1,
                                           opacityOnHover: 1,
                                           colorIndex: publicMode ? 1 : 3,
@@ -381,6 +409,22 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                                       opacity: 1.0,
                                       child: Row(
                                         children: [
+                                          //////////////////////////////
+                                          /// SEARCH BUTTON
+                                          /// ///////////////////////////
+                                          ComindTextButton(
+                                              text: "Search",
+                                              onPressed: () {
+                                                setState(() {
+                                                  searchMode = !searchMode;
+                                                });
+                                              },
+                                              colorIndex: 1,
+                                              opacity: 1.0,
+                                              textStyle: const TextStyle(
+                                                  fontFamily: "Bungee",
+                                                  fontSize: 16)),
+
                                           /////////////////////////////////
                                           /// REFRESH BUTTON
                                           ///////////////////////////
@@ -695,33 +739,61 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     );
   }
 
-  Padding thoughtBoxVerbBar(BuildContext context, int index) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-      child: Opacity(
-        opacity: 1.0,
-        child: Row(
-          children: [
-            /////////////////
-            // EDIT BUTTON //
-            /////////////////
-            ComindTextButton(
-                text: "Change",
-                onPressed: () {
-                  _editNote(context, index); // Call _editNote with the context
-                },
-                colorIndex: 2,
-                lineOnly: !verbBarHoverList[index],
-                opacity: 0.8,
-                textStyle: const TextStyle(fontFamily: "Bungee", fontSize: 12)),
-
-            ///////////////////
-            // DELETE BUTTON //
-            ///////////////////
-            if (expandedVisibilityList[index])
+  Expanded thoughtBoxVerbBar(BuildContext context, int index) {
+    var smallScreen = MediaQuery.of(context).size.width < 600;
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+        child: Opacity(
+          opacity: 1,
+          child: Row(
+            children: [
+              /////////////////
+              // EDIT BUTTON //
+              /////////////////
+              // IconButton.outlined(
+              //   onPressed: () {
+              //     setState(() {
+              //       editVisibilityList[index] = !editVisibilityList[index];
+              //     });
+              //   },
+              //   icon: Icon(
+              //     Icons.edit,
+              //     color: Theme.of(context).colorScheme.onPrimary,
+              //   ),
+              //   iconSize: 16,
+              //   splashRadius: 16,
+              //   padding: const EdgeInsets.all(8),
+              //   constraints: const BoxConstraints(),
+              //   color: Theme.of(context).colorScheme.onPrimary,
+              //   hoverColor: Theme.of(context).colorScheme.primary,
+              //   focusColor: Theme.of(context).colorScheme.onPrimary,
+              //   highlightColor: Theme.of(context).colorScheme.onPrimary,
+              //   disabledColor: Theme.of(context).colorScheme.onPrimary,
+              //   // shape: RoundedRectangleBorder(
+              //   //   borderRadius: BorderRadius.circular(10),
+              //   // ),
+              // ),
               ComindTextButton(
-                  lineOnly: !verbBarHoverList[index],
-                  colorIndex: 2,
+                  text: "Edit",
+                  onPressed: () {
+                    _editNote(
+                        context, index); // Call _editNote with the context
+                  },
+                  colorIndex: 1,
+                  // lineOnly: !verbBarHoverList[index],
+                  opacity: 0.8,
+                  textStyle:
+                      const TextStyle(fontFamily: "Bungee", fontSize: 16)),
+
+              ///////////////////
+              // DELETE BUTTON //
+              ///////////////////
+              // if (expandedVisibilityList[index])
+
+              ComindTextButton(
+                  // lineOnly: !verbBarHoverList[index],
+                  colorIndex: 3,
                   onPressed: () async {
                     bool? shouldDelete = await showDialog<bool>(
                       context: context,
@@ -771,48 +843,50 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                   text: "Delete",
                   opacity: 0.8,
                   textStyle:
-                      const TextStyle(fontFamily: "Bungee", fontSize: 12)),
+                      const TextStyle(fontFamily: "Bungee", fontSize: 16)),
 
-            ///////////////////////
-            // Think BUTTON //
-            ///////////////////////
-            ComindTextButton(
-                text: "Think",
-                lineOnly: !verbBarHoverList[index],
-                opacity: 0.8,
-                colorIndex: 1,
-                textStyle: const TextStyle(fontFamily: "Bungee", fontSize: 12),
-                onPressed: () {
-                  // Save the parent thought if the text has length > 0
-                  if (_controllers[index].text.isNotEmpty) {
-                    // Send the thought
-                    saveQuickThought(_controllers[index].text, publicMode,
-                        thoughts[index].id);
+              ///////////////////////
+              // Think BUTTON //
+              ///////////////////////
+              ComindTextButton(
+                  text: "Think",
+                  // lineOnly: !verbBarHoverList[index],
+                  opacity: 0.8,
+                  colorIndex: 2,
+                  textStyle:
+                      const TextStyle(fontFamily: "Bungee", fontSize: 16),
+                  onPressed: () {
+                    // Save the parent thought if the text has length > 0
+                    if (_controllers[index].text.isNotEmpty) {
+                      // Send the thought
+                      saveQuickThought(_controllers[index].text, publicMode,
+                          thoughts[index].id);
 
-                    // Clear the text field
-                    _controllers[index].clear();
+                      // Clear the text field
+                      _controllers[index].clear();
 
-                    // Refresh the thoughts
-                    _fetchThoughts();
-                  }
-                }),
+                      // Refresh the thoughts
+                      _fetchThoughts();
+                    }
+                  }),
 
-            ///////////////////////////
-            /// THINK BUTTON BUTTON ///
-            ///////////////////////////
-            ComindTextButton(
-                colorIndex: 3,
-                lineOnly: !verbBarHoverList[index],
-                onPressed: () {
-                  setState(() {
-                    expandedVisibilityList[index] =
-                        !expandedVisibilityList[index];
-                  });
-                },
-                opacity: 0.8,
-                text: expandedVisibilityList[index] ? "Less" : "More",
-                textStyle: TextStyle(fontFamily: "Bungee", fontSize: 12)),
-          ],
+              ///////////////////////////
+              /// THINK BUTTON BUTTON ///
+              ///////////////////////////
+              ComindTextButton(
+                  colorIndex: 1,
+                  // lineOnly: !verbBarHoverList[index],
+                  onPressed: () {
+                    setState(() {
+                      expandedVisibilityList[index] =
+                          !expandedVisibilityList[index];
+                    });
+                  },
+                  opacity: 0.8,
+                  text: expandedVisibilityList[index] ? "Less" : "More",
+                  textStyle: TextStyle(fontFamily: "Bungee", fontSize: 16)),
+            ],
+          ),
         ),
       ),
     );

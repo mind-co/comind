@@ -1,3 +1,4 @@
+import 'package:comind/misc/util.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/misc/comind_logo.dart';
 import 'package:flutter/services.dart';
@@ -31,21 +32,7 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          title: ComindLogo(key: UniqueKey()),
-          centerTitle: true,
-          elevation: 0,
-          actions: [
-            // Add dark mode toggle
-            IconButton(
-              icon: const Icon(Icons.dark_mode),
-              onPressed: () {
-                // Toggle the brightness
-              },
-            ),
-          ],
-        ),
+        appBar: comindAppBar(context),
         body: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
             body: Padding(
