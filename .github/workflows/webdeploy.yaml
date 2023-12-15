@@ -26,12 +26,6 @@ jobs:
           channel: master
       - run: flutter doctor -v
 
-      # - name: Install web dependencies
-      #   uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
-      #   with:
-      #     node-version: "14"
-      # - run: npm install -g firebase-tools@11.0.1
-
       # Checkout gallery code and get packages.
       - name: Checkout gallery code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
