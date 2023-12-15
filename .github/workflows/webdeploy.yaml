@@ -39,6 +39,15 @@ jobs:
           git config --global user.name "Cameron Pfiffer"
           git config --global user.email "cameron@pfiffer.org"
           git checkout -b web
-          git add build/web/ # Make sure the path is correct
-          git commit -m "Add web build results"
-          git push --set-upstream origin web
+
+          # Remove all files except for .gitignore and the build directory.
+          find . -maxdepth 1 ! -name .gitignore ! -name build ! -name . -exec rm -rf {} \;
+
+          # Move the build directory contents up one level.
+          mv build/web/* .
+          rm -rf build
+
+          # Commit and push.
+          git add .
+          git commit -m "Deploy to web"
+          git push -f origin web

@@ -355,27 +355,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(fontSize: fontSize)),
               ),
 
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                child: SelectableText(
-                    "I'm glad you're here. Comind is a place for you to share your thoughts and muck around with this whole being human thing. Well, there's robots too, but they're mostly friendly. And a bit dumb but mostly friendly.",
-                    style: TextStyle(fontSize: fontSize)),
-              ),
-
               // const Padding(
               //   padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
               //   child: SelectableText(
-              //       "To sign up, I need an email, a username, and a password. I'll send you an email to confirm your email address, and then you'll be good to go. Let's see your username now.",
+              //       "I'm glad you're here. Comind is a place for you to share your thoughts and muck around with this whole being human thing. Well, there's robots too, but they're mostly friendly. And a bit dumb but mostly friendly.",
               //       style: TextStyle(fontSize: fontSize)),
               // ),
 
-              // My name is Co, by the way.
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                child: SelectableText(
-                    "My name is Co, by the way. What's yours?",
-                    style: TextStyle(fontSize: fontSize)),
-              ),
+              // // const Padding(
+              // //   padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
+              // //   child: SelectableText(
+              // //       "To sign up, I need an email, a username, and a password. I'll send you an email to confirm your email address, and then you'll be good to go. Let's see your username now.",
+              // //       style: TextStyle(fontSize: fontSize)),
+              // // ),
+
+              // // My name is Co, by the way.
+              // const Padding(
+              //   padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
+              //   child: SelectableText(
+              //       "My name is Co, by the way. What's yours?",
+              //       style: TextStyle(fontSize: fontSize)),
+              // ),
 
               // Username field
               Padding(
