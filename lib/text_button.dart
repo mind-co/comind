@@ -1,6 +1,8 @@
 import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
 
+enum LineLocation { top, bottom, left, right }
+
 class ComindTextButton extends StatefulWidget {
   final String text;
   final double opacityOnHover;
@@ -8,9 +10,10 @@ class ComindTextButton extends StatefulWidget {
   final Function onPressed;
   final double opacity;
   final int colorIndex;
-  final bool underline;
-  final bool lineOnly;
+  final LineLocation lineLocation;
+  final String side = "top";
   final double fontSize;
+  bool lineOnly = true;
 
   ComindTextButton({
     required this.text,
@@ -22,9 +25,9 @@ class ComindTextButton extends StatefulWidget {
     required this.onPressed,
     this.opacity = 0.5,
     this.colorIndex = 1, // 1 = primary, 2 = secondary, 3 = tertiary
-    this.underline = true,
-    this.lineOnly = false,
+    this.lineLocation = LineLocation.bottom,
     this.fontSize = 16,
+    this.lineOnly = true,
   });
 
   @override
@@ -35,6 +38,7 @@ class _ComindTextButtonState extends State<ComindTextButton> {
   bool _isHovered = false;
   bool _isPressed = false;
   int colorIndex = 0;
+  // bool lineOnly = true;
 
   // Method to make the color shift to the next one
   void shiftColor() {
@@ -63,11 +67,13 @@ class _ComindTextButtonState extends State<ComindTextButton> {
       onEnter: (_) {
         setState(() {
           _isHovered = true;
+          // lineOnly = false;
         });
       },
       onExit: (_) {
         setState(() {
           _isHovered = false;
+          // lineOnly = true;
         });
       },
       child: GestureDetector(
@@ -90,66 +96,79 @@ class _ComindTextButtonState extends State<ComindTextButton> {
           child: Container(
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(
-                  color: Colors.transparent,
-                  width: _isHovered ? 1.0 : 4.0,
-                ),
+                // Top
+                top: widget.lineLocation == LineLocation.top
+                    ? BorderSide(
+                        color: Colors.transparent,
+                        width: _isHovered ? 1.0 : 4.0,
+                      )
+                    : BorderSide(
+                        color: Colors.transparent,
+                      ),
+
+                // Bottom
+                bottom: widget.lineLocation == LineLocation.bottom
+                    ? BorderSide(
+                        color: Colors.transparent,
+                        width: _isHovered ? 1.0 : 4.0,
+                      )
+                    : BorderSide(
+                        color: Colors.transparent,
+                      ),
               ),
             ),
-            child: widget.lineOnly
-                ? Container(
-                    height: 21,
-                    width: 36,
-                    color: colorIndex == 0
-                        ? Colors.transparent
-                        : colorIndex == 1
-                            ? ComindColors().tertiaryColor
-                            : colorIndex == 2
-                                ? ComindColors().primaryColor
-                                : ComindColors().secondaryColor,
-                  )
-                : Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        // Top appears if !underline
-                        top: !widget.underline
-                            ? BorderSide(
-                                color: colorIndex == 0
-                                    ? Colors.transparent
-                                    : colorIndex == 1
-                                        ? ComindColors().tertiaryColor
-                                        : colorIndex == 2
-                                            ? ComindColors().primaryColor
-                                            : ComindColors().secondaryColor,
-                                width: _isHovered ? 6.0 : 3.0,
-                              )
-                            : BorderSide(),
+            child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    // Top appears if !underline
+                    top: widget.lineLocation == LineLocation.top
+                        ? BorderSide(
+                            color: colorIndex == 0
+                                ? Colors.transparent
+                                : colorIndex == 1
+                                    ? ComindColors().tertiaryColor
+                                    : colorIndex == 2
+                                        ? ComindColors().primaryColor
+                                        : ComindColors().secondaryColor,
+                            width: _isHovered ? 6.0 : 3.0,
+                          )
+                        : BorderSide(
+                            color: Colors.transparent,
+                            width: 0.0,
+                          ),
 
-                        bottom: widget.underline
-                            ? BorderSide(
-                                color: colorIndex == 0
-                                    ? Colors.transparent
-                                    : colorIndex == 1
-                                        ? ComindColors().tertiaryColor
-                                        : colorIndex == 2
-                                            ? ComindColors().primaryColor
-                                            : ComindColors().secondaryColor,
-                                width: _isHovered ? 6.0 : 3.0,
-                              )
-                            : BorderSide(),
-                      ),
+                    bottom: widget.lineLocation == LineLocation.bottom
+                        ? BorderSide(
+                            color: colorIndex == 0
+                                ? Colors.transparent
+                                : colorIndex == 1
+                                    ? ComindColors().tertiaryColor
+                                    : colorIndex == 2
+                                        ? ComindColors().primaryColor
+                                        : ComindColors().secondaryColor,
+                            width: _isHovered ? 6.0 : 3.0,
+                          )
+                        : BorderSide(
+                            color: Colors.transparent,
+                            width: 0.0,
+                          ),
+                  ),
+                ),
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 100),
+                  opacity: !widget.lineOnly ? 0 : 1,
+                  child: Text(
+                    widget.text,
+                    style: widget.textStyle.copyWith(
+                      fontSize: widget.fontSize,
                     ),
-                    child: Text(
-                      widget.text,
-                      style: widget.textStyle.copyWith(
-                        fontSize: widget.fontSize,
-                      ),
-                    )
-                    // child: Text(
-                    //   widget.text,
-                    //   style: widget.textStyle,
-                    // ),
-                    ),
+                  ),
+                )
+                // child: Text(
+                //   widget.text,
+                //   style: widget.textStyle,
+                // ),
+                ),
           ),
         ),
       ),

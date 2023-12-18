@@ -51,8 +51,8 @@ class ComindApp extends StatelessWidget {
           // home: ThoughtEditorScreen(
           //   thought: Thought.basic(),
           // ),
-          // home: const ThoughtListScreen(),
-          home: StreamScreen(),
+          home: const ThoughtListScreen(),
+          // home: StreamScreen(),
           theme: ThemeData(
             useMaterial3: true,
             colorScheme: ComindColors().colorScheme,
@@ -222,201 +222,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                         // Main text field
                         MainTextField(primaryController: _primaryController),
 
-                        ///////////////////////
-                        // Verb bar for top editor (hehe vebs) //
-                        ///////////////////////
-                        SizedBox(
-                          width: constraints.maxWidth > 600
-                              ? 600
-                              : constraints.maxWidth,
-                          child: Opacity(
-                            opacity: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 8, 0, 8),
-                              child: Row(
-                                mainAxisAlignment: moreMenuExpanded
-                                    ? MainAxisAlignment.end
-                                    : MainAxisAlignment.center,
-                                children: [
-                                  // User name
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(4, 0, 4, 0),
-                                    child: Column(
-                                      children: [
-                                        ComindTextButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              publicMode = !publicMode;
-                                            });
-                                          },
-                                          text: publicMode
-                                              ? "Public mode"
-                                              : "Private mode",
-                                          opacity: 1,
-                                          opacityOnHover: 1,
-                                          colorIndex: publicMode ? 1 : 3,
-                                          textStyle: const TextStyle(
-                                              fontFamily: "Bungee",
-                                              fontSize: 18),
-                                        ),
-
-                                        // clock
-                                        if (constraints.maxWidth > 600)
-                                          Opacity(
-                                            opacity: 0.5,
-                                            child: Text(
-                                              // Show current time in locale format
-                                              // DateFormat.yMMMd().format(
-                                              //         DateTime.now()) +
-                                              // " at " +
-                                              DateFormat.jm().format(
-                                                DateTime.now(),
-                                              ),
-
-                                              style: const TextStyle(
-                                                  // fontFamily: "Bungee",
-                                                  fontSize: 12),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // Divider line
-                                  Visibility(
-                                    // visible: !editVisibilityList[index],
-                                    visible: true,
-                                    child: Expanded(
-                                      child: Container(
-                                        height: 2,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onBackground
-                                            .withAlpha(32),
-                                      ),
-                                    ),
-                                  ),
-
-                                  //////////////////////////
-                                  /// whether it's public or not
-                                  /////
-
-                                  // Divider line
-                                  Visibility(
-                                    // visible: !editVisibilityList[index],
-                                    visible: true,
-                                    child: Expanded(
-                                      child: Container(
-                                        height: 2,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onBackground
-                                            .withAlpha(32),
-                                      ),
-                                    ),
-                                  ),
-
-                                  //////////////////////////
-                                  /// VERB ROW BUTTONS ///
-                                  //////////////////////////
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                                    child: Opacity(
-                                      opacity: 1.0,
-                                      child: Row(
-                                        children: [
-                                          //////////////////////////////
-                                          /// SEARCH BUTTON
-                                          /// ///////////////////////////
-                                          ComindTextButton(
-                                              text: "Search",
-                                              onPressed: () {
-                                                setState(() {
-                                                  searchMode = !searchMode;
-                                                });
-                                              },
-                                              colorIndex: 1,
-                                              opacity: 1.0,
-                                              textStyle: const TextStyle(
-                                                  fontFamily: "Bungee",
-                                                  fontSize: 16)),
-
-                                          /////////////////////////////////
-                                          /// REFRESH BUTTON
-                                          ///////////////////////////
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: ComindTextButton(
-                                                text: "Refresh",
-                                                onPressed: () {
-                                                  _fetchThoughts();
-                                                },
-                                                colorIndex: 3,
-                                                opacity: 1.0,
-                                                textStyle: const TextStyle(
-                                                    fontFamily: "Bungee",
-                                                    fontSize: 16)),
-                                          ),
-
-                                          ///////////////////////
-                                          // Think BUTTON, main text field
-                                          ///////////////////////
-                                          // Padding(
-                                          //   padding: constraints.maxWidth > 800
-                                          //       ? const EdgeInsets.fromLTRB(
-                                          //           0, 0, 0, 0)
-                                          //       : const EdgeInsets.fromLTRB(
-                                          //           0, 0, 16, 0),
-                                          //   // const EdgeInsets.all(8.0),
-                                          //   child: ComindTextButton(
-                                          //       opacity: 1,
-                                          //       text: "Think",
-                                          //       onPressed: () {
-                                          //         setState(() {
-                                          //           // Save a quick thought for the main text field
-                                          //           saveQuickThought(
-                                          //               _primaryController.text,
-                                          //               publicMode,
-                                          //               null);
-                                          //         });
-                                          //         // Clear the text field
-                                          //         _primaryController.clear();
-
-                                          //         // Refresh the thoughts
-                                          //         _fetchThoughts();
-                                          //       },
-                                          //       colorIndex: 1),
-                                          // ),
-
-                                          ///////////////////////////
-                                          /// MORE BUTTON ///
-                                          ///////////////////////////
-                                          // funButton(
-                                          //   -1,
-                                          //   onTap: () {
-                                          //     setState(() {
-                                          //       moreMenuExpanded =
-                                          //           !moreMenuExpanded;
-                                          //     });
-                                          //   },
-                                          //   size: buttonSize(constraints),
-                                          //   color: 3,
-                                          //   text: moreMenuExpanded
-                                          //       ? "Less"
-                                          //       : "More",
-                                          // ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
                         /// THOUGHTS LIST VIEW / STREAM OF CONCIOUSNESS
                         ///////////////////////////
                         Expanded(
@@ -511,151 +316,153 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     return constraints.maxWidth > 600 ? 16 : 14;
   }
 
-  Padding thoughtBox(BuildContext context, int index,
+  Widget thoughtBox(BuildContext context, int index,
       {required BoxConstraints constraints}) {
-    return Padding(
-      padding: constraints.maxWidth > 600
-          ? const EdgeInsets.fromLTRB(0, 0, 0, 32)
-          : const EdgeInsets.fromLTRB(16, 8, 16, 24),
-      child: Container(
-          decoration: BoxDecoration(
-              border:
-                  Border.all(color: Theme.of(context).dialogBackgroundColor)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Show name & date
-              nameAndDate(index, context, compact: constraints.maxWidth < 600),
+    return MarkdownThought(thought: thoughts[index], context: context);
 
-              // Thought body
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                      child: MarkdownThought(
-                          thought: thoughts[index], context: context)),
-                ],
-              ),
+    // return Padding(
+    //   padding: constraints.maxWidth > 600
+    //       ? const EdgeInsets.fromLTRB(0, 0, 0, 32)
+    //       : const EdgeInsets.fromLTRB(16, 8, 16, 24),
+    //   child: Container(
+    //       decoration: BoxDecoration(
+    //           border:
+    //               Border.all(color: Theme.of(context).dialogBackgroundColor)),
+    //       child: Column(
+    //         mainAxisAlignment: MainAxisAlignment.start,
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           // Show name & date
+    //           nameAndDate(index, context, compact: constraints.maxWidth < 600),
 
-              // Text editing row, thought box
-              Visibility(
-                visible: editVisibilityList[index],
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 2, 0, 4),
-                        child: TextField(
-                          autofocus: false,
-                          controller: _controllers[index],
-                          maxLines: null,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(fontSize: 16),
-                          cursorColor: Theme.of(context).colorScheme.onPrimary,
-                          decoration: InputDecoration(
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimary
-                                    .withAlpha(32),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimary
-                                    .withAlpha(64),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    //           // Thought body
+    //           Column(
+    //             crossAxisAlignment: CrossAxisAlignment.start,
+    //             children: [
+    //               Padding(
+    //                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+    //                   child: MarkdownThought(
+    //                       thought: thoughts[index], context: context)),
+    //             ],
+    //           ),
 
-              ///////////////////////
-              // Verbs (hehe vebs) //
-              ///////////////////////
-              MouseRegion(
-                onEnter: (event) {
-                  setState(() {
-                    verbBarHoverList[index] = true;
-                  });
-                },
-                onExit: (event) {
-                  setState(() {
-                    verbBarHoverList[index] = false;
-                  });
-                },
-                child: Opacity(
-                  opacity: verbBarHoverList[index] ? 1.0 : 0.5,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                    child: Row(
-                      mainAxisAlignment: editVisibilityList[index]
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.center,
-                      children: [
-                        // User name
-                        // Padding(
-                        //     padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-                        //     child: constraints.maxWidth > 600
-                        //         ? nameAndDate(index, context)
-                        //         : nameAndDate(index, context, compact: true)),
+    //           // Text editing row, thought box
+    //           Visibility(
+    //             visible: editVisibilityList[index],
+    //             child: Row(
+    //               crossAxisAlignment: CrossAxisAlignment.center,
+    //               children: [
+    //                 Expanded(
+    //                   child: Padding(
+    //                     padding: const EdgeInsets.fromLTRB(0, 2, 0, 4),
+    //                     child: TextField(
+    //                       autofocus: false,
+    //                       controller: _controllers[index],
+    //                       maxLines: null,
+    //                       style: Theme.of(context)
+    //                           .textTheme
+    //                           .bodyMedium
+    //                           ?.copyWith(fontSize: 16),
+    //                       cursorColor: Theme.of(context).colorScheme.onPrimary,
+    //                       decoration: InputDecoration(
+    //                         contentPadding:
+    //                             const EdgeInsets.fromLTRB(8, 8, 8, 8),
+    //                         enabledBorder: OutlineInputBorder(
+    //                           borderSide: BorderSide(
+    //                             color: Theme.of(context)
+    //                                 .colorScheme
+    //                                 .onPrimary
+    //                                 .withAlpha(32),
+    //                           ),
+    //                         ),
+    //                         focusedBorder: OutlineInputBorder(
+    //                           borderSide: BorderSide(
+    //                             color: Theme.of(context)
+    //                                 .colorScheme
+    //                                 .onPrimary
+    //                                 .withAlpha(64),
+    //                           ),
+    //                         ),
+    //                       ),
+    //                     ),
+    //                   ),
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
 
-                        // Divider line
-                        // Visibility(
-                        //   // visible: !editVisibilityList[index],
-                        //   visible: true,
-                        //   child: Expanded(
-                        //     child: Container(
-                        //       height: 2,
-                        //       color: Theme.of(context)
-                        //           .colorScheme
-                        //           .onBackground
-                        //           .withAlpha(32),
-                        //     ),
-                        //   ),
-                        // ),
+    //           ///////////////////////
+    //           // Verbs (hehe vebs) //
+    //           ///////////////////////
+    //           MouseRegion(
+    //             onEnter: (event) {
+    //               setState(() {
+    //                 verbBarHoverList[index] = true;
+    //               });
+    //             },
+    //             onExit: (event) {
+    //               setState(() {
+    //                 verbBarHoverList[index] = false;
+    //               });
+    //             },
+    //             child: Opacity(
+    //               opacity: verbBarHoverList[index] ? 1.0 : 0.5,
+    //               child: Padding(
+    //                 padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+    //                 child: Row(
+    //                   mainAxisAlignment: editVisibilityList[index]
+    //                       ? MainAxisAlignment.end
+    //                       : MainAxisAlignment.center,
+    //                   children: [
+    //                     // User name
+    //                     // Padding(
+    //                     //     padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+    //                     //     child: constraints.maxWidth > 600
+    //                     //         ? nameAndDate(index, context)
+    //                     //         : nameAndDate(index, context, compact: true)),
 
-                        // Divider line
-                        // Visibility(
-                        //   // visible: !editVisibilityList[index],
-                        //   visible: true,
-                        //   child: Expanded(
-                        //     child: Container(
-                        //       height: 2,
-                        //       color: Theme.of(context)
-                        //           .colorScheme
-                        //           .onBackground
-                        //           .withAlpha(32),
-                        //     ),
-                        //   ),
-                        // ),
+    //                     // Divider line
+    //                     // Visibility(
+    //                     //   // visible: !editVisibilityList[index],
+    //                     //   visible: true,
+    //                     //   child: Expanded(
+    //                     //     child: Container(
+    //                     //       height: 2,
+    //                     //       color: Theme.of(context)
+    //                     //           .colorScheme
+    //                     //           .onBackground
+    //                     //           .withAlpha(32),
+    //                     //     ),
+    //                     //   ),
+    //                     // ),
 
-                        //////////////////////////
-                        /// VERB ROW BUTTONS ///
-                        //////////////////////////
-                        thoughtBoxVerbBar(context, index),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          )),
-    );
+    //                     // Divider line
+    //                     // Visibility(
+    //                     //   // visible: !editVisibilityList[index],
+    //                     //   visible: true,
+    //                     //   child: Expanded(
+    //                     //     child: Container(
+    //                     //       height: 2,
+    //                     //       color: Theme.of(context)
+    //                     //           .colorScheme
+    //                     //           .onBackground
+    //                     //           .withAlpha(32),
+    //                     //     ),
+    //                     //   ),
+    //                     // ),
+
+    //                     //////////////////////////
+    //                     /// VERB ROW BUTTONS ///
+    //                     //////////////////////////
+    //                     thoughtBoxVerbBar(context, index),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //         ],
+    //       )),
+    // );
   }
 
   Expanded thoughtBoxVerbBar(BuildContext context, int index) {

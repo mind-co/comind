@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:comind/types/thought.dart';
 import 'package:comind/input_field.dart';
 import 'package:comind/api.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // StreamScreen
 //
@@ -42,17 +43,15 @@ class _StreamScreenState extends State<StreamScreen> {
 
   // Fetch thoughts
   void _fetchThoughts() async {
-    // Replace with your API call
-    List<Thought> train = await fetchThoughts();
-    // setState(() {
-    //   // thoughts = fetchedThoughts;
+    // Get the thoughts
+    var thoughts = await fetchThoughts();
 
-    //   // Make a new controller for each thought
-    //   // for (var i = 0; i < thoughts.length; i++) {
-    //   //   _controllers.add(TextEditingController());
-    //   // }
-    // });
-    // loaded = true;
+    // Set the state
+    setState(() {
+      train = thoughts;
+    });
+
+    print("Fetched thoughts");
   }
 
   // _StreamScreenState
@@ -66,8 +65,11 @@ class _StreamScreenState extends State<StreamScreen> {
   //
   @override
   Widget build(BuildContext context) {
-    var textStyle = TextStyle(
-      fontFamily: "Bungee",
+    // var textStyle = TextStyle(
+    //   fontFamily: "Bungee",
+    //   fontSize: 20,
+    // );
+    var textStyle = GoogleFonts.bungeeInline(
       fontSize: 20,
     );
     return Scaffold(
