@@ -10,16 +10,21 @@ class ComindTextButton extends StatefulWidget {
   final int colorIndex;
   final bool underline;
   final bool lineOnly;
+  final double fontSize;
 
   ComindTextButton({
     required this.text,
     this.opacityOnHover = 1.0,
-    this.textStyle = const TextStyle(fontFamily: "Bungee", fontSize: 16),
+    this.textStyle = const TextStyle(
+      fontFamily: "Bungee",
+      fontSize: 14,
+    ),
     required this.onPressed,
     this.opacity = 0.5,
     this.colorIndex = 1, // 1 = primary, 2 = secondary, 3 = tertiary
     this.underline = true,
     this.lineOnly = false,
+    this.fontSize = 16,
   });
 
   @override
@@ -80,56 +85,71 @@ class _ComindTextButtonState extends State<ComindTextButton> {
             });
           });
         },
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 2, 4, 0),
-          child: Opacity(
-            opacity: _isHovered ? widget.opacityOnHover : widget.opacity,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Colors.transparent,
-                    width: _isHovered ? 1.0 : 4.0,
-                  ),
+        child: Opacity(
+          opacity: _isHovered ? widget.opacityOnHover : widget.opacity,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.transparent,
+                  width: _isHovered ? 1.0 : 4.0,
                 ),
               ),
-              child: widget.lineOnly
-                  ? Container(
-                      height: 21,
-                      width: 36,
-                      color: colorIndex == 0
-                          ? Colors.transparent
-                          : colorIndex == 1
-                              ? ComindColors().tertiaryColor
-                              : colorIndex == 2
-                                  ? ComindColors().primaryColor
-                                  : ComindColors().secondaryColor,
-                    )
-                  : Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: colorIndex == 0
-                                ? Colors.transparent
-                                : colorIndex == 1
-                                    ? ComindColors().tertiaryColor
-                                    : colorIndex == 2
-                                        ? ComindColors().primaryColor
-                                        : ComindColors().secondaryColor,
-                            width: _isHovered ? 6.0 : 3.0,
-                          ),
-                        ),
-                      ),
-                      child: Text(
-                        widget.text,
-                        style: widget.textStyle,
-                      )
-                      // child: Text(
-                      //   widget.text,
-                      //   style: widget.textStyle,
-                      // ),
-                      ),
             ),
+            child: widget.lineOnly
+                ? Container(
+                    height: 21,
+                    width: 36,
+                    color: colorIndex == 0
+                        ? Colors.transparent
+                        : colorIndex == 1
+                            ? ComindColors().tertiaryColor
+                            : colorIndex == 2
+                                ? ComindColors().primaryColor
+                                : ComindColors().secondaryColor,
+                  )
+                : Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        // Top appears if !underline
+                        top: !widget.underline
+                            ? BorderSide(
+                                color: colorIndex == 0
+                                    ? Colors.transparent
+                                    : colorIndex == 1
+                                        ? ComindColors().tertiaryColor
+                                        : colorIndex == 2
+                                            ? ComindColors().primaryColor
+                                            : ComindColors().secondaryColor,
+                                width: _isHovered ? 6.0 : 3.0,
+                              )
+                            : BorderSide(),
+
+                        bottom: widget.underline
+                            ? BorderSide(
+                                color: colorIndex == 0
+                                    ? Colors.transparent
+                                    : colorIndex == 1
+                                        ? ComindColors().tertiaryColor
+                                        : colorIndex == 2
+                                            ? ComindColors().primaryColor
+                                            : ComindColors().secondaryColor,
+                                width: _isHovered ? 6.0 : 3.0,
+                              )
+                            : BorderSide(),
+                      ),
+                    ),
+                    child: Text(
+                      widget.text,
+                      style: widget.textStyle.copyWith(
+                        fontSize: widget.fontSize,
+                      ),
+                    )
+                    // child: Text(
+                    //   widget.text,
+                    //   style: widget.textStyle,
+                    // ),
+                    ),
           ),
         ),
       ),

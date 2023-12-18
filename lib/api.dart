@@ -22,8 +22,8 @@ Future<List<Thought>> fetchThoughts() async {
 
 // Method to save a quick thought that has only
 // body, isPublic, and an optional parentThoughtId
-Future<void> saveQuickThought(
-    String body, bool isPublic, String? parentThoughtId) async {
+Future<void> saveQuickThought(String body, bool isPublic,
+    String? parentThoughtId, String? childThoughtId) async {
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
 
   final headers = {
@@ -40,6 +40,11 @@ Future<void> saveQuickThought(
   // If the thought has a parentThoughtId, add it to the body
   if (parentThoughtId != null) {
     bodyJson['parent_thought_id'] = parentThoughtId;
+  }
+
+  // If the thought has a childThoughtId, add it to the body
+  if (childThoughtId != null) {
+    bodyJson['child_thought_id'] = childThoughtId;
   }
 
   final response = await http.post(

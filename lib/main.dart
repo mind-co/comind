@@ -1,3 +1,4 @@
+import 'package:comind/markdown_display.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -14,6 +15,7 @@ import 'package:markdown/markdown.dart' as md;
 // import 'package:comind/firebase_options.dart';
 
 // Comind imports
+import 'package:comind/input_field.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/api.dart';
 import 'package:comind/providers.dart';
@@ -26,6 +28,7 @@ import 'package:comind/thought_editor_basic.dart';
 // import 'package:comind/thought_editor_quill.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/login.dart';
+import 'package:comind/stream.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,11 +47,12 @@ class ComindApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-          home: const LoginScreen(),
+          // home: const LoginScreen(),
           // home: ThoughtEditorScreen(
           //   thought: Thought.basic(),
           // ),
           // home: const ThoughtListScreen(),
+          home: StreamScreen(),
           theme: ThemeData(
             useMaterial3: true,
             colorScheme: ComindColors().colorScheme,
@@ -216,93 +220,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                         // ),
 
                         // Main text field
-                        Container(
-                          width: constraints.maxWidth > 600
-                              ? 600
-                              : constraints.maxWidth,
-                          child: Padding(
-                            padding: constraints.maxWidth > 600
-                                ? const EdgeInsets.fromLTRB(0, 16, 0, 16)
-                                : const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                            child: Container(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceVariant
-                                  .withAlpha(128),
-                              child: TextField(
-                                cursorWidth: 10,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(fontSize: 16),
-                                autofocus: false,
-                                controller: _primaryController,
-                                maxLines: null,
-                                onTap: () {
-                                  // Toggle the visibility
-                                  // setState(() {
-                                  //   editVisibilityList[0] = true;
-                                  // });
-                                },
-                                cursorColor:
-                                    Theme.of(context).colorScheme.primary,
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(
-                                    Icons.search,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary
-                                        .withAlpha(200),
-                                  ),
-                                  prefixIconConstraints: BoxConstraints(
-                                    minWidth: 0,
-                                    minHeight: 0,
-                                  ),
-                                  prefix: searchMode
-                                      ? Text("search ",
-                                          style: TextStyle(
-                                            fontFamily: "Bungee",
-                                            fontSize: 16,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onBackground
-                                                .withAlpha(164),
-                                          ))
-                                      : null,
-                                  hintStyle: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                          fontSize: 16,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                              .withAlpha(200)),
-                                  contentPadding:
-                                      EdgeInsets.fromLTRB(4, 4, 4, 4),
-                                  enabledBorder: OutlineInputBorder(
-                                    // borderRadius: BorderRadius.circular(14),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary
-                                          .withAlpha(32),
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    // borderRadius: BorderRadius.circular(100),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary
-                                          .withAlpha(64),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        MainTextField(primaryController: _primaryController),
 
                         ///////////////////////
                         // Verb bar for top editor (hehe vebs) //
@@ -445,32 +363,32 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                                           ///////////////////////
                                           // Think BUTTON, main text field
                                           ///////////////////////
-                                          Padding(
-                                            padding: constraints.maxWidth > 800
-                                                ? const EdgeInsets.fromLTRB(
-                                                    0, 0, 0, 0)
-                                                : const EdgeInsets.fromLTRB(
-                                                    0, 0, 16, 0),
-                                            // const EdgeInsets.all(8.0),
-                                            child: ComindTextButton(
-                                                opacity: 1,
-                                                text: "Think",
-                                                onPressed: () {
-                                                  setState(() {
-                                                    // Save a quick thought for the main text field
-                                                    saveQuickThought(
-                                                        _primaryController.text,
-                                                        publicMode,
-                                                        null);
-                                                  });
-                                                  // Clear the text field
-                                                  _primaryController.clear();
+                                          // Padding(
+                                          //   padding: constraints.maxWidth > 800
+                                          //       ? const EdgeInsets.fromLTRB(
+                                          //           0, 0, 0, 0)
+                                          //       : const EdgeInsets.fromLTRB(
+                                          //           0, 0, 16, 0),
+                                          //   // const EdgeInsets.all(8.0),
+                                          //   child: ComindTextButton(
+                                          //       opacity: 1,
+                                          //       text: "Think",
+                                          //       onPressed: () {
+                                          //         setState(() {
+                                          //           // Save a quick thought for the main text field
+                                          //           saveQuickThought(
+                                          //               _primaryController.text,
+                                          //               publicMode,
+                                          //               null);
+                                          //         });
+                                          //         // Clear the text field
+                                          //         _primaryController.clear();
 
-                                                  // Refresh the thoughts
-                                                  _fetchThoughts();
-                                                },
-                                                colorIndex: 1),
-                                          ),
+                                          //         // Refresh the thoughts
+                                          //         _fetchThoughts();
+                                          //       },
+                                          //       colorIndex: 1),
+                                          // ),
 
                                           ///////////////////////////
                                           /// MORE BUTTON ///
@@ -616,7 +534,8 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                 children: [
                   Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                      child: bodyCell(index, context)),
+                      child: MarkdownThought(
+                          thought: thoughts[index], context: context)),
                 ],
               ),
 
@@ -848,27 +767,27 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
               ///////////////////////
               // Think BUTTON //
               ///////////////////////
-              ComindTextButton(
-                  text: "Think",
-                  // lineOnly: !verbBarHoverList[index],
-                  opacity: 0.8,
-                  colorIndex: 2,
-                  textStyle:
-                      const TextStyle(fontFamily: "Bungee", fontSize: 16),
-                  onPressed: () {
-                    // Save the parent thought if the text has length > 0
-                    if (_controllers[index].text.isNotEmpty) {
-                      // Send the thought
-                      saveQuickThought(_controllers[index].text, publicMode,
-                          thoughts[index].id);
+              // ComindTextButton(
+              //     text: "Think",
+              //     // lineOnly: !verbBarHoverList[index],
+              //     opacity: 0.8,
+              //     colorIndex: 2,
+              //     textStyle:
+              //         const TextStyle(fontFamily: "Bungee", fontSize: 16),
+              //     onPressed: () {
+              //       // Save the parent thought if the text has length > 0
+              //       if (_controllers[index].text.isNotEmpty) {
+              //         // Send the thought
+              //         saveQuickThought(_controllers[index].text, publicMode,
+              //             thoughts[index].id);
 
-                      // Clear the text field
-                      _controllers[index].clear();
+              //         // Clear the text field
+              //         _controllers[index].clear();
 
-                      // Refresh the thoughts
-                      _fetchThoughts();
-                    }
-                  }),
+              //         // Refresh the thoughts
+              //         _fetchThoughts();
+              //       }
+              //     }),
 
               ///////////////////////////
               /// THINK BUTTON BUTTON ///
@@ -1030,45 +949,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  MarkdownBody bodyCell(int index, BuildContext context) {
-    return MarkdownBody(
-      // Use the thought content
-      data: thoughts[index].body,
-      selectable: true,
-
-      // Set the markdown styling
-      styleSheet: MarkdownStyleSheet(
-        // Smush the text together
-
-        blockquoteDecoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceVariant,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        codeblockDecoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceVariant,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        code: GoogleFonts.ibmPlexMono(
-          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-          fontWeight: FontWeight.w400,
-          fontSize: 14,
-        ),
-        blockquote: TextStyle(
-          color: Theme.of(context).colorScheme.onPrimary,
-          fontFamily: "Bungee",
-          fontSize: 14,
-        ),
-      ),
-      extensionSet: md.ExtensionSet(
-        md.ExtensionSet.gitHubFlavored.blockSyntaxes,
-        <md.InlineSyntax>[
-          md.EmojiSyntax(),
-          ...md.ExtensionSet.gitHubFlavored.inlineSyntaxes
-        ],
       ),
     );
   }

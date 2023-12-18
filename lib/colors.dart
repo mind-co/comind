@@ -34,7 +34,7 @@ class ComindColors {
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
     surface: tertiaryColorDefault,
-    background: Color.fromRGBO(34, 34, 34, 1),
+    background: Color.fromRGBO(16, 16, 16, 1),
     error: secondaryColorDefault,
     onPrimary: darkTextColor,
     onSecondary: darkTextColor,

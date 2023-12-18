@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:comind/misc/comind_logo.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/comind_div.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 String formatTimestamp(String timestamp) {
@@ -23,6 +24,13 @@ String formatTimestamp(String timestamp) {
   } else {
     return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
   }
+}
+
+String exactTimestamp(String timestamp) {
+  DateTime dateTime = DateTime.parse(timestamp);
+
+  // Return in Month Day, Year -- Hour:Minute format
+  return DateFormat('MMMM d, y HH:mm').format(dateTime);
 }
 
 // App bar widget
