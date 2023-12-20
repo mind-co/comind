@@ -225,3 +225,55 @@ Future<bool> emailExists(String email) async {
   final jsonResponse = json.decode(response.body);
   return jsonResponse['taken'];
 }
+
+// Search result type
+class SearchResult {
+  final String id;
+  final String body;
+  final String username;
+  final double cosineSimilarity;
+
+  SearchResult({
+    required this.id,
+    required this.body,
+    required this.username,
+    required this.cosineSimilarity,
+  });
+
+  static SearchResult fromJson(Map<String, dynamic> json) {
+    return SearchResult(
+      id: json['id'],
+      body: json['body'],
+      username: json['username'],
+      cosineSimilarity: json['cosinesimilarity'],
+    );
+  }
+}
+
+Future<List<SearchResult>> searchThoughts(String query) async {
+  final url = Uri.parse("http://nimbus.pfiffer.org:8000/api/search");
+
+  final headers = {'ComindUsername': 'cameron', 'ComindQuery': query};
+
+  final response = await http.get(
+    url,
+    headers: headers,
+    // body: body,
+  );
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonResponse = json.decode(response.body);
+
+    // DEBUG Print out each element of jsonResponse
+    // for (var thought in jsonResponse) {
+    //   print(thought);
+    // }
+
+    // print(jsonResponse);
+    return jsonResponse
+        .map((thought) => SearchResult.fromJson(thought))
+        .toList();
+  } else {
+    throw Exception('Failed to search');
+  }
+}

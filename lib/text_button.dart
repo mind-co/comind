@@ -16,6 +16,7 @@ class ComindTextButton extends StatefulWidget {
   bool lineOnly = true;
 
   ComindTextButton({
+    super.key,
     required this.text,
     this.opacityOnHover = 1.0,
     this.textStyle = const TextStyle(
@@ -31,12 +32,12 @@ class ComindTextButton extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _ComindTextButtonState createState() => _ComindTextButtonState();
 }
 
 class _ComindTextButtonState extends State<ComindTextButton> {
   bool _isHovered = false;
-  bool _isPressed = false;
   int colorIndex = 0;
   // bool lineOnly = true;
 
@@ -82,13 +83,9 @@ class _ComindTextButtonState extends State<ComindTextButton> {
           // shiftColor();
 
           // Turn ispressed on and disable it after 100ms
-          setState(() {
-            _isPressed = true;
-          });
+          setState(() {});
           Future.delayed(const Duration(milliseconds: 100), () {
-            setState(() {
-              _isPressed = false;
-            });
+            setState(() {});
           });
         },
         child: Opacity(

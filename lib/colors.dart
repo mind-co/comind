@@ -34,7 +34,7 @@ class ComindColors {
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
     surface: tertiaryColorDefault,
-    background: Color.fromRGBO(16, 16, 16, 1),
+    background: Color.fromRGBO(8, 8, 8, 1),
     error: secondaryColorDefault,
     onPrimary: darkTextColor,
     onSecondary: darkTextColor,
@@ -67,18 +67,32 @@ class ComindColors {
   }
 
   // Text themes
+  // static final bodyStyle = GoogleFonts.hankenGrotesk(
+  // static final bodyStyle = GoogleFonts.ibmPlexSans(
   // Ignore formatted
-  static TextTheme textTheme = TextTheme(
-      // Nunito is good
+  static final bodyStyle = GoogleFonts.nunito(
+      // static final bodyStyle = GoogleFonts.questrial(
+      fontWeight: FontWeight.w400,
+      height: 1.2);
 
-      // bodyMedium: GoogleFonts.comfortaa(
-      // bodyMedium: GoogleFonts.assistant(
-      // bodyMedium: GoogleFonts.hankenGrotesk(
-      bodyMedium: GoogleFonts.questrial(
-          // bodyMedium: GoogleFonts.nunito(
-          fontWeight: FontWeight.w400,
-          fontSize: 16,
-          height: 1.2));
+  static final titleStyle = GoogleFonts.bungee(
+    fontWeight: FontWeight.w400,
+    fontSize: 20,
+  );
+
+  static TextTheme textTheme = TextTheme(
+    // Nunito is good
+
+    // Body style
+    bodySmall: bodyStyle.copyWith(fontSize: 12),
+    bodyMedium: bodyStyle.copyWith(fontSize: 14),
+    bodyLarge: bodyStyle.copyWith(fontSize: 16),
+
+    // Title style
+    titleSmall: titleStyle.copyWith(fontSize: 14),
+    titleMedium: titleStyle.copyWith(fontSize: 16),
+    titleLarge: titleStyle.copyWith(fontSize: 18),
+  );
 
   static const Color textColor = Colors.black;
   static const Color darkTextColor = Color.fromARGB(255, 220, 220, 220);
