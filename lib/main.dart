@@ -1,18 +1,11 @@
 import 'package:comind/markdown_display.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown/flutter_markdown.dart'; // TODO Probably actually use this at some point instead of MarkdownBody
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 // import 'package:comind/comind_div.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:markdown/markdown.dart' as md;
 // Expand button
-
-// Firebase imports
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:comind/firebase_options.dart';
 
 // Comind imports
 import 'package:comind/input_field.dart';
@@ -27,15 +20,14 @@ import 'package:comind/thought_editor_basic.dart';
 // import 'package:comind/thought_editor_super.dart';
 // import 'package:comind/thought_editor_quill.dart';
 import 'package:comind/misc/util.dart';
-import 'package:comind/login.dart';
-import 'package:comind/stream.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
   runApp(ChangeNotifierProvider(
-    create: (_) => ThemeProvider(),
-    child: const ComindApp(),
+    create: (_) => ComindColorsNotifier(),
+    child: ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: const ComindApp(),
+    ),
   ));
 }
 
@@ -44,8 +36,8 @@ class ComindApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
+    return Consumer2<ThemeProvider, ComindColorsNotifier>(
+      builder: (context, themeProvider, colorNotifier, child) {
         return MaterialApp(
           // home: const LoginScreen(),
           // home: ThoughtEditorScreen(
@@ -55,15 +47,16 @@ class ComindApp extends StatelessWidget {
           // home: StreamScreen(),
           theme: ThemeData(
             useMaterial3: true,
-            colorScheme: ComindColors().colorScheme,
-            textTheme: ComindColors.textTheme,
+            colorScheme: colorNotifier.currentColors.colorScheme,
+            textTheme: colorNotifier.currentColors.textTheme,
           ),
           darkTheme: ThemeData(
             useMaterial3: true,
-            colorScheme: ComindColors.darkColorScheme,
-            textTheme: ComindColors.textTheme,
+            // colorScheme: ComindColors.darkColorScheme,
+            colorScheme: colorNotifier.currentColors.colorScheme,
+            textTheme: colorNotifier.currentColors.textTheme,
             dialogTheme: DialogTheme(
-              backgroundColor: ComindColors.darkColorScheme.background,
+              backgroundColor: colorNotifier.currentColors.colorScheme.surface,
             ),
           ),
           debugShowCheckedModeBanner: false,
@@ -171,7 +164,8 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     if (!loaded) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor:
+              Provider.of<ComindColorsNotifier>(context).colorScheme.background,
           // title: ComindLogo(key: UniqueKey()),
           // elevation: 0,
           // Add toolbar
@@ -179,7 +173,9 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
         body: Center(
           // Set background color
           child: Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.background,
+            backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                .colorScheme
+                .background,
             body: const ComindIsLoading(),
           ),
         ),
@@ -189,13 +185,16 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     // Check if we have thoughts, make a widget for each one
     return LayoutBuilder(
       builder: (context, constraints) {
-        var smallScreen = constraints.maxWidth < 600;
         if (thoughts.isNotEmpty) {
           return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.background,
+            backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                .colorScheme
+                .background,
             appBar: comindAppBar(context),
             drawer: Drawer(
-              backgroundColor: Theme.of(context).colorScheme.background,
+              backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .background,
               child: const Nav(),
             ),
             body: Stack(
@@ -220,7 +219,27 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                         // ),
 
                         // Main text field
-                        MainTextField(primaryController: _primaryController),
+                        MainTextField(
+                            primaryController: _primaryController,
+                            colorIndex: publicMode ? 2 : 1),
+
+                        // Single row with time on the right
+                        // Time
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: Opacity(
+                            opacity: 0.5,
+                            child: Text(
+                              DateFormat('h:mm a').format(DateTime.now()),
+                              style: Provider.of<ComindColorsNotifier>(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontSize: 12,
+                                  ),
+                            ),
+                          ),
+                        ),
 
                         /// THOUGHTS LIST VIEW / STREAM OF CONCIOUSNESS
                         ///////////////////////////
@@ -263,7 +282,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                     //         // Blubble bar thing (not sure what to call it)
                     //         // Anyway it's just for testing rn to fill hte column
                     //         Expanded(
-                    //           // color: Theme.of(context).colorScheme.background,
+                    //           // color: Provider.of<ComindColorsNotifier>(context).colorScheme.background,
                     //           child: Padding(
                     //             padding: const EdgeInsets.all(16.0),
                     //             child: InkWell(
@@ -272,14 +291,14 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                     //                 // Make it a rounded rectangle
                     //                 decoration: BoxDecoration(
                     //                   borderRadius: BorderRadius.circular(42),
-                    //                   // color: Theme.of(context)
+                    //                   // color: Provider.of<ComindColorsNotifier>(context)
                     //                   //     .colorScheme
                     //                   //     .surface
                     //                   //     .withAlpha(32),
                     //                 ),
 
                     //                 // color: BoxDecoration(
-                    //                 //     child: Theme.of(context)
+                    //                 //     child: Provider.of<ComindColorsNotifier>(context)
                     //                 //         .colorScheme
                     //                 //         .surface
                     //                 //         .withAlpha(32)),
@@ -327,7 +346,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     //   child: Container(
     //       decoration: BoxDecoration(
     //           border:
-    //               Border.all(color: Theme.of(context).dialogBackgroundColor)),
+    //               Border.all(color: Provider.of<ComindColorsNotifier>(context).dialogBackgroundColor)),
     //       child: Column(
     //         mainAxisAlignment: MainAxisAlignment.start,
     //         crossAxisAlignment: CrossAxisAlignment.start,
@@ -359,17 +378,17 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     //                       autofocus: false,
     //                       controller: _controllers[index],
     //                       maxLines: null,
-    //                       style: Theme.of(context)
+    //                       style: Provider.of<ComindColorsNotifier>(context)
     //                           .textTheme
     //                           .bodyMedium
     //                           ?.copyWith(fontSize: 16),
-    //                       cursorColor: Theme.of(context).colorScheme.onPrimary,
+    //                       cursorColor: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
     //                       decoration: InputDecoration(
     //                         contentPadding:
     //                             const EdgeInsets.fromLTRB(8, 8, 8, 8),
     //                         enabledBorder: OutlineInputBorder(
     //                           borderSide: BorderSide(
-    //                             color: Theme.of(context)
+    //                             color: Provider.of<ComindColorsNotifier>(context)
     //                                 .colorScheme
     //                                 .onPrimary
     //                                 .withAlpha(32),
@@ -377,7 +396,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     //                         ),
     //                         focusedBorder: OutlineInputBorder(
     //                           borderSide: BorderSide(
-    //                             color: Theme.of(context)
+    //                             color: Provider.of<ComindColorsNotifier>(context)
     //                                 .colorScheme
     //                                 .onPrimary
     //                                 .withAlpha(64),
@@ -428,7 +447,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     //                     //   child: Expanded(
     //                     //     child: Container(
     //                     //       height: 2,
-    //                     //       color: Theme.of(context)
+    //                     //       color: Provider.of<ComindColorsNotifier>(context)
     //                     //           .colorScheme
     //                     //           .onBackground
     //                     //           .withAlpha(32),
@@ -443,7 +462,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     //                     //   child: Expanded(
     //                     //     child: Container(
     //                     //       height: 2,
-    //                     //       color: Theme.of(context)
+    //                     //       color: Provider.of<ComindColorsNotifier>(context)
     //                     //           .colorScheme
     //                     //           .onBackground
     //                     //           .withAlpha(32),
@@ -466,7 +485,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   }
 
   Expanded thoughtBoxVerbBar(BuildContext context, int index) {
-    var smallScreen = MediaQuery.of(context).size.width < 600;
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
@@ -485,17 +503,17 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
               //   },
               //   icon: Icon(
               //     Icons.edit,
-              //     color: Theme.of(context).colorScheme.onPrimary,
+              //     color: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
               //   ),
               //   iconSize: 16,
               //   splashRadius: 16,
               //   padding: const EdgeInsets.all(8),
               //   constraints: const BoxConstraints(),
-              //   color: Theme.of(context).colorScheme.onPrimary,
-              //   hoverColor: Theme.of(context).colorScheme.primary,
-              //   focusColor: Theme.of(context).colorScheme.onPrimary,
-              //   highlightColor: Theme.of(context).colorScheme.onPrimary,
-              //   disabledColor: Theme.of(context).colorScheme.onPrimary,
+              //   color: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
+              //   hoverColor: Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
+              //   focusColor: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
+              //   highlightColor: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
+              //   disabledColor: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
               //   // shape: RoundedRectangleBorder(
               //   //   borderRadius: BorderRadius.circular(10),
               //   // ),
@@ -506,7 +524,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                     _editNote(
                         context, index); // Call _editNote with the context
                   },
-                  colorIndex: 1,
+                  colorIndex: 2,
                   // lineOnly: !verbBarHoverList[index],
                   opacity: 0.8,
                   textStyle:
@@ -526,7 +544,9 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                       builder: (BuildContext context) {
                         return AlertDialog(
                           backgroundColor:
-                              Theme.of(context).colorScheme.background,
+                              Provider.of<ComindColorsNotifier>(context)
+                                  .colorScheme
+                                  .background,
                           surfaceTintColor: Colors.black,
                           title: const Text(
                             'Delete thought',
@@ -628,7 +648,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
       double size = 16,
       bool underline = true}) {
     return Material(
-      // color: Theme.of(context).colorScheme.primary,
+      // color: Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
@@ -644,9 +664,15 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                     border: Border(
                       bottom: BorderSide(
                         color: color == 1
-                            ? ComindColors().secondaryColor.withAlpha(200)
+                            ? Provider.of<ComindColorsNotifier>(context)
+                                .currentColors
+                                .secondaryColor
+                                .withAlpha(200)
                             : color == 3
-                                ? ComindColors().tertiaryColor.withAlpha(200)
+                                ? Provider.of<ComindColorsNotifier>(context)
+                                    .currentColors
+                                    .tertiaryColor
+                                    .withAlpha(200)
                                 : color == 0
                                     ? Colors.transparent
                                     : ComindColors()
@@ -680,10 +706,16 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
             padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
             shape:
                 BeveledRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            backgroundColor: Theme.of(context).colorScheme.background,
-            textStyle:
-                Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 14)),
+            foregroundColor: Provider.of<ComindColorsNotifier>(context)
+                .colorScheme
+                .onPrimary,
+            backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                .colorScheme
+                .background,
+            textStyle: Provider.of<ComindColorsNotifier>(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(fontSize: 14)),
         onPressed: onPressed,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -708,7 +740,10 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
               ),
             ),
             VerticalDivider(
-              color: Theme.of(context).colorScheme.onBackground.withAlpha(64),
+              color: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .onBackground
+                  .withAlpha(64),
               thickness: 2,
             ),
             Padding(
@@ -722,10 +757,14 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                     fontSize: 12,
                     decorationThickness: 2,
                     decoration: TextDecoration.underline,
-                    // decorationColor: ComindColors().primaryColor,
+                    // decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
                     decorationColor: thoughts[index].isPublic
-                        ? ComindColors().secondaryColor
-                        : ComindColors().tertiaryColor,
+                        ? Provider.of<ComindColorsNotifier>(context)
+                            .currentColors
+                            .secondaryColor
+                        : Provider.of<ComindColorsNotifier>(context)
+                            .currentColors
+                            .tertiaryColor,
                   ),
                 ),
               ),
@@ -737,8 +776,10 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
               child: Expanded(
                 child: Container(
                   height: 2,
-                  color:
-                      Theme.of(context).colorScheme.onBackground.withAlpha(32),
+                  color: Provider.of<ComindColorsNotifier>(context)
+                      .colorScheme
+                      .onBackground
+                      .withAlpha(32),
                 ),
               ),
             ),
@@ -748,7 +789,10 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                 opacity: 0.5,
                 child: Text(
                   formatTimestamp(thoughts[index].dateUpdated),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  style: Provider.of<ComindColorsNotifier>(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(
                         fontSize: 12,
                       ),
                 ),
@@ -757,41 +801,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  FloatingActionButton _newNoteButton(BuildContext context) {
-    // Iconbutton approach
-    // return FloatingActionButton.extended(
-    //     onPressed: () {
-    //       // _addNote(context); // Call _addNote with the context
-    //     },
-    //     label: Text("New"));
-
-    // return FloatingActionButton.large(
-    //   onPressed: () {
-    //     // _addNote(context); // Call _addNote with the context
-    //   },
-
-    // );
-
-    return FloatingActionButton.large(
-      // Center it
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.onPrimary,
-          width: 4.0,
-        ),
-        borderRadius: BorderRadius.circular(30.0),
-      ),
-      onPressed: () {
-        _addNote(context); // Call _addNote with the context
-      },
-      splashColor: ComindColors().secondaryColor,
-      backgroundColor: Theme.of(context).colorScheme.background,
-      child: funButton(-1 /*index*/, onTap: () {
-        // _addNote(context); // Call _addNote with the context
-      }, text: "New", underline: false),
     );
   }
 }
@@ -804,14 +813,14 @@ class Nav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Provider.of<ComindColorsNotifier>(context).colorScheme.background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Blubble bar thing (not sure what to call it)
           // Anyway it's just for testing rn to fill hte column
           Expanded(
-            // color: Theme.of(context).colorScheme.background,
+            // color: Provider.of<ComindColorsNotifier>(context).colorScheme.background,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: InkWell(
@@ -820,16 +829,18 @@ class Nav extends StatelessWidget {
                   // Make it a rounded rectangle
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(42),
-                    color: Theme.of(context).colorScheme.background,
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .background,
                   ),
 
                   // color: BoxDecoration(
-                  //     child: Theme.of(context)
+                  //     child: Provider.of<ComindColorsNotifier>(context)
                   //         .colorScheme
                   //         .surface
                   //         .withAlpha(32)),
                   child: Material(
-                    // color: Theme.of(context).colorScheme.primary,
+                    // color: Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(10),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(10),

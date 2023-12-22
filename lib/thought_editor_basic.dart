@@ -1,4 +1,5 @@
 import 'package:comind/colors.dart';
+import 'package:comind/misc/util.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/misc/comind_logo.dart';
 import 'package:comind/types/thought.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'dart:async';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 // FIXME remove this ignore
 // ignore: must_be_immutable
@@ -22,8 +24,6 @@ class ThoughtEditorScreen extends StatefulWidget {
 
 class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
   final TextEditingController _textEditingController = TextEditingController();
-  final QuillController _controller = QuillController.basic();
-  String? _originalContent;
 
   // Display a snackbar with the given message
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -43,7 +43,6 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
   void initState() {
     super.initState();
     _textEditingController.text = widget.thought.body;
-    _originalContent = widget.thought.body;
 
     // // Autosave every n_sec seconds
     // const nSec = 5;
@@ -66,20 +65,20 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
     //                 style: TextStyle(
     //                     fontFamily: "Bungee Pop",
     //                     fontSize: 46,
-    //                     color: ComindColors().primaryColor)),
+    //                     color: Provider.of<ComindColorsNotifier>(context).primaryColor)),
     //             Text("O",
     //                 style: TextStyle(
     //                     fontFamily: "Bungee Pop",
     //                     fontSize: 46,
-    //                     color: ComindColors().secondaryColor)),
+    //                     color: Provider.of<ComindColorsNotifier>(context).secondaryColor)),
     //             Text("}",
     //                 style: TextStyle(
     //                     fontFamily: "Bungee Pop",
     //                     fontSize: 46,
-    //                     color: ComindColors().tertiaryColor)),
+    //                     color: Provider.of<ComindColorsNotifier>(context).tertiaryColor)),
     //           ],
     //         ),
-    //         backgroundColor: Theme.of(context).colorScheme.background,
+    //         backgroundColor: Provider.of<ComindColorsNotifier>(context).colorScheme.background,
     //       ),
     //     );
     //     _originalContent = _textEditingController.text;
@@ -89,99 +88,13 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Extract the current colors
+    var colors = Provider.of<ComindColorsNotifier>(context);
+
+    // App bar widget
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        title: ComindLogo(key: UniqueKey()),
-        centerTitle: true,
-        elevation: 0,
-        actions: [
-          // Add dark mode toggle
-          IconButton(
-            icon: const Icon(Icons.dark_mode),
-            onPressed: () {
-              // Toggle the brightness
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () async {
-              widget.thought.body = _textEditingController.text;
-              await saveThought(widget.thought);
-              // ScaffoldMessenger.of(context).showSnackBar(
-              //   SnackBar(content: Text('Note saved')),
-              // );
-              Navigator.pop(context, widget.thought);
-            },
-          ),
-          // Add a delete button
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () async {
-              // Delete the thought
-              await deleteThought(widget.thought.id);
-              Navigator.pop(context, widget.thought);
-            },
-          ),
-        ],
-      ),
-
-      // Using quill
-      // body: Scaffold(
-      //     backgroundColor: Theme.of(context).colorScheme.background,
-      //     body: Padding(
-      //       padding: const EdgeInsets.all(16.0),
-      //       child: QuillProvider(
-      //         configurations: QuillConfigurations(
-      //           controller: _controller,
-      //           // sharedConfigurations: const QuillSharedConfigurations(
-      //           //   locale: Locale('us', 'US'),
-      //           // ),
-      //         ),
-      //         child: Column(
-      //           children: [
-      //             const QuillToolbar(
-      //               configurations: QuillToolbarConfigurations(
-      //                   showBoldButton: false,
-      //                   showItalicButton: false,
-      //                   showUnderLineButton: false,
-      //                   showStrikeThrough: false,
-      //                   showColorButton: false,
-      //                   showBackgroundColorButton: false,
-      //                   showClearFormat: false,
-      //                   showHeaderStyle: true,
-      //                   showListNumbers: true,
-      //                   showListBullets: true,
-      //                   showListCheck: true,
-      //                   showCodeBlock: true,
-      //                   showQuote: true,
-      //                   showIndent: true,
-      //                   showLink: true,
-      //                   showLeftAlignment: false,
-      //                   showSearchButton: false,
-      //                   showSuperscript: false,
-      //                   showFontFamily: false,
-      //                   showFontSize: false,
-      //                   showUndo: false,
-      //                   showRedo: false,
-      //                   showSubscript: false,
-      //                   showRightAlignment: false),
-      //             ),
-      //             Expanded(
-      //               child: QuillEditor.basic(
-      //                 configurations: const QuillEditorConfigurations(
-      //                   readOnly: false,
-      //                   autoFocus: true,
-      //                   minHeight: 100,
-      //                   showCursor: true,
-      //                 ),
-      //               ),
-      //             )
-      //           ],
-      //         ),
-      //       ),
-      //     )
+      appBar: comindAppBar(context),
 
       // Using the basic text field
       body: Padding(
@@ -192,25 +105,22 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
             // Text(
             //   widget.thought.id,
             //   style: TextStyle(
-            //     color: ComindColors().getTextColorBasedOnBackground(
-            //       Theme.of(context).colorScheme.background,
+            //     color: Provider.of<ComindColorsNotifier>(context).getTextColorBasedOnBackground(
+            //       Provider.of<ComindColorsNotifier>(context).colorScheme.background,
             //     ),
             //   ),
             // ),
             Expanded(
               child: Center(
-                child: Container(
+                child: SizedBox(
                   width: 600, // Set your desired maximum width here
                   child: TextField(
-                    // style: Theme.of(context).textTheme.bodyMedium,
+                    // style: Provider.of<ComindColorsNotifier>(context).textTheme.bodyMedium,
                     // style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w300),
                     controller: _textEditingController,
                     maxLines:
                         null, // Allows the text field to expand to multiple lines
                     expands: true, // Expands the text field as needed
-                    cursorColor: ComindColors.getTextColorBasedOnBackground(
-                      Theme.of(context).colorScheme.background,
-                    ),
                     // cursorColor: Colors.white,
                     decoration: const InputDecoration(
                       hintText: 'Get thinky...',

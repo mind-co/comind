@@ -1,4 +1,6 @@
+import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 // Basic body text style widget
 class BodyText extends StatelessWidget {
@@ -13,7 +15,8 @@ class BodyText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: style ?? Theme.of(context).textTheme.bodyMedium,
+      style: style ??
+          Provider.of<ComindColorsNotifier>(context).textTheme.bodyMedium,
       textAlign: textAlign,
     );
   }

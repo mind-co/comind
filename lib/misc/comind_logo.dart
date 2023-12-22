@@ -1,6 +1,7 @@
 import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 //
 // Widget get ComindLogo {
@@ -10,7 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 //       Text(
 //         '{',
 //         style: TextStyle(
-//           color: ComindColors().primaryColor,
+//           color: Provider.of<ComindColorsNotifier>(context).primaryColor,
 //           fontFamily: "Bungee Shade",
 //           fontSize: size,
 //         ),
@@ -18,7 +19,7 @@ import 'package:google_fonts/google_fonts.dart';
 //       Text(
 //         'co',
 //         style: TextStyle(
-//           color: ComindColors().secondaryColor,
+//           color: Provider.of<ComindColorsNotifier>(context).secondaryColor,
 //           fontFamily: "Bungee Shade",
 //           fontSize: size,
 //         ),
@@ -26,7 +27,7 @@ import 'package:google_fonts/google_fonts.dart';
 //       Text(
 //         'mind',
 //         style: TextStyle(
-//           color: ComindColors().tertiaryColor,
+//           color: Provider.of<ComindColorsNotifier>(context).tertiaryColor,
 //           fontFamily: "Bungee Shade",
 //           fontSize: size,
 //         ),
@@ -34,7 +35,7 @@ import 'package:google_fonts/google_fonts.dart';
 //       Text(
 //         '}',
 //         style: TextStyle(
-//             color: ComindColors().primaryColor,
+//             color: Provider.of<ComindColorsNotifier>(context).primaryColor,
 //             fontFamily: "Bungee Shade",
 //             fontSize: size),
 //       ),
@@ -43,11 +44,16 @@ import 'package:google_fonts/google_fonts.dart';
 // }
 
 // The short comind logo
+// ignore: must_be_immutable
 class ComindShortLogo extends StatelessWidget {
-  const ComindShortLogo({Key? key}) : super(key: key);
+  const ComindShortLogo({
+    Key? key,
+    required this.colors,
+  }) : super(key: key);
 
   // Add a main axis alignment property, default to center
   static const MainAxisAlignment mainAxisAlignment = MainAxisAlignment.center;
+  final ComindColorsNotifier colors;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +64,7 @@ class ComindShortLogo extends StatelessWidget {
         Text(
           '{',
           style: TextStyle(
-            color: ComindColors().primaryColor,
+            color: colors.currentColors.primaryColor,
             fontFamily: "Bungee Pop",
             fontSize: size,
           ),
@@ -66,7 +72,7 @@ class ComindShortLogo extends StatelessWidget {
         Text(
           'c',
           style: TextStyle(
-            color: ComindColors().secondaryColor,
+            color: colors.currentColors.secondaryColor,
             fontFamily: "Bungee Pop",
             fontSize: size,
           ),
@@ -74,7 +80,7 @@ class ComindShortLogo extends StatelessWidget {
         Text(
           'o',
           style: TextStyle(
-            color: ComindColors().tertiaryColor,
+            color: colors.currentColors.tertiaryColor,
             fontFamily: "Bungee Pop",
             fontSize: size,
           ),
@@ -82,7 +88,7 @@ class ComindShortLogo extends StatelessWidget {
         Text(
           '}',
           style: TextStyle(
-              color: ComindColors().primaryColor,
+              color: colors.currentColors.primaryColor,
               fontFamily: "Bungee Pop",
               fontSize: size),
         ),
@@ -93,146 +99,168 @@ class ComindShortLogo extends StatelessWidget {
 
 // The comind logo
 class ComindLogo extends StatelessWidget {
-  const ComindLogo({Key? key}) : super(key: key);
+  const ComindLogo({
+    Key? key,
+    required this.colors,
+  }) : super(key: key);
 
   // Add a main axis alignment property, default to center
   static const MainAxisAlignment mainAxisAlignment = MainAxisAlignment.center;
+  final ComindColorsNotifier colors;
 
+  // This function is used when the logo is hovered.
+  // When hovered, secondary=primary, tertiary=secondary, primary=tertiary
+  // This is a simple color shift.
+  void shiftColors(ComindColorsNotifier colors) {
+    return colors.currentColors.setColors(
+      colors.currentColors.secondaryColor,
+      colors.currentColors.tertiaryColor,
+      colors.currentColors.primaryColor,
+    );
+  }
+
+  // Build the widget
   @override
   Widget build(BuildContext context) {
-    const size = 56.0;
-    return (Row(
-      mainAxisAlignment: mainAxisAlignment,
-      children: [
-        ////////////////////
-        // Modern take on the logo
-        ////////////////////
-        // Long version
-        // Text(
-        //   '∙',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: ComindColors().primaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   'co',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: ComindColors().secondaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   'mind',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: ComindColors().tertiaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   '∙',
-        //   style: TextStyle(
-        //       decoration: TextDecoration.underline,
-        //       decorationThickness: 2,
-        //       decorationColor: ComindColors().primaryColor,
-        //       fontFamily: "Bungee",
-        //       fontSize: size),
-        // ),
+    const size = 44.0;
+    return MouseRegion(
+      onEnter: (event) {
+        shiftColors(colors);
+      },
+      child: (Row(
+        mainAxisAlignment: mainAxisAlignment,
+        children: [
+          ////////////////////
+          // Modern take on the logo
+          ////////////////////
+          // Long version
+          // Text(
+          //   '∙',
+          //   style: TextStyle(
+          //     decorationThickness: 2,
+          //     decoration: TextDecoration.underline,
+          //     decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
+          //     fontFamily: "Bungee",
+          //     fontSize: size,
+          //   ),
+          // ),
+          // Text(
+          //   'co',
+          //   style: TextStyle(
+          //     decorationThickness: 2,
+          //     decoration: TextDecoration.underline,
+          //     decorationColor: Provider.of<ComindColorsNotifier>(context).secondaryColor,
+          //     fontFamily: "Bungee",
+          //     fontSize: size,
+          //   ),
+          // ),
+          // Text(
+          //   'mind',
+          //   style: TextStyle(
+          //     decorationThickness: 2,
+          //     decoration: TextDecoration.underline,
+          //     decorationColor: Provider.of<ComindColorsNotifier>(context).tertiaryColor,
+          //     fontFamily: "Bungee",
+          //     fontSize: size,
+          //   ),
+          // ),
+          // Text(
+          //   '∙',
+          //   style: TextStyle(
+          //       decoration: TextDecoration.underline,
+          //       decorationThickness: 2,
+          //       decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
+          //       fontFamily: "Bungee",
+          //       fontSize: size),
+          // ),
 
-        // Short version
-        // Text(
-        //   '∙',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: ComindColors().primaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   'c',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: ComindColors().secondaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   'o',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: ComindColors().tertiaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   '∙',
-        //   style: TextStyle(
-        //       decoration: TextDecoration.underline,
-        //       decorationThickness: 2,
-        //       decorationColor: ComindColors().primaryColor,
-        //       fontFamily: "Bungee",
-        //       fontSize: size),
-        // ),
+          // Short version
+          // Text(
+          //   '∙',
+          //   style: TextStyle(
+          //     decorationThickness: 2,
+          //     decoration: TextDecoration.underline,
+          //     decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
+          //     fontFamily: "Bungee",
+          //     fontSize: size,
+          //   ),
+          // ),
+          // Text(
+          //   'c',
+          //   style: TextStyle(
+          //     decorationThickness: 2,
+          //     decoration: TextDecoration.underline,
+          //     decorationColor: Provider.of<ComindColorsNotifier>(context).secondaryColor,
+          //     fontFamily: "Bungee",
+          //     fontSize: size,
+          //   ),
+          // ),
+          // Text(
+          //   'o',
+          //   style: TextStyle(
+          //     decorationThickness: 2,
+          //     decoration: TextDecoration.underline,
+          //     decorationColor: Provider.of<ComindColorsNotifier>(context).tertiaryColor,
+          //     fontFamily: "Bungee",
+          //     fontSize: size,
+          //   ),
+          // ),
+          // Text(
+          //   '∙',
+          //   style: TextStyle(
+          //       decoration: TextDecoration.underline,
+          //       decorationThickness: 2,
+          //       decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
+          //       fontFamily: "Bungee",
+          //       fontSize: size),
+          // ),
 
-        ////////////////////
-        /// Original logo
-        /// //////////////////
-        Text(
-          '{',
-          style: TextStyle(
-            // decorationThickness: 2,
-            // decoration: TextDecoration.underline,
-            color: ComindColors().primaryColor,
-            fontFamily: "Bungee Pop",
-            fontSize: size,
-          ),
-        ),
-        Text(
-          'co',
-          style: TextStyle(
-            // decorationThickness: 2,
-            // decoration: TextDecoration.underline,
-            color: ComindColors().secondaryColor,
-            fontFamily: "Bungee Pop",
-            fontSize: size,
-          ),
-        ),
-        Text(
-          'mind',
-          style: TextStyle(
-            // decorationThickness: 2,
-            // decoration: TextDecoration.underline,
-            color: ComindColors().tertiaryColor,
-            fontFamily: "Bungee Pop",
-            fontSize: size,
-          ),
-        ),
-        Text(
-          '}',
-          style: TextStyle(
-              // decoration: TextDecoration.underline,
+          ////////////////////
+          /// Original logo
+          /// //////////////////
+          Text(
+            '{',
+            style: TextStyle(
               // decorationThickness: 2,
-              color: ComindColors().primaryColor,
+              // decoration: TextDecoration.underline,
+              color: colors.currentColors.primaryColor,
               fontFamily: "Bungee Pop",
-              fontSize: size),
-        ),
-      ],
-    ));
+              fontSize: size,
+            ),
+          ),
+          Text(
+            'co',
+            style: TextStyle(
+              // decorationThickness: 2,
+              // decoration: TextDecoration.underline,
+              color: colors.currentColors.secondaryColor,
+              fontFamily: "Bungee Pop",
+              fontSize: size,
+            ),
+          ),
+          Text(
+            'mind',
+            style: TextStyle(
+              // decorationThickness: 2,
+              // decoration: TextDecoration.underline,
+              color: colors.currentColors.tertiaryColor,
+              fontFamily: "Bungee Pop",
+              fontSize: size,
+            ),
+          ),
+          Text(
+            '}',
+            style: TextStyle(
+                // decoration: TextDecoration.underline,
+                // decorationThickness: 2,
+
+                color: colors.currentColors.primaryColor,
+                fontFamily: "Bungee Pop",
+                fontSize: size),
+          ),
+        ],
+      )),
+    );
   }
 }
 
@@ -255,7 +283,9 @@ class ComindHeader extends StatelessWidget {
         Text(
           text,
           style: TextStyle(
-            color: ComindColors().primaryColor,
+            color: Provider.of<ComindColorsNotifier>(context)
+                .currentColors
+                .primaryColor,
             fontFamily: "Bungee Shade",
             fontSize: size,
           ),
@@ -326,7 +356,9 @@ class _ComindIsLoadingState extends State<ComindIsLoading>
                       '{',
                       style: GoogleFonts.bungeeShade(
                         fontSize: size,
-                        color: ComindColors().primaryColor,
+                        color: Provider.of<ComindColorsNotifier>(context)
+                            .currentColors
+                            .primaryColor,
                       ),
                     ),
                   ),
@@ -338,7 +370,9 @@ class _ComindIsLoadingState extends State<ComindIsLoading>
                       fontSize: size,
                       fontFamily: "Bungee",
                       fontWeight: FontWeight.normal,
-                      color: ComindColors().secondaryColor,
+                      color: Provider.of<ComindColorsNotifier>(context)
+                          .currentColors
+                          .secondaryColor,
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -350,7 +384,9 @@ class _ComindIsLoadingState extends State<ComindIsLoading>
                           fontSize: size,
                           fontFamily: "Bungee",
                           fontWeight: FontWeight.normal,
-                          color: ComindColors().tertiaryColor,
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .currentColors
+                              .tertiaryColor,
                         ),
                       ))
                 ],

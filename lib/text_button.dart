@@ -1,8 +1,10 @@
 import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 enum LineLocation { top, bottom, left, right }
 
+// ignore: must_be_immutable
 class ComindTextButton extends StatefulWidget {
   final String text;
   final double opacityOnHover;
@@ -26,7 +28,7 @@ class ComindTextButton extends StatefulWidget {
     required this.onPressed,
     this.opacity = 0.5,
     this.colorIndex = 1, // 1 = primary, 2 = secondary, 3 = tertiary
-    this.lineLocation = LineLocation.bottom,
+    this.lineLocation = LineLocation.top,
     this.fontSize = 16,
     this.lineOnly = true,
   });
@@ -91,66 +93,92 @@ class _ComindTextButtonState extends State<ComindTextButton> {
         child: Opacity(
           opacity: _isHovered ? widget.opacityOnHover : widget.opacity,
           child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                // Top
-                top: widget.lineLocation == LineLocation.top
-                    ? BorderSide(
-                        color: Colors.transparent,
-                        width: _isHovered ? 1.0 : 4.0,
-                      )
-                    : BorderSide(
-                        color: Colors.transparent,
-                      ),
+            decoration: colorIndex == 0
+                ? const BoxDecoration()
+                : BoxDecoration(
+                    border: Border(
+                      // Top
+                      top: widget.lineLocation == LineLocation.top
+                          ? BorderSide(
+                              color: Colors.transparent,
+                              width: _isHovered ? 1.0 : 4.0,
+                            )
+                          : const BorderSide(
+                              color: Colors.transparent,
+                            ),
 
-                // Bottom
-                bottom: widget.lineLocation == LineLocation.bottom
-                    ? BorderSide(
-                        color: Colors.transparent,
-                        width: _isHovered ? 1.0 : 4.0,
-                      )
-                    : BorderSide(
-                        color: Colors.transparent,
-                      ),
-              ),
-            ),
-            child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    // Top appears if !underline
-                    top: widget.lineLocation == LineLocation.top
-                        ? BorderSide(
-                            color: colorIndex == 0
-                                ? Colors.transparent
-                                : colorIndex == 1
-                                    ? ComindColors().tertiaryColor
-                                    : colorIndex == 2
-                                        ? ComindColors().primaryColor
-                                        : ComindColors().secondaryColor,
-                            width: _isHovered ? 6.0 : 3.0,
-                          )
-                        : BorderSide(
-                            color: Colors.transparent,
-                            width: 0.0,
-                          ),
-
-                    bottom: widget.lineLocation == LineLocation.bottom
-                        ? BorderSide(
-                            color: colorIndex == 0
-                                ? Colors.transparent
-                                : colorIndex == 1
-                                    ? ComindColors().tertiaryColor
-                                    : colorIndex == 2
-                                        ? ComindColors().primaryColor
-                                        : ComindColors().secondaryColor,
-                            width: _isHovered ? 6.0 : 3.0,
-                          )
-                        : BorderSide(
-                            color: Colors.transparent,
-                            width: 0.0,
-                          ),
+                      // Bottom
+                      bottom: widget.lineLocation == LineLocation.top
+                          ? BorderSide(
+                              color: Colors.transparent,
+                              width: _isHovered ? 1.0 : 4.0,
+                            )
+                          : const BorderSide(
+                              color: Colors.transparent,
+                            ),
+                    ),
                   ),
-                ),
+            child: Container(
+                decoration: colorIndex == 0
+                    ? const BoxDecoration()
+                    : BoxDecoration(
+                        border: Border(
+                          // Top appears if !underline
+                          top: widget.lineLocation == LineLocation.top
+                              ? BorderSide(
+                                  color: colorIndex == 0
+                                      ? Colors.transparent
+                                      : colorIndex == 1
+                                          ? Provider.of<ComindColorsNotifier>(
+                                                  context)
+                                              .currentColors
+                                              .tertiaryColor
+                                          : colorIndex == 2
+                                              ? Provider.of<
+                                                          ComindColorsNotifier>(
+                                                      context)
+                                                  .currentColors
+                                                  .primaryColor
+                                              : Provider.of<
+                                                          ComindColorsNotifier>(
+                                                      context)
+                                                  .currentColors
+                                                  .secondaryColor,
+                                  width: _isHovered ? 6.0 : 3.0,
+                                )
+                              : const BorderSide(
+                                  color: Colors.transparent,
+                                  width: 0.0,
+                                ),
+
+                          bottom: widget.lineLocation == LineLocation.bottom
+                              ? BorderSide(
+                                  color: colorIndex == 0
+                                      ? Colors.transparent
+                                      : colorIndex == 1
+                                          ? Provider.of<ComindColorsNotifier>(
+                                                  context)
+                                              .currentColors
+                                              .tertiaryColor
+                                          : colorIndex == 2
+                                              ? Provider.of<
+                                                          ComindColorsNotifier>(
+                                                      context)
+                                                  .currentColors
+                                                  .primaryColor
+                                              : Provider.of<
+                                                          ComindColorsNotifier>(
+                                                      context)
+                                                  .currentColors
+                                                  .secondaryColor,
+                                  width: _isHovered ? 6.0 : 3.0,
+                                )
+                              : const BorderSide(
+                                  color: Colors.transparent,
+                                  width: 0.0,
+                                ),
+                        ),
+                      ),
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 100),
                   opacity: !widget.lineOnly ? 0 : 1,

@@ -1,4 +1,5 @@
 // import 'package:intl/intl.dart';
+import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/misc/comind_logo.dart';
 import 'package:comind/providers.dart';
@@ -34,51 +35,50 @@ String exactTimestamp(String timestamp) {
 }
 
 // App bar widget
-// Original definition:
-// AppBar(
-//           backgroundColor: Theme.of(context).colorScheme.background,
-//           // backgroundColor: Colors.white,
-//           title: ComindLogo(key: UniqueKey()),
-//           centerTitle: true,
-//           // elevation: 100,
-//           scrolledUnderElevation: 0,
-//           // Add toolbar
-//           toolbarHeight: 100,
-//           actions: [
-//             // Add dark mode toggle
-//             IconButton(
-//               icon: const Icon(Icons.dark_mode),
-//               onPressed: () {
-//                 Provider.of<ThemeProvider>(context, listen: false)
-//                     .toggleTheme();
-//               },
-//             ),
-//           ],
-//           // bottom: const PreferredSize(
-//           //   preferredSize: Size.fromHeight(4.0),
-//           //   child: ComindDiv(),
-//           // )
-//         ),
-comindAppBar(BuildContext context) {
+AppBar comindAppBar(BuildContext context) {
+  // Get the colors
+  ComindColorsNotifier colors = Provider.of<ComindColorsNotifier>(context);
+
   return AppBar(
-    backgroundColor: Theme.of(context).colorScheme.background,
+    backgroundColor: colors.background,
     // backgroundColor: Colors.white,
 
     // If the width of the screen is less than 550 pixels, use the
     // ComindLogo class, otherwise use the original definition
     title: MediaQuery.of(context).size.width > 550
-        ? ComindLogo(key: UniqueKey())
-        : ComindShortLogo(key: UniqueKey()),
+        ? ComindLogo(
+            key: UniqueKey(),
+            colors: colors,
+          )
+        : ComindShortLogo(
+            key: UniqueKey(),
+            colors: colors,
+          ),
     centerTitle: true,
     scrolledUnderElevation: 0,
     // Add toolbar
     toolbarHeight: 100,
     actions: [
+      // Add a toggle for handedness
+      IconButton(
+        icon: colors.rightHanded
+            ? const Icon(Icons.format_align_left)
+            : const Icon(Icons.format_align_right),
+        onPressed: () {
+          Provider.of<ComindColorsNotifier>(context, listen: false)
+              .toggleHandedness(!colors.rightHanded);
+        },
+      ),
       // Add dark mode toggle
       IconButton(
-        icon: const Icon(Icons.dark_mode),
+        icon: colors.darkMode
+            ? const Icon(Icons.dark_mode)
+            : const Icon(Icons.light_mode),
         onPressed: () {
-          Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+          print(colors.darkMode);
+          Provider.of<ComindColorsNotifier>(context, listen: false)
+              .toggleTheme(!colors.darkMode);
+          print(colors.darkMode);
         },
       ),
     ],

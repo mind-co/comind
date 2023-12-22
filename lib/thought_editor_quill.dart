@@ -1,9 +1,11 @@
+import 'package:comind/colors.dart';
 import 'package:comind/misc/util.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/misc/comind_logo.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:comind/types/thought.dart';
+import 'package:provider/provider.dart';
 
 class ThoughtEditorScreen extends StatefulWidget {
   final Thought thought;
@@ -34,7 +36,9 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
     return Scaffold(
         appBar: comindAppBar(context),
         body: Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.background,
+            backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                .colorScheme
+                .background,
             body: Padding(
               padding: const EdgeInsets.all(16.0),
               child: QuillProvider(

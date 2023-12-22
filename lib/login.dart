@@ -21,7 +21,9 @@ import 'package:comind/text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:crypto/crypto.dart';
-import 'dart:convert'; // for the utf8.encode method
+import 'dart:convert';
+
+import 'package:provider/provider.dart'; // for the utf8.encode method
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -143,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onSaved: (val) => _emailController.text = val!,
                   decoration: InputDecoration(
                     labelStyle: TextStyle(
-                        color: Theme.of(context)
+                        color: Provider.of<ComindColorsNotifier>(context)
                             .colorScheme
                             .onBackground
                             .withAlpha(150)),
@@ -152,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     labelText: signUpMode ? 'Email' : 'Email or Username',
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(150),
@@ -161,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(50),
@@ -217,14 +219,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelStyle: TextStyle(
-                        color: Theme.of(context)
+                        color: Provider.of<ComindColorsNotifier>(context)
                             .colorScheme
                             .onBackground
                             .withAlpha(150)),
                     // ignore: library_private_types_in_public_api
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(150),
@@ -233,7 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(50),
@@ -268,13 +270,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       border: OutlineInputBorder(),
                       labelText: 'Confirm Password',
                       labelStyle: TextStyle(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(150)),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                            color: Theme.of(context)
+                            color: Provider.of<ComindColorsNotifier>(context)
                                 .colorScheme
                                 .onBackground
                                 .withAlpha(150),
@@ -283,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                            color: Theme.of(context)
+                            color: Provider.of<ComindColorsNotifier>(context)
                                 .colorScheme
                                 .onBackground
                                 .withAlpha(50),
@@ -398,7 +400,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelStyle: TextStyle(
                         color: _usernameController.text.isEmpty
-                            ? Theme.of(context)
+                            ? Provider.of<ComindColorsNotifier>(context)
                                 .colorScheme
                                 .onBackground
                                 .withAlpha(150)
@@ -408,7 +410,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // ignore: library_private_types_in_public_api
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(150),
@@ -417,7 +419,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(50),
@@ -452,7 +454,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelStyle: TextStyle(
                       color: _emailController.text.isEmpty
-                          ? Theme.of(context)
+                          ? Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(150)
@@ -473,7 +475,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             : 'Email not valid',
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(150),
@@ -482,7 +484,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(50),
@@ -520,14 +522,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelStyle: TextStyle(
-                        color: Theme.of(context)
+                        color: Provider.of<ComindColorsNotifier>(context)
                             .colorScheme
                             .onBackground
                             .withAlpha(150)),
                     // ignore: library_private_types_in_public_api
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(150),
@@ -536,7 +538,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(50),
@@ -571,13 +573,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       border: OutlineInputBorder(),
                       labelText: 'Confirm Password',
                       labelStyle: TextStyle(
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(150)),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                            color: Theme.of(context)
+                            color: Provider.of<ComindColorsNotifier>(context)
                                 .colorScheme
                                 .onBackground
                                 .withAlpha(150),
@@ -586,7 +588,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                            color: Theme.of(context)
+                            color: Provider.of<ComindColorsNotifier>(context)
                                 .colorScheme
                                 .onBackground
                                 .withAlpha(50),
@@ -633,7 +635,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Container(
                           height: 16,
                           width: 1,
-                          color: Theme.of(context)
+                          color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(150)),
@@ -672,8 +674,10 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: const EdgeInsets.all(8.0),
       child: Text("or",
           style: TextStyle(
-              color:
-                  Theme.of(context).colorScheme.onBackground.withAlpha(150))),
+              color: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .onBackground
+                  .withAlpha(150))),
     );
   }
 
@@ -681,7 +685,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return Expanded(
       child: Container(
         height: 2,
-        color: Theme.of(context).colorScheme.onBackground.withAlpha(32),
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onBackground
+            .withAlpha(32),
       ),
     );
   }

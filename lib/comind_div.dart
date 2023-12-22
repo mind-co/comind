@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:comind/colors.dart';
+import 'package:provider/provider.dart';
 
 // Colored bar that is n pixes high but alternates between the three colors.
 class ComindDiv extends StatefulWidget {
@@ -52,19 +53,25 @@ class _ComindDivState extends State<ComindDiv>
         Expanded(
           child: Container(
             height: _animation1.value,
-            color: ComindColors().primaryColor,
+            color: Provider.of<ComindColorsNotifier>(context)
+                .currentColors
+                .primaryColor,
           ),
         ),
         Expanded(
           child: Container(
             height: _animation1.value,
-            color: ComindColors().secondaryColor,
+            color: Provider.of<ComindColorsNotifier>(context)
+                .currentColors
+                .secondaryColor,
           ),
         ),
         Expanded(
           child: Container(
             height: _animation1.value,
-            color: ComindColors().tertiaryColor,
+            color: Provider.of<ComindColorsNotifier>(context)
+                .currentColors
+                .tertiaryColor,
           ),
         ),
       ],

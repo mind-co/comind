@@ -230,14 +230,22 @@ Future<bool> emailExists(String email) async {
 class SearchResult {
   final String id;
   final String body;
+  final String title;
   final String username;
   final double cosineSimilarity;
+  final int? numLinks;
+  final bool? linkedTo;
+  final bool? linkedFrom;
 
   SearchResult({
     required this.id,
     required this.body,
     required this.username,
+    required this.title,
     required this.cosineSimilarity,
+    this.numLinks = 0,
+    this.linkedTo = false,
+    this.linkedFrom = false,
   });
 
   static SearchResult fromJson(Map<String, dynamic> json) {
@@ -245,20 +253,39 @@ class SearchResult {
       id: json['id'],
       body: json['body'],
       username: json['username'],
+      title: json['title'],
       cosineSimilarity: json['cosinesimilarity'],
+      numLinks: json['numlinks'],
+      linkedTo: json['linked_to'],
+      linkedFrom: json['linked_from'],
     );
   }
 }
 
-Future<List<SearchResult>> searchThoughts(String query) async {
+Future<List<SearchResult>> searchThoughts(String query,
+    {String? associatedId}) async {
   final url = Uri.parse("http://nimbus.pfiffer.org:8000/api/search");
 
-  final headers = {'ComindUsername': 'cameron', 'ComindQuery': query};
+  final headers = {
+    'ComindUsername': 'cameron',
+  };
+  final body = associatedId == null
+      ? jsonEncode(<String, dynamic>{
+          'query': query,
+          'limit': 5,
+          'pageno': 0,
+        })
+      : jsonEncode(<String, dynamic>{
+          'query': query,
+          'associated_id': associatedId,
+          'limit': 5,
+          'pageno': 0,
+        });
 
-  final response = await http.get(
+  final response = await http.post(
     url,
     headers: headers,
-    // body: body,
+    body: body,
   );
 
   if (response.statusCode == 200) {

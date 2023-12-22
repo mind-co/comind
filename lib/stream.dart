@@ -50,8 +50,6 @@ class _StreamScreenState extends State<StreamScreen> {
     setState(() {
       train = thoughts;
     });
-
-    print("Fetched thoughts");
   }
 
   // _StreamScreenState
@@ -69,9 +67,6 @@ class _StreamScreenState extends State<StreamScreen> {
     //   fontFamily: "Bungee",
     //   fontSize: 20,
     // );
-    var textStyle = GoogleFonts.bungeeInline(
-      fontSize: 20,
-    );
     return Scaffold(
         appBar: comindAppBar(context),
         body: Center(
