@@ -16,8 +16,8 @@ class ComindColors {
   // Handedness
   bool rightHanded = true;
 
-  void toggleHandedness() {
-    rightHanded = !rightHanded;
+  void toggleHandedness(bool value) {
+    rightHanded = value;
   }
 
   // Dark mode tracker
@@ -74,6 +74,8 @@ class ComindColors {
   get _colorScheme => darkMode ? _darkScheme : _lightScheme;
 
   get primary => null;
+  get secondary => null;
+  get tertiary => null;
 
   // Init method and set the color scheme
   void init(prim, seco, tert) {
@@ -148,10 +150,28 @@ class ComindColors {
     int primaryBlue = primaryColor.blue;
 
     // Calculate split-complementary colors
+    // Color secondaryColor1 = Color.fromRGBO(
+    //     primaryRed, (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
+    // Color secondaryColor2 = Color.fromRGBO(
+    //     (primaryRed + 128) % 256, primaryGreen, (primaryBlue + 128) % 256, 1.0);
+
+    // Calculate complementary colors
+    // Color secondaryColor1 = Color.fromRGBO(
+    //     (primaryRed + 128) % 256, (primaryGreen + 128) % 256, primaryBlue, 1.0);
+    // Color secondaryColor2 = Color.fromRGBO(
+    //     primaryRed, (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
+
+    // Calculate triadic colors
+    // Color secondaryColor1 = Color.fromRGBO(
+    //     (primaryRed + 128) % 256, (primaryGreen + 128) % 256, primaryBlue, 1.0);
+    // Color secondaryColor2 = Color.fromRGBO(
+    //     (primaryRed + 128) % 256, primaryGreen, (primaryBlue + 128) % 256, 1.0);
+
+    // Calculate analogous colors
     Color secondaryColor1 = Color.fromRGBO(
-        primaryRed, (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
+        (primaryRed + 128) % 256, (primaryGreen + 128) % 256, primaryBlue, 1.0);
     Color secondaryColor2 = Color.fromRGBO(
-        (primaryRed + 128) % 256, primaryGreen, (primaryBlue + 128) % 256, 1.0);
+        primaryRed, (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
 
     return [primaryColor, secondaryColor1, secondaryColor2];
   }
@@ -178,6 +198,12 @@ class ComindColors {
   ComindColors.fromPrimary(Color primary) {
     final newColors = generateSplitComplementaryColors(primary);
     init(newColors[0], newColors[1], newColors[2]);
+  }
+
+  // Modify existing colors with from primar
+  void modifyColors(Color primary) {
+    final newColors = generateSplitComplementaryColors(primary);
+    setColors(newColors[0], newColors[1], newColors[2]);
   }
 }
 
@@ -226,7 +252,17 @@ class ComindColorsNotifier extends ChangeNotifier {
   }
 
   void toggleHandedness(bool value) {
-    _currentColors.toggleHandedness();
+    _currentColors.toggleHandedness(value);
+    notifyListeners();
+  }
+
+  void modifyColors(Color primary) {
+    _currentColors.modifyColors(primary);
+    notifyListeners();
+  }
+
+  void shiftColors() {
+    _currentColors = ComindColors.fromPrimary(_currentColors.secondary);
     notifyListeners();
   }
 }

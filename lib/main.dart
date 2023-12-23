@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:comind/color_picker.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -141,6 +144,20 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     );
   }
 
+  // Fetch concepts
+  void _fetchConcepts(BuildContext context) {
+    // This function will be called when the page loads.
+    setState(() {
+      // fetchConcepts();
+    });
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => const ThoughtEditorScreen(thought: newThought),
+    //   ),
+    // );
+  }
+
   // Edit a note
   void _editNote(BuildContext context, int index) {
     Navigator.push(
@@ -197,137 +214,147 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                   .background,
               child: const Nav(),
             ),
-            body: Stack(
-              children: [
-                // Center column
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Left column
-                    // Nav bar
-                    // if (constraints.maxWidth > 600)
-                    //   SizedBox(
-                    //     width: constraints.maxWidth * 0.2 - 10,
-                    //     child: const Nav(),
-                    //   ),
-                    // center column
-                    Column(
-                      children: [
-                        // DEBUG FOR PIXEL WIDTH PIXEL HEIGHT
-                        // Text(
-                        //   "${constraints.maxWidth} wide, ${constraints.minHeight} tall",
-                        // ),
-
-                        // Main text field
-                        MainTextField(
-                            primaryController: _primaryController,
-                            colorIndex: publicMode ? 2 : 1),
-
-                        // Single row with time on the right
-                        // Time
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                          child: Opacity(
-                            opacity: 0.5,
-                            child: Text(
-                              DateFormat('h:mm a').format(DateTime.now()),
-                              style: Provider.of<ComindColorsNotifier>(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
-                                    fontSize: 12,
-                                  ),
-                            ),
+            bottomNavigationBar: Container(
+              height: 100,
+              color: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .background,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Add a note button
+                  ComindTextButton(
+                    text: "Add note",
+                    onPressed: () {
+                      _addNote(context); // Call _addNote with the context
+                    },
+                    colorIndex: 2,
+                    opacity: 0.8,
+                    textStyle: const TextStyle(
+                        fontFamily: "Bungee",
+                        fontSize: 16,
+                        color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            body: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Left column
+                  if (false) //MediaQuery.of(context).size.width > 800)
+                    OutsideColumn(
+                      child: Column(
+                        children: [
+                          // Add a note button
+                          ComindTextButton(
+                            text: "Concepts",
+                            onPressed: () {
+                              _fetchConcepts(context);
+                            },
+                            colorIndex: 2,
+                            opacity: 0.8,
+                            textStyle: const TextStyle(
+                                fontFamily: "Bungee",
+                                fontSize: 16,
+                                color: Colors.white),
                           ),
-                        ),
-
-                        /// THOUGHTS LIST VIEW / STREAM OF CONCIOUSNESS
-                        ///////////////////////////
-                        Expanded(
-                          // Thought list view
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: Center(
-                                  child: SizedBox(
-                                    width: constraints.maxWidth > 600
-                                        ? 600
-                                        : constraints.maxWidth > 600
-                                            ? 600
-                                            : constraints.maxWidth,
-                                    child: ListView.builder(
-                                      itemCount: thoughts.length,
-                                      itemBuilder: (context, index) {
-                                        return thoughtBox(context, index,
-                                            constraints: constraints);
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
 
-                    ////////////////
-                    // Right column
-                    ////////////////
-                    // if (constraints.maxWidth > 600)
-                    //   SizedBox(
-                    //     width: constraints.maxWidth * 0.2 - 10,
-                    //     child: Column(
-                    //       children: [
-                    //         // Blubble bar thing (not sure what to call it)
-                    //         // Anyway it's just for testing rn to fill hte column
-                    //         Expanded(
-                    //           // color: Provider.of<ComindColorsNotifier>(context).colorScheme.background,
-                    //           child: Padding(
-                    //             padding: const EdgeInsets.all(16.0),
-                    //             child: InkWell(
-                    //               child: Container(
-                    //                 height: 100,
-                    //                 // Make it a rounded rectangle
-                    //                 decoration: BoxDecoration(
-                    //                   borderRadius: BorderRadius.circular(42),
-                    //                   // color: Provider.of<ComindColorsNotifier>(context)
-                    //                   //     .colorScheme
-                    //                   //     .surface
-                    //                   //     .withAlpha(32),
-                    //                 ),
+                  // Center column
+                  centerColumn(context, constraints),
 
-                    //                 // color: BoxDecoration(
-                    //                 //     child: Provider.of<ComindColorsNotifier>(context)
-                    //                 //         .colorScheme
-                    //                 //         .surface
-                    //                 //         .withAlpha(32)),
-                    //                 child: const Column(
-                    //                   children: [
-                    //                     Text(
-                    //                       "Blubble bar thing",
-                    //                       style: TextStyle(
-                    //                           fontFamily: "Bungee",
-                    //                           fontSize: 14),
-                    //                     )
-                    //                   ],
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ),
-                  ],
-                ),
-              ],
+                  // Right column
+                  if (false) //MediaQuery.of(context).size.width > 800)
+                    OutsideColumn(
+                      child: Column(
+                        children: [
+                          // Add a note button
+                          ComindTextButton(
+                            text: "Add note",
+                            onPressed: () {
+                              _addNote(
+                                  context); // Call _addNote with the context
+                            },
+                            colorIndex: 2,
+                            opacity: 0.8,
+                            textStyle: const TextStyle(
+                                fontFamily: "Bungee",
+                                fontSize: 16,
+                                color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
             ),
           );
         }
         // Add your else condition here if needed
         return Container(); // Return an empty container if thoughts is empty
       },
+    );
+  }
+
+  SizedBox centerColumn(BuildContext context, BoxConstraints constraints) {
+    return SizedBox(
+      width: 600,
+      child: Column(
+        children: [
+          // DEBUG FOR PIXEL WIDTH PIXEL HEIGHT
+          // Text(
+          //   "${constraints.maxWidth} wide, ${constraints.minHeight} tall",
+          // ),
+          Text("Set colors"),
+          ColorPicker(onColorSelected: (Color color) {
+            Provider.of<ComindColorsNotifier>(context, listen: false)
+                .modifyColors(color);
+          }),
+
+          // Main text field
+          MainTextField(
+              primaryController: _primaryController,
+              colorIndex: publicMode ? 2 : 1),
+
+          // Single row with time on the right
+          // Time
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+              child: Opacity(
+                opacity: 0.5,
+                child: Text(
+                  DateFormat('h:mm a').format(DateTime.now()),
+                  style: Provider.of<ComindColorsNotifier>(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(
+                        fontSize: 12,
+                      ),
+                ),
+              ),
+            ),
+          ),
+
+          /// THOUGHTS LIST VIEW / STREAM OF CONCIOUSNESS
+          ///////////////////////////
+          Expanded(
+            child: Center(
+              child: ListView.builder(
+                itemCount: thoughts.length,
+                itemBuilder: (context, index) {
+                  return thoughtBox(context, index, constraints: constraints);
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -802,6 +829,22 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
         ),
       ),
     );
+  }
+}
+
+class OutsideColumn extends StatelessWidget {
+  const OutsideColumn({
+    super.key,
+    required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        width: min((MediaQuery.of(context).size.width - 650) / 2, 400),
+        child: child);
   }
 }
 

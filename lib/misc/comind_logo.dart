@@ -123,144 +123,139 @@ class ComindLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const size = 44.0;
-    return MouseRegion(
-      onEnter: (event) {
-        shiftColors(colors);
-      },
-      child: (Row(
-        mainAxisAlignment: mainAxisAlignment,
-        children: [
-          ////////////////////
-          // Modern take on the logo
-          ////////////////////
-          // Long version
-          // Text(
-          //   '∙',
-          //   style: TextStyle(
-          //     decorationThickness: 2,
-          //     decoration: TextDecoration.underline,
-          //     decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
-          //     fontFamily: "Bungee",
-          //     fontSize: size,
-          //   ),
-          // ),
-          // Text(
-          //   'co',
-          //   style: TextStyle(
-          //     decorationThickness: 2,
-          //     decoration: TextDecoration.underline,
-          //     decorationColor: Provider.of<ComindColorsNotifier>(context).secondaryColor,
-          //     fontFamily: "Bungee",
-          //     fontSize: size,
-          //   ),
-          // ),
-          // Text(
-          //   'mind',
-          //   style: TextStyle(
-          //     decorationThickness: 2,
-          //     decoration: TextDecoration.underline,
-          //     decorationColor: Provider.of<ComindColorsNotifier>(context).tertiaryColor,
-          //     fontFamily: "Bungee",
-          //     fontSize: size,
-          //   ),
-          // ),
-          // Text(
-          //   '∙',
-          //   style: TextStyle(
-          //       decoration: TextDecoration.underline,
-          //       decorationThickness: 2,
-          //       decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
-          //       fontFamily: "Bungee",
-          //       fontSize: size),
-          // ),
+    return (Row(
+      mainAxisAlignment: mainAxisAlignment,
+      children: [
+        ////////////////////
+        // Modern take on the logo
+        ////////////////////
+        // Long version
+        // Text(
+        //   '∙',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   'co',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: Provider.of<ComindColorsNotifier>(context).secondaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   'mind',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: Provider.of<ComindColorsNotifier>(context).tertiaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   '∙',
+        //   style: TextStyle(
+        //       decoration: TextDecoration.underline,
+        //       decorationThickness: 2,
+        //       decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
+        //       fontFamily: "Bungee",
+        //       fontSize: size),
+        // ),
 
-          // Short version
-          // Text(
-          //   '∙',
-          //   style: TextStyle(
-          //     decorationThickness: 2,
-          //     decoration: TextDecoration.underline,
-          //     decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
-          //     fontFamily: "Bungee",
-          //     fontSize: size,
-          //   ),
-          // ),
-          // Text(
-          //   'c',
-          //   style: TextStyle(
-          //     decorationThickness: 2,
-          //     decoration: TextDecoration.underline,
-          //     decorationColor: Provider.of<ComindColorsNotifier>(context).secondaryColor,
-          //     fontFamily: "Bungee",
-          //     fontSize: size,
-          //   ),
-          // ),
-          // Text(
-          //   'o',
-          //   style: TextStyle(
-          //     decorationThickness: 2,
-          //     decoration: TextDecoration.underline,
-          //     decorationColor: Provider.of<ComindColorsNotifier>(context).tertiaryColor,
-          //     fontFamily: "Bungee",
-          //     fontSize: size,
-          //   ),
-          // ),
-          // Text(
-          //   '∙',
-          //   style: TextStyle(
-          //       decoration: TextDecoration.underline,
-          //       decorationThickness: 2,
-          //       decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
-          //       fontFamily: "Bungee",
-          //       fontSize: size),
-          // ),
+        // Short version
+        // Text(
+        //   '∙',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   'c',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: Provider.of<ComindColorsNotifier>(context).secondaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   'o',
+        //   style: TextStyle(
+        //     decorationThickness: 2,
+        //     decoration: TextDecoration.underline,
+        //     decorationColor: Provider.of<ComindColorsNotifier>(context).tertiaryColor,
+        //     fontFamily: "Bungee",
+        //     fontSize: size,
+        //   ),
+        // ),
+        // Text(
+        //   '∙',
+        //   style: TextStyle(
+        //       decoration: TextDecoration.underline,
+        //       decorationThickness: 2,
+        //       decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
+        //       fontFamily: "Bungee",
+        //       fontSize: size),
+        // ),
 
-          ////////////////////
-          /// Original logo
-          /// //////////////////
-          Text(
-            '{',
-            style: TextStyle(
-              // decorationThickness: 2,
+        ////////////////////
+        /// Original logo
+        /// //////////////////
+        Text(
+          '{',
+          style: TextStyle(
+            // decorationThickness: 2,
+            // decoration: TextDecoration.underline,
+            color: colors.currentColors.primaryColor,
+            fontFamily: "Bungee Pop",
+            fontSize: size,
+          ),
+        ),
+        Text(
+          'co',
+          style: TextStyle(
+            // decorationThickness: 2,
+            // decoration: TextDecoration.underline,
+            color: colors.currentColors.secondaryColor,
+            fontFamily: "Bungee Pop",
+            fontSize: size,
+          ),
+        ),
+        Text(
+          'mind',
+          style: TextStyle(
+            // decorationThickness: 2,
+            // decoration: TextDecoration.underline,
+            color: colors.currentColors.tertiaryColor,
+            fontFamily: "Bungee Pop",
+            fontSize: size,
+          ),
+        ),
+        Text(
+          '}',
+          style: TextStyle(
               // decoration: TextDecoration.underline,
+              // decorationThickness: 2,
+
               color: colors.currentColors.primaryColor,
               fontFamily: "Bungee Pop",
-              fontSize: size,
-            ),
-          ),
-          Text(
-            'co',
-            style: TextStyle(
-              // decorationThickness: 2,
-              // decoration: TextDecoration.underline,
-              color: colors.currentColors.secondaryColor,
-              fontFamily: "Bungee Pop",
-              fontSize: size,
-            ),
-          ),
-          Text(
-            'mind',
-            style: TextStyle(
-              // decorationThickness: 2,
-              // decoration: TextDecoration.underline,
-              color: colors.currentColors.tertiaryColor,
-              fontFamily: "Bungee Pop",
-              fontSize: size,
-            ),
-          ),
-          Text(
-            '}',
-            style: TextStyle(
-                // decoration: TextDecoration.underline,
-                // decorationThickness: 2,
-
-                color: colors.currentColors.primaryColor,
-                fontFamily: "Bungee Pop",
-                fontSize: size),
-          ),
-        ],
-      )),
-    );
+              fontSize: size),
+        ),
+      ],
+    ));
   }
 }
 

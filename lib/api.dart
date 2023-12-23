@@ -265,10 +265,6 @@ class SearchResult {
 Future<List<SearchResult>> searchThoughts(String query,
     {String? associatedId}) async {
   final url = Uri.parse("http://nimbus.pfiffer.org:8000/api/search");
-
-  final headers = {
-    'ComindUsername': 'cameron',
-  };
   final body = associatedId == null
       ? jsonEncode(<String, dynamic>{
           'query': query,
@@ -282,10 +278,21 @@ Future<List<SearchResult>> searchThoughts(String query,
           'pageno': 0,
         });
 
+  final encodedBody = utf8.encode(body);
+
+  final headers = {
+    'ComindUsername': 'cameron',
+    "Content-Type": "application/json",
+    "Content-Length": "${encodedBody.length}"
+  };
+
+  print(headers);
+  print(encodedBody);
+
   final response = await http.post(
     url,
     headers: headers,
-    body: body,
+    body: encodedBody,
   );
 
   if (response.statusCode == 200) {
@@ -304,3 +311,7 @@ Future<List<SearchResult>> searchThoughts(String query,
     throw Exception('Failed to search');
   }
 }
+
+// List<Concept> fetchConcepts() {
+
+// }

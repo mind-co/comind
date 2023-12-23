@@ -56,6 +56,7 @@ AppBar comindAppBar(BuildContext context) {
           ),
     centerTitle: true,
     scrolledUnderElevation: 0,
+
     // Add toolbar
     toolbarHeight: 100,
     actions: [
@@ -65,8 +66,11 @@ AppBar comindAppBar(BuildContext context) {
             ? const Icon(Icons.format_align_left)
             : const Icon(Icons.format_align_right),
         onPressed: () {
-          Provider.of<ComindColorsNotifier>(context, listen: false)
-              .toggleHandedness(!colors.rightHanded);
+          colors.rightHanded
+              ? Provider.of<ComindColorsNotifier>(context, listen: false)
+                  .toggleHandedness(true)
+              : Provider.of<ComindColorsNotifier>(context, listen: false)
+                  .toggleHandedness(false);
         },
       ),
       // Add dark mode toggle

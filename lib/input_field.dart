@@ -305,7 +305,7 @@ class _MainTextFieldState extends State<MainTextField> {
                       child: Row(
                         children: [
                           // Send button
-                          if (true) //_primaryController.text.isNotEmpty)
+                          if (_primaryController.text.isNotEmpty)
                             ComindTextButton(
                               text: widget.type == TextFieldType.main
                                   ? "Send"
@@ -313,9 +313,38 @@ class _MainTextFieldState extends State<MainTextField> {
                               lineLocation: LineLocation.top,
                               onPressed: widget.type == TextFieldType.main
                                   ? _sendThought
-                                  : () {},
+                                  : () {
+                                      // Save the thought
+                                      // saveQuickThought(
+                                      //     _primaryController.text,
+                                      //     false,
+                                      //     widget.parentThought?.id,
+                                      //     widget.childThought?.id);
+
+                                      // Clear the text field
+                                      // _primaryController.clear();
+
+                                      // Refresh the thoughts
+                                      // _fetchThoughts();
+                                    },
                               colorIndex:
                                   widget.type == TextFieldType.main ? 1 : 2,
+                              opacity: 1.0,
+                              fontSize: 12,
+                            ),
+
+                          // Cancel button
+                          if (widget.type == TextFieldType.edit)
+                            ComindTextButton(
+                              text: "Cancel",
+                              lineLocation: LineLocation.top,
+                              onPressed: () {
+                                // Clear the text field
+                                _primaryController.clear();
+
+                                //
+                              },
+                              colorIndex: 2,
                               opacity: 1.0,
                               fontSize: 12,
                             ),
