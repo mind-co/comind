@@ -297,14 +297,11 @@ Future<List<Thought>> searchThoughts(String query,
     "Content-Length": "${encodedBody.length}"
   };
 
-  print(headers);
-  print(encodedBody);
-
   final response = await dio.post(
     url.toString(),
     data: {
       'query': query,
-      'limit': 5,
+      'limit': 10,
       'pageno': 0,
     },
     options: Options(

@@ -682,12 +682,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
               moreActionButton(edgeInsets, context, edgeInsets2, buttonFontSize,
                   buttonOpacity),
 
-              // Link action button
-              // TODO enter link mode, show relevant thoughts
-              //      that could be linked to this one
-              relatedActionButton(edgeInsets, context, edgeInsets2,
-                  buttonFontSize, buttonOpacity),
-
               // Info action button
               // if (moreClicked)
               Visibility(
@@ -720,6 +714,12 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                 child: deleteActionButton(edgeInsets, context, edgeInsets2,
                     buttonOpacity, buttonFontSize),
               ),
+
+              // Link action button
+              // TODO enter link mode, show relevant thoughts
+              //      that could be linked to this one
+              relatedActionButton(edgeInsets, context, edgeInsets2,
+                  buttonFontSize, buttonOpacity),
             ],
           ),
         ),
@@ -743,7 +743,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             lineLocation: LineLocation.top,
             fontSize: buttonFontSize,
             opacity: buttonOpacity,
-            colorIndex: 2,
+            colorIndex: 3,
             text: moreClicked ? "Less" : "More",
             // lineOnly: hovered,
             onPressed: () async {
@@ -877,7 +877,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             fontSize: buttonFontSize,
             opacity: buttonOpacity,
             lineLocation: LineLocation.top,
-            colorIndex: 1,
+            colorIndex: 2,
             text: widget.showTextBox ? "Close" : "Edit",
             // lineOnly: hovered,
             onPressed: () {

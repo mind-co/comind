@@ -39,21 +39,41 @@ AppBar comindAppBar(BuildContext context) {
   // Get the colors
   ComindColorsNotifier colors = Provider.of<ComindColorsNotifier>(context);
 
+  // Whether we're public or private
+  var isPublic = colors.publicMode ? 'Public' : 'Private';
+
+  // Determine whether to use the long or short logo
+  var title = Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      MediaQuery.of(context).size.width > 550
+          ? ComindLogo(
+              key: UniqueKey(),
+              colors: colors,
+            )
+          : ComindShortLogo(
+              key: UniqueKey(),
+              colors: colors,
+            ),
+
+      Text(
+        isPublic,
+        style: colors.textTheme.titleSmall,
+      ),
+      // MSmall grey divider
+      Container(height: 5, width: 50, color: colors.surface),
+      //
+    ],
+  );
+
+  // Determine when to use
   return AppBar(
     backgroundColor: colors.background,
     // backgroundColor: Colors.white,
 
     // If the width of the screen is less than 550 pixels, use the
     // ComindLogo class, otherwise use the original definition
-    title: MediaQuery.of(context).size.width > 550
-        ? ComindLogo(
-            key: UniqueKey(),
-            colors: colors,
-          )
-        : ComindShortLogo(
-            key: UniqueKey(),
-            colors: colors,
-          ),
+    title: title,
     centerTitle: true,
     scrolledUnderElevation: 0,
 

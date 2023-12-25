@@ -29,6 +29,9 @@ class ComindColors {
     rightHanded = value;
   }
 
+  // What public/private mode the user is in
+  bool publicMode = true;
+
   // Dark mode tracker
   bool darkMode = true;
 
@@ -64,8 +67,11 @@ class ComindColors {
     surfaceVariant: Color.fromRGBO(52, 52, 52, 1),
   );
 
-  get _colorScheme => darkMode ? _darkScheme : _lightScheme;
+  // get _colorScheme => darkMode ? _darkScheme : _lightScheme;
+  // ColorScheme get colorScheme => _darkScheme;
+  // ColorScheme get colorScheme => _lightScheme;
   ColorScheme get colorScheme => darkMode ? _darkScheme : _lightScheme;
+  // ColorScheme get colorScheme => darkMode ? _darkScheme : _lightScheme;
 
   // Setter
   set colorScheme(ColorScheme newScheme) {
@@ -82,21 +88,7 @@ class ComindColors {
 
   // Init method and set the color scheme
   void init(prim, seco, tert) {
-    colorScheme = ColorScheme(
-      primary: prim,
-      secondary: seco,
-      tertiary: tert,
-      surface: tertiaryColor,
-      background: Colors.white,
-      error: secondaryColor,
-      onPrimary: textColor,
-      onSecondary: textColor,
-      onSurface: textColor,
-      onBackground: textColor,
-      onError: textColor,
-      brightness: Brightness.light,
-      surfaceVariant: const Color.fromRGBO(239, 239, 239, 1),
-    );
+    colorScheme = darkMode ? _darkScheme : _lightScheme;
   }
 
   // Text themes
@@ -156,7 +148,8 @@ class ComindColors {
   }
 
   // Color generating type
-  ColorMethod colorMethod = ColorMethod.analogous;
+  // NOTE triadic is weird rn
+  ColorMethod colorMethod = ColorMethod.monochromatic;
 
   // Set color generating type
   void setColorMethod(ColorMethod newMethod) {
@@ -187,10 +180,10 @@ class ComindColors {
     // Calculate triadic colors
     if (colorMethod == ColorMethod.triadic) {
       print("Triadic");
-      Color secondaryColor1 = Color.fromRGBO((primaryRed + 128) % 256,
-          (primaryGreen + 128) % 256, primaryBlue, 1.0);
-      Color secondaryColor2 = Color.fromRGBO((primaryRed + 128) % 256,
-          primaryGreen, (primaryBlue + 128) % 256, 1.0);
+      Color secondaryColor1 = Color.fromRGBO((primaryRed + -10) % 256,
+          (primaryGreen - 128) % 256, primaryBlue, 1.0);
+      Color secondaryColor2 = Color.fromRGBO((primaryRed + 0) % 256,
+          primaryGreen - 8, (primaryBlue + 10) % 256, 1.0);
 
       // Return the list of colors
       return [primaryColor, secondaryColor1, secondaryColor2];
@@ -223,15 +216,21 @@ class ComindColors {
 
     // Calculate monocromatic colors
     if (colorMethod == ColorMethod.monochromatic) {
-      print("Monochromatic");
-      // Calculate split-complementary colors
-      Color secondaryColor1 = Color.fromRGBO((primaryRed + 128) % 256,
-          (primaryGreen + 128) % 256, primaryBlue, 1.0);
-      Color secondaryColor2 = Color.fromRGBO(primaryRed,
-          (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
+      Color adjustBrightness(Color color, double factor) {
+        return Color.fromRGBO(
+          (color.red * factor).clamp(0, 255).toInt(),
+          (color.green * factor).clamp(0, 255).toInt(),
+          (color.blue * factor).clamp(0, 255).toInt(),
+          1,
+        );
+      }
 
       // Return the list of colors
-      return [primaryColor, secondaryColor1, secondaryColor2];
+      return [
+        primaryColor,
+        adjustBrightness(primaryColor, 2.0),
+        adjustBrightness(primaryColor, 2.5)
+      ];
     }
 
     return [
@@ -283,7 +282,7 @@ class ComindColorsNotifier extends ChangeNotifier {
   // ColorScheme get colorScheme => _currentColors.colorScheme;
   // If the dark mode is enabled, return the dark color scheme,
   // otherwise return the normal color scheme
-  ColorScheme get colorScheme => currentColors._colorScheme;
+  ColorScheme get colorScheme => currentColors.colorScheme;
   Color get background => colorScheme.background;
   Color get primary => colorScheme.primary;
   Color get secondary => colorScheme.secondary;
@@ -297,6 +296,9 @@ class ComindColorsNotifier extends ChangeNotifier {
   Color get onError => colorScheme.onError;
   bool get darkMode => currentColors.darkMode;
   TextTheme get textTheme => currentColors.textTheme;
+
+  // whether in public mode
+  bool get publicMode => currentColors.publicMode;
 
   get textStyle => null;
 

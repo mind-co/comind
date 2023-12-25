@@ -294,7 +294,7 @@ class _MainTextFieldState extends State<MainTextField> {
 
                 // Send button
                 Positioned(
-                  bottom: -4,
+                  bottom: 0,
                   right: 8,
                   child: Container(
                     color: Provider.of<ComindColorsNotifier>(context)
@@ -305,33 +305,32 @@ class _MainTextFieldState extends State<MainTextField> {
                       child: Row(
                         children: [
                           // Send button
-                          if (_primaryController.text.isNotEmpty)
-                            ComindTextButton(
-                              text: widget.type == TextFieldType.main
-                                  ? "Send"
-                                  : "Save",
-                              lineLocation: LineLocation.top,
-                              onPressed: widget.type == TextFieldType.main
-                                  ? _sendThought
-                                  : () {
-                                      // Save the thought
-                                      // saveQuickThought(
-                                      //     _primaryController.text,
-                                      //     false,
-                                      //     widget.parentThought?.id,
-                                      //     widget.childThought?.id);
+                          ComindTextButton(
+                            text: widget.type == TextFieldType.main
+                                ? "Think"
+                                : "Save",
+                            lineLocation: LineLocation.top,
+                            onPressed: widget.type == TextFieldType.main
+                                ? _sendThought
+                                : () {
+                                    // Save the thought
+                                    // saveQuickThought(
+                                    //     _primaryController.text,
+                                    //     false,
+                                    //     widget.parentThought?.id,
+                                    //     widget.childThought?.id);
 
-                                      // Clear the text field
-                                      // _primaryController.clear();
+                                    // Clear the text field
+                                    // _primaryController.clear();
 
-                                      // Refresh the thoughts
-                                      // _fetchThoughts();
-                                    },
-                              colorIndex:
-                                  widget.type == TextFieldType.main ? 1 : 2,
-                              opacity: 1.0,
-                              fontSize: 12,
-                            ),
+                                    // Refresh the thoughts
+                                    // _fetchThoughts();
+                                  },
+                            colorIndex:
+                                widget.type == TextFieldType.main ? 1 : 2,
+                            opacity: 1.0,
+                            fontSize: 12,
+                          ),
 
                           // Cancel button
                           if (widget.type == TextFieldType.edit)
@@ -604,17 +603,17 @@ class ThoughtTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 600,
-      height: 200,
+      height: 600,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: Provider.of<ComindColorsNotifier>(context)
             .colorScheme
             .surfaceVariant
-            .withAlpha(64),
+            .withAlpha(128),
       ),
 
       // If there are no thoughts, show a message
-      child: true // thoughts.isEmpty
+      child: thoughts.isEmpty
           ? Center(
               // "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
               // child: Text(
@@ -631,16 +630,23 @@ class ThoughtTable extends StatelessWidget {
                   text: "No thoughts found! \n\n",
                   style: Provider.of<ComindColorsNotifier>(context)
                       .textTheme
-                      .headlineMedium,
+                      .headlineMedium
+                      ?.copyWith(
+                        color: Provider.of<ComindColorsNotifier>(context)
+                            .colorScheme
+                            .onPrimary
+                            .withAlpha(180),
+                      ),
                   children: <TextSpan>[
                     TextSpan(
-                      text: "Y'all should mke some. \n\n",
+                      text: "Y'all should make some. \n\n",
                       style: Provider.of<ComindColorsNotifier>(context)
                           .textTheme
                           .bodyLarge,
                     ),
                     TextSpan(
-                      text: "I know you've got some cool stuff up there.",
+                      text:
+                          "I would. But I am just a lame, boring computer.\n\n",
                       style: Provider.of<ComindColorsNotifier>(context)
                           .textTheme
                           .bodyLarge,
@@ -650,11 +656,42 @@ class ThoughtTable extends StatelessWidget {
               ),
             )
           : ListView.builder(
-              itemCount: thoughts.length,
+              itemCount: thoughts.length + 1,
               itemBuilder: (context, index) {
                 // return Text("ABC");
-                return MarkdownThought(
-                    thought: thoughts[index], context: context);
+                if (index < thoughts.length)
+                  return MarkdownThought(
+                      thought: thoughts[index], context: context);
+                else {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 24, 0, 64),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Do you want to see ",
+                            style: Provider.of<ComindColorsNotifier>(context)
+                                .textTheme
+                                .bodyMedium,
+                          ),
+                          ComindTextButton(
+                            text: "More",
+                            onPressed: () {},
+                            opacity: 1.0,
+                            fontSize: 12,
+                          ),
+                          Text(
+                            " thoughts?",
+                            style: Provider.of<ComindColorsNotifier>(context)
+                                .textTheme
+                                .bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
               }),
     );
   }

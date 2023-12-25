@@ -26,12 +26,16 @@ class _ColorPickerState extends State<ColorPicker> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildColorButton(Color.fromARGB(255, 143, 36, 0)),
-            _buildColorButton(Color.fromARGB(255, 55, 0, 91)),
-            _buildColorButton(const Color.fromARGB(255, 146, 215, 148)),
+            _buildColorButton(Color.fromARGB(255, 32, 61, 77)),
+
+            //
+            _buildColorButton(Color.fromARGB(255, 157, 46, 46)),
 
             // from #51AE5F
-            _buildColorButton(const Color.fromARGB(255, 81, 174, 95)),
+            _buildColorButton(Color.fromARGB(255, 76, 198, 95)),
+
+            // #3B5EDA, RGB: 59, 94, 218
+            _buildColorButton(Color.fromARGB(255, 59, 94, 218)),
             // _buildColorButton(Colors.yellow),
             // _buildColorButton(Colors.purple),
             // _buildColorButton(Colors.orange),
@@ -43,7 +47,10 @@ class _ColorPickerState extends State<ColorPicker> {
   }
 
   Widget _buildColorButton(Color color) {
-    return GestureDetector(
+    return Material(
+        child: InkWell(
+      splashColor: color,
+      borderRadius: BorderRadius.circular(10),
       onTap: () {
         setState(() {
           selectedColor = color;
@@ -51,18 +58,35 @@ class _ColorPickerState extends State<ColorPicker> {
         widget.onColorSelected(color);
       },
       child: Container(
-        width: 30,
-        height: 30,
+        color: color,
+        width: 20,
+        height: 20,
         margin: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: selectedColor == color ? Colors.black : Colors.transparent,
-            width: 2,
-          ),
-        ),
       ),
-    );
+    ));
+
+    // return GestureDetector(
+    //   onTap: () {
+    //     setState(() {
+    //       selectedColor = color;
+    //     });
+    //     widget.onColorSelected(color);
+    //   },
+    //   // child: Center(
+    //   //   child: Container(
+    //   //     width: 30,
+    //   //     height: 30,
+    //   //     margin: EdgeInsets.all(8),
+    //   //     decoration: BoxDecoration(
+    //   //       color: color,
+    //   //       shape: BoxShape.circle,
+    //   //       border: Border.all(
+    //   //         color: selectedColor == color ? Colors.black : Colors.transparent,
+    //   //         width: 6,
+    //   //       ),
+    //   //     ),
+    //   //   ),
+    //   // ),
+    // );
   }
 }
