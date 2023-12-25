@@ -309,7 +309,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           // Text(
           //   "${constraints.maxWidth} wide, ${constraints.minHeight} tall",
           // ),
-          Text("Set colors"),
+          // Text("Set colors"),
           ColorPicker(onColorSelected: (Color color) {
             Provider.of<ComindColorsNotifier>(context, listen: false)
                 .modifyColors(color);

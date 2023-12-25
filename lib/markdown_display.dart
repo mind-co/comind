@@ -64,7 +64,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   final double opacity;
   final double opacityOnHover;
   final _editController = TextEditingController();
-  List<SearchResult> relatedResults = [];
+  List<Thought> relatedResults = [];
   final ComindColors colors = ComindColors();
 
   // store whether hovered
@@ -238,19 +238,16 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
           // Display the related results
           if (widget.relatedMode && relatedResults.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Text("Some other notes for ya",
-                  //     style: Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall),
-                  ComindSearchResultTable(
-                    searchResults: relatedResults,
-                    parentThought: thought,
-                  ),
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Text("Some other notes for ya",
+                //     style: Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall),
+                ThoughtTable(
+                  thoughts: relatedResults,
+                  parentThought: thought,
+                ),
+              ],
             )
         ]),
       ),
@@ -777,8 +774,8 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             lineLocation: LineLocation.top,
             fontSize: buttonFontSize,
             opacity: buttonOpacity,
-            colorIndex: 2,
-            text: "Link",
+            colorIndex: 1,
+            text: "Think",
             // lineOnly: hovered,
             onPressed: () async {
               if (relatedResults.isEmpty) {
@@ -880,7 +877,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             fontSize: buttonFontSize,
             opacity: buttonOpacity,
             lineLocation: LineLocation.top,
-            colorIndex: 0,
+            colorIndex: 1,
             text: widget.showTextBox ? "Close" : "Edit",
             // lineOnly: hovered,
             onPressed: () {
@@ -997,19 +994,13 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                     formatTimestamp(thought.dateUpdated),
                     style: Provider.of<ComindColorsNotifier>(context)
                         .textTheme
-                        .bodyMedium
-                        ?.copyWith(
-                          fontSize: 10,
-                        ),
+                        .bodyMedium,
                   ),
                   Text(
                     thought.isPublic ? "public" : "private",
                     style: Provider.of<ComindColorsNotifier>(context)
                         .textTheme
-                        .bodyMedium
-                        ?.copyWith(
-                          fontSize: 10,
-                        ),
+                        .bodyMedium,
                   ),
                 ],
               )

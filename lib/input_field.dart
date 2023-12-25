@@ -60,7 +60,7 @@ class _MainTextFieldState extends State<MainTextField> {
   final ScrollController _scrollController = ScrollController();
   String uiMode = "think";
   // String uiMode = "think";
-  List<SearchResult> searchResults = [
+  List<Thought> searchResults = [
     // SearchResult(
     //     id: "a", body: "Howdy", username: "Cameron", cosineSimilarity: 0.8),
     // SearchResult(
@@ -363,7 +363,8 @@ class _MainTextFieldState extends State<MainTextField> {
             if (uiMode == "search" && searchResults.isNotEmpty)
               Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                  child: ComindSearchResultTable(searchResults: searchResults)),
+                  child: ThoughtTable(thoughts: searchResults)),
+            // child: ComindSearchResultTable(searchResults: searchResults)),
           ],
         ),
       ),
@@ -504,7 +505,13 @@ class ComindSearchResultTable extends StatelessWidget {
                       searchResults[index].username,
                       style: Provider.of<ComindColorsNotifier>(context)
                           .textTheme
-                          .titleSmall,
+                          .titleSmall
+                          ?.copyWith(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onPrimary
+                                .withAlpha(180),
+                          ),
                     ),
                   ),
                 ),
@@ -578,6 +585,77 @@ class ComindSearchResultTable extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+// ThoughtTable shows a list of searched thoughts
+class ThoughtTable extends StatelessWidget {
+  const ThoughtTable({
+    Key? key,
+    required this.thoughts,
+    this.parentThought,
+  }) : super(key: key);
+
+  final List<Thought> thoughts;
+  final Thought? parentThought;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 600,
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .surfaceVariant
+            .withAlpha(64),
+      ),
+
+      // If there are no thoughts, show a message
+      child: true // thoughts.isEmpty
+          ? Center(
+              // "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
+              // child: Text(
+              //   "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
+              //   style: Provider.of<ComindColorsNotifier>(context)
+              //       .textTheme
+              //       .bodyMedium,
+              // ),
+
+              // Using text span
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  text: "No thoughts found! \n\n",
+                  style: Provider.of<ComindColorsNotifier>(context)
+                      .textTheme
+                      .headlineMedium,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: "Y'all should mke some. \n\n",
+                      style: Provider.of<ComindColorsNotifier>(context)
+                          .textTheme
+                          .bodyLarge,
+                    ),
+                    TextSpan(
+                      text: "I know you've got some cool stuff up there.",
+                      style: Provider.of<ComindColorsNotifier>(context)
+                          .textTheme
+                          .bodyLarge,
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : ListView.builder(
+              itemCount: thoughts.length,
+              itemBuilder: (context, index) {
+                // return Text("ABC");
+                return MarkdownThought(
+                    thought: thoughts[index], context: context);
+              }),
     );
   }
 }

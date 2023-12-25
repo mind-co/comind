@@ -21,6 +21,8 @@ class Thought {
   final int rejects;
   final int rethinks;
   final int refs;
+  final int numLinks = 0;
+  final double cosineSimilarity = 0.0;
 
   Thought({
     required this.title,

@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// Color method type
+enum ColorMethod {
+  splitComplementary,
+  complementary,
+  triadic,
+  analogous,
+  monochromatic
+}
+
 class ComindColors {
   // Old version
   static const Color primaryColorDefault = Color.fromRGBO(0, 137, 200, 1);
@@ -23,7 +32,7 @@ class ComindColors {
   // Dark mode tracker
   bool darkMode = true;
 
-  final ColorScheme _lightScheme = const ColorScheme(
+  ColorScheme _lightScheme = const ColorScheme(
     primary: primaryColorDefault,
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
@@ -39,7 +48,7 @@ class ComindColors {
     surfaceVariant: Color.fromRGBO(239, 239, 239, 1),
   );
 
-  final ColorScheme _darkScheme = const ColorScheme(
+  ColorScheme _darkScheme = const ColorScheme(
     primary: primaryColorDefault,
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
@@ -55,23 +64,17 @@ class ComindColors {
     surfaceVariant: Color.fromRGBO(52, 52, 52, 1),
   );
 
-  ColorScheme colorScheme = const ColorScheme(
-    primary: primaryColorDefault,
-    secondary: secondaryColorDefault,
-    tertiary: tertiaryColorDefault,
-    surface: tertiaryColorDefault,
-    background: Colors.blue,
-    error: secondaryColorDefault,
-    onPrimary: Colors.black,
-    onSecondary: Colors.black,
-    onSurface: Colors.black,
-    onBackground: Colors.black,
-    onError: Colors.black,
-    brightness: Brightness.light,
-    surfaceVariant: Color.fromRGBO(239, 239, 239, 1),
-  );
-
   get _colorScheme => darkMode ? _darkScheme : _lightScheme;
+  ColorScheme get colorScheme => darkMode ? _darkScheme : _lightScheme;
+
+  // Setter
+  set colorScheme(ColorScheme newScheme) {
+    if (darkMode) {
+      _darkScheme = newScheme;
+    } else {
+      _lightScheme = newScheme;
+    }
+  }
 
   get primary => null;
   get secondary => null;
@@ -122,6 +125,16 @@ class ComindColors {
     titleSmall: titleStyle.copyWith(fontSize: 14),
     titleMedium: titleStyle.copyWith(fontSize: 16),
     titleLarge: titleStyle.copyWith(fontSize: 18),
+
+    // Header style
+    headlineLarge: titleStyle.copyWith(fontSize: 20),
+    headlineMedium: titleStyle.copyWith(fontSize: 24),
+    headlineSmall: titleStyle.copyWith(fontSize: 28),
+
+    // Display style
+    displayLarge: titleStyle.copyWith(fontSize: 32),
+    displayMedium: titleStyle.copyWith(fontSize: 36),
+    displaySmall: titleStyle.copyWith(fontSize: 40),
   );
 
   static const Color _textColor = Colors.black;
@@ -142,38 +155,90 @@ class ComindColors {
     tertiaryColor = tertiaryColorDefault;
   }
 
+  // Color generating type
+  ColorMethod colorMethod = ColorMethod.analogous;
+
+  // Set color generating type
+  void setColorMethod(ColorMethod newMethod) {
+    colorMethod = newMethod;
+  }
+
   // Add color scheme generation method
-  static List<Color> generateSplitComplementaryColors(Color primaryColor) {
+  List<Color> generateSplitComplementaryColors(Color primaryColor) {
     // Extract RGB values from the primaryColor
     int primaryRed = primaryColor.red;
     int primaryGreen = primaryColor.green;
     int primaryBlue = primaryColor.blue;
 
-    // Calculate split-complementary colors
-    // Color secondaryColor1 = Color.fromRGBO(
-    //     primaryRed, (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
-    // Color secondaryColor2 = Color.fromRGBO(
-    //     (primaryRed + 128) % 256, primaryGreen, (primaryBlue + 128) % 256, 1.0);
-
     // Calculate complementary colors
-    // Color secondaryColor1 = Color.fromRGBO(
-    //     (primaryRed + 128) % 256, (primaryGreen + 128) % 256, primaryBlue, 1.0);
-    // Color secondaryColor2 = Color.fromRGBO(
-    //     primaryRed, (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
+    print("Primary color is ${primaryColor}");
+    print("The theme is ${colorMethod}");
+    if (colorMethod == ColorMethod.complementary) {
+      print("Complementary");
+      Color secondaryColor1 = Color.fromRGBO((primaryRed + 128) % 256,
+          (primaryGreen + 128) % 256, primaryBlue, 1.0);
+      Color secondaryColor2 = Color.fromRGBO(primaryRed,
+          (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
+
+      // Return the list of colors
+      return [primaryColor, secondaryColor1, secondaryColor2];
+    }
 
     // Calculate triadic colors
-    // Color secondaryColor1 = Color.fromRGBO(
-    //     (primaryRed + 128) % 256, (primaryGreen + 128) % 256, primaryBlue, 1.0);
-    // Color secondaryColor2 = Color.fromRGBO(
-    //     (primaryRed + 128) % 256, primaryGreen, (primaryBlue + 128) % 256, 1.0);
+    if (colorMethod == ColorMethod.triadic) {
+      print("Triadic");
+      Color secondaryColor1 = Color.fromRGBO((primaryRed + 128) % 256,
+          (primaryGreen + 128) % 256, primaryBlue, 1.0);
+      Color secondaryColor2 = Color.fromRGBO((primaryRed + 128) % 256,
+          primaryGreen, (primaryBlue + 128) % 256, 1.0);
+
+      // Return the list of colors
+      return [primaryColor, secondaryColor1, secondaryColor2];
+    }
 
     // Calculate analogous colors
-    Color secondaryColor1 = Color.fromRGBO(
-        (primaryRed + 128) % 256, (primaryGreen + 128) % 256, primaryBlue, 1.0);
-    Color secondaryColor2 = Color.fromRGBO(
-        primaryRed, (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
+    if (colorMethod == ColorMethod.analogous) {
+      print("Analogous");
+      Color secondaryColor1 = Color.fromRGBO((primaryRed + 128) % 256,
+          (primaryGreen + 128) % 256, primaryBlue, 1.0);
+      Color secondaryColor2 = Color.fromRGBO(primaryRed,
+          (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
 
-    return [primaryColor, secondaryColor1, secondaryColor2];
+      // Return the list of colors
+      return [primaryColor, secondaryColor1, secondaryColor2];
+    }
+
+    // Calculate split-complementary colors
+    if (colorMethod == ColorMethod.splitComplementary) {
+      print("Split complementary");
+      // Calculate split-complementary colors
+      Color secondaryColor1 = Color.fromRGBO((primaryRed + 128) % 256,
+          (primaryGreen + 128) % 256, primaryBlue, 1.0);
+      Color secondaryColor2 = Color.fromRGBO(primaryRed,
+          (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
+
+      // Return the list of colors
+      return [primaryColor, secondaryColor1, secondaryColor2];
+    }
+
+    // Calculate monocromatic colors
+    if (colorMethod == ColorMethod.monochromatic) {
+      print("Monochromatic");
+      // Calculate split-complementary colors
+      Color secondaryColor1 = Color.fromRGBO((primaryRed + 128) % 256,
+          (primaryGreen + 128) % 256, primaryBlue, 1.0);
+      Color secondaryColor2 = Color.fromRGBO(primaryRed,
+          (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
+
+      // Return the list of colors
+      return [primaryColor, secondaryColor1, secondaryColor2];
+    }
+
+    return [
+      ComindColors.primaryColorDefault,
+      ComindColors.secondaryColorDefault,
+      ComindColors.tertiaryColorDefault
+    ];
   }
 
   // Method to get text color based on current background
@@ -214,7 +279,6 @@ class ComindColorsNotifier extends ChangeNotifier {
   // Handedness because why not, also I ain't making a new provider for this shit
   bool get rightHanded => _currentColors.rightHanded;
 
-  ComindColors get currentText => _currentColors;
   ComindColors get currentColors => _currentColors;
   // ColorScheme get colorScheme => _currentColors.colorScheme;
   // If the dark mode is enabled, return the dark color scheme,
@@ -234,6 +298,8 @@ class ComindColorsNotifier extends ChangeNotifier {
   bool get darkMode => currentColors.darkMode;
   TextTheme get textTheme => currentColors.textTheme;
 
+  get textStyle => null;
+
   set currentColors(ComindColors newColors) {
     print("New colors. Primary is ${newColors.primaryColor}");
     _currentColors = newColors;
@@ -243,6 +309,7 @@ class ComindColorsNotifier extends ChangeNotifier {
   void toggleTheme(bool value) {
     print("Toggling theme");
     print("Current is ${_currentColors.darkMode}, new is ${value}");
+    print("The prior text color is ${_currentColors.textColor}");
 
     _currentColors.darkMode = value;
 

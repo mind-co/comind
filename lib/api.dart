@@ -1,8 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:comind/types/thought.dart';
+import 'package:dio/dio.dart';
+
+// Initialize Dio
+final dio = Dio();
 
 Future<List<Thought>> fetchThoughts() async {
+  // TODO convert to dio
   final url =
       Uri.parse('http://nimbus.pfiffer.org:8000/api/user-thoughts/cameron/');
   final headers = {
@@ -24,6 +29,7 @@ Future<List<Thought>> fetchThoughts() async {
 // body, isPublic, and an optional parentThoughtId
 Future<void> saveQuickThought(String body, bool isPublic,
     String? parentThoughtId, String? childThoughtId) async {
+  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
 
   final headers = {
@@ -69,6 +75,7 @@ Future<void> saveQuickThought(String body, bool isPublic,
 }
 
 Future<void> saveThought(Thought thought) async {
+  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
 
   // If the thought has an ID, we're updating an existing thought.
@@ -141,6 +148,7 @@ Future<void> saveThought(Thought thought) async {
 }
 
 Future<void> deleteThought(String thoughtId) async {
+  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
   final headers = {
     'ComindUsername': 'cameron',
@@ -173,6 +181,7 @@ Future<void> deleteThought(String thoughtId) async {
 // 5. Alice parties.
 
 Future<bool> newUser(String username, String email, String password) async {
+  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/new-user/');
   final headers = {
     'ComindUsername': username,
@@ -195,6 +204,7 @@ Future<bool> newUser(String username, String email, String password) async {
 }
 
 Future<bool> userExists(String username) async {
+  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/user-exists/');
   final headers = {
     'ComindUsername': username,
@@ -211,6 +221,7 @@ Future<bool> userExists(String username) async {
 }
 
 Future<bool> emailExists(String email) async {
+  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/email-taken/');
   final headers = {
     'ComindEmail': email,
@@ -262,7 +273,7 @@ class SearchResult {
   }
 }
 
-Future<List<SearchResult>> searchThoughts(String query,
+Future<List<Thought>> searchThoughts(String query,
     {String? associatedId}) async {
   final url = Uri.parse("http://nimbus.pfiffer.org:8000/api/search");
   final body = associatedId == null
@@ -289,29 +300,30 @@ Future<List<SearchResult>> searchThoughts(String query,
   print(headers);
   print(encodedBody);
 
-  final response = await http.post(
-    url,
-    headers: headers,
-    body: encodedBody,
+  final response = await dio.post(
+    url.toString(),
+    data: {
+      'query': query,
+      'limit': 5,
+      'pageno': 0,
+    },
+    options: Options(
+      headers: headers,
+    ),
   );
 
-  if (response.statusCode == 200) {
-    final List<dynamic> jsonResponse = json.decode(response.body);
+  if (response.statusCode == 200 && response.data is List) {
+    final jsonResponse = response.data as List;
+    var result = jsonResponse.map((thought) {
+      if (thought is Map<String, dynamic>) {
+        return Thought.fromJson(thought);
+      } else {
+        throw Exception('Invalid data format');
+      }
+    }).toList();
 
-    // DEBUG Print out each element of jsonResponse
-    // for (var thought in jsonResponse) {
-    //   print(thought);
-    // }
-
-    // print(jsonResponse);
-    return jsonResponse
-        .map((thought) => SearchResult.fromJson(thought))
-        .toList();
+    return result;
   } else {
     throw Exception('Failed to search');
   }
 }
-
-// List<Concept> fetchConcepts() {
-
-// }
