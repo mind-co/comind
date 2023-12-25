@@ -187,6 +187,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                 // Add the action row on bottom
                                 Positioned(
                                   bottom: -4,
+                                  left: 0,
                                   child: actionRow(
                                       context,
                                       edgeInsets2,
@@ -632,40 +633,45 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     );
   }
 
-  SizedBox actionRow(BuildContext context, EdgeInsets edgeInsets2,
+  Widget actionRow(BuildContext context, EdgeInsets edgeInsets2,
       EdgeInsets edgeInsets, double buttonFontSize, double buttonOpacity) {
-    return SizedBox(
-      // 600or MediaQuery.of(context).size.
-      width: min(600, MediaQuery.of(context).size.width),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 24, 0),
-        child: Flex(
-          direction: Axis.horizontal,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // TODO #1 add code to make this left-hand right-hand toggleable
-            // added some stuff but it's not working. May be an issue with state refresh
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        SizedBox(
+          width: 600,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 24, 0),
+            child: Flex(
+              direction: Axis.horizontal,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // TODO #1 add code to make this left-hand right-hand toggleable
+                // added some stuff but it's not working. May be an issue with state refresh
 
-            // Date
-            if (Provider.of<ComindColorsNotifier>(context).rightHanded)
-              dateChunk(context),
+                // Date
+                if (Provider.of<ComindColorsNotifier>(context).rightHanded)
+                  dateChunk(context),
 
-            // Right icon box
-            if (Provider.of<ComindColorsNotifier>(context).rightHanded)
-              actionStuff(edgeInsets, context, edgeInsets2, buttonFontSize,
-                  buttonOpacity),
+                // Right icon box
+                if (Provider.of<ComindColorsNotifier>(context).rightHanded)
+                  actionStuff(edgeInsets, context, edgeInsets2, buttonFontSize,
+                      buttonOpacity),
 
-            // Date, left handed
-            if (!Provider.of<ComindColorsNotifier>(context).rightHanded)
-              dateChunk(context),
+                // Date, left handed
+                if (!Provider.of<ComindColorsNotifier>(context).rightHanded)
+                  dateChunk(context),
 
-            // Right icon box, left handed
-            if (!Provider.of<ComindColorsNotifier>(context).rightHanded)
-              actionStuff(edgeInsets, context, edgeInsets2, buttonFontSize,
-                  buttonOpacity),
-          ],
+                // Right icon box, left handed
+                if (!Provider.of<ComindColorsNotifier>(context).rightHanded)
+                  actionStuff(edgeInsets, context, edgeInsets2, buttonFontSize,
+                      buttonOpacity),
+              ],
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 

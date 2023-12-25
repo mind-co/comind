@@ -601,98 +601,146 @@ class ThoughtTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 600,
-      height: 600,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Provider.of<ComindColorsNotifier>(context)
-            .colorScheme
-            .surfaceVariant
-            .withAlpha(128),
-      ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 16, 0, 8),
+      child: Stack(clipBehavior: Clip.none, children: [
+        Container(
+          width: 600,
+          height: 300,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            // Border color
+            border: Border.all(
+              color: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .onPrimary
+                  .withAlpha(128),
+            ),
+          ),
 
-      // If there are no thoughts, show a message
-      child: thoughts.isEmpty
-          ? Center(
-              // "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
-              // child: Text(
-              //   "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
-              //   style: Provider.of<ComindColorsNotifier>(context)
-              //       .textTheme
-              //       .bodyMedium,
-              // ),
+          // If there are no thoughts, show a message
+          child: thoughts.isEmpty
+              ? Center(
+                  // "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
+                  // child: Text(
+                  //   "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
+                  //   style: Provider.of<ComindColorsNotifier>(context)
+                  //       .textTheme
+                  //       .bodyMedium,
+                  // ),
 
-              // Using text span
-              child: RichText(
-                textAlign: TextAlign.start,
-                text: TextSpan(
-                  text: "No thoughts found! \n\n",
-                  style: Provider.of<ComindColorsNotifier>(context)
-                      .textTheme
-                      .headlineMedium
-                      ?.copyWith(
-                        color: Provider.of<ComindColorsNotifier>(context)
-                            .colorScheme
-                            .onPrimary
-                            .withAlpha(180),
-                      ),
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: "Y'all should make some. \n\n",
+                  // Using text span
+                  child: RichText(
+                    textAlign: TextAlign.start,
+                    text: TextSpan(
+                      text: "No thoughts found! \n\n",
                       style: Provider.of<ComindColorsNotifier>(context)
                           .textTheme
-                          .bodyLarge,
+                          .headlineMedium
+                          ?.copyWith(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onPrimary
+                                .withAlpha(180),
+                          ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: "Y'all should make some. \n\n",
+                          style: Provider.of<ComindColorsNotifier>(context)
+                              .textTheme
+                              .bodyLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              "I would. But I am just a lame, boring computer.\n\n",
+                          style: Provider.of<ComindColorsNotifier>(context)
+                              .textTheme
+                              .bodyLarge,
+                        ),
+                      ],
                     ),
-                    TextSpan(
-                      text:
-                          "I would. But I am just a lame, boring computer.\n\n",
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .bodyLarge,
-                    ),
-                  ],
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView.builder(
+                      itemCount: thoughts.length + 1,
+                      itemBuilder: (context, index) {
+                        // return Text("ABC");
+                        if (index < thoughts.length) {
+                          return MarkdownThought(
+                              thought: thoughts[index], context: context);
+                        } else {
+                          return Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Do you want to see ",
+                                  style:
+                                      Provider.of<ComindColorsNotifier>(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                ),
+                                // TODO #5 add more thoughts button
+                                ComindTextButton(
+                                  text: "More",
+                                  onPressed: () {},
+                                  opacity: 1.0,
+                                  fontSize: 12,
+                                ),
+                                Text(
+                                  " thoughts?",
+                                  style:
+                                      Provider.of<ComindColorsNotifier>(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      }),
                 ),
-              ),
-            )
-          : ListView.builder(
-              itemCount: thoughts.length + 1,
-              itemBuilder: (context, index) {
-                // return Text("ABC");
-                if (index < thoughts.length)
-                  return MarkdownThought(
-                      thought: thoughts[index], context: context);
-                else {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 24, 0, 64),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Do you want to see ",
-                            style: Provider.of<ComindColorsNotifier>(context)
-                                .textTheme
-                                .bodyMedium,
+        ),
+
+        // Display ("Search results") at top left corner
+        Positioned(
+          top: -8,
+          left: 10,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+            child: Row(
+              children: [
+                // Send button
+                Container(
+                  decoration: BoxDecoration(
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .background,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    child: Text(
+                      "Results",
+                      style: Provider.of<ComindColorsNotifier>(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onPrimary
+                                .withAlpha(180),
                           ),
-                          ComindTextButton(
-                            text: "More",
-                            onPressed: () {},
-                            opacity: 1.0,
-                            fontSize: 12,
-                          ),
-                          Text(
-                            " thoughts?",
-                            style: Provider.of<ComindColorsNotifier>(context)
-                                .textTheme
-                                .bodyMedium,
-                          ),
-                        ],
-                      ),
                     ),
-                  );
-                }
-              }),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ]),
     );
   }
 }
