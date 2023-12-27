@@ -641,30 +641,19 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           // ),
           // Text("Set colors"),
 
-          // TODO #4 Find a design for the color picker that works.
-          ColorPicker(onColorSelected: (Color color) {
-            Provider.of<ComindColorsNotifier>(context, listen: false)
-                .modifyColors(color);
-          }),
-
           // Main text field
           MainTextField(
               onThoughtSubmitted: (Thought thought) async {
                 // Send the thought
-                // await saveThought(thought, newThought: true);
+                await saveThought(thought, newThought: true);
 
-                // Add the new thought to the list
-                setState(() {
-                  // DEBUG replace thoughts with just new thought
-                  thoughts = [thought];
+                // Refresh the thought list
+                // TODO this should be adjusted to only refresh the thought that
+                // TODO was just added
+                _fetchThoughts();
 
-                  // thoughts.add(thought);
-                  // editVisibilityList.add(false);
-                  // expandedVisibilityList.add(false);
-                  // verbBarHoverList.add(false);
-                  // _controllers.add(TextEditingController());
-                  // _fetchThoughts();
-                });
+                // Clear the text field
+                _primaryController.clear();
               },
               primaryController: _primaryController,
               colorIndex: Provider.of<ComindColorsNotifier>(context).publicMode
