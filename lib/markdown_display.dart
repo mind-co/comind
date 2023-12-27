@@ -157,7 +157,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
                                       // All border
                                       border: Border.all(
-                                        width: 2,
+                                        width: 1,
                                         color:
                                             Provider.of<ComindColorsNotifier>(
                                                     context)
@@ -291,9 +291,8 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   }
 
   Positioned borderUsername(BuildContext context) {
-    double lockSize = 14;
     return Positioned(
-      top: -8,
+      top: -16,
       left: 8,
       child: Container(
         decoration: BoxDecoration(
@@ -302,38 +301,39 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           borderRadius: BorderRadius.circular(4),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
           child: Row(
             children: [
               ComindTextButton(
                 text: thought.username,
-                colorIndex: 0,
-                lineLocation: LineLocation.top,
+                colorIndex: 1,
+                lineLocation: LineLocation.bottom,
                 opacity: hovered
-                    ? outlineAlphaHover / 255
+                    ? 1
                     : widget.showTextBox
-                        ? 1
-                        : outlineAlpha / 255,
+                        ? opacityOnHover
+                        : 0.6,
+                opacityOnHover: outlineAlphaHover / 255,
                 onPressed: () {
                   // Navigate to the user's profile
                   Navigator.pushNamed(context, '/thinkers/${thought.username}');
                 },
                 fontSize: 12,
               ),
-              Opacity(
-                opacity: hovered
-                    ? 1
-                    : widget.showTextBox
-                        ? 1
-                        : 0.4,
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(4, 0, 0, 0),
-                  child: thought.isPublic
-                      ? Icon(Icons.lock_open,
-                          size: lockSize, color: Colors.grey)
-                      : Icon(Icons.lock, size: lockSize, color: Colors.grey),
-                ),
-              ),
+              // Opacity(
+              //   opacity: hovered
+              //       ? 1
+              //       : widget.showTextBox
+              //           ? 1
+              //           : 0.4,
+              //   child: Padding(
+              //       padding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+              //       // child: thought.isPublic
+              //       //     ? Icon(Icons.lock_open,
+              //       //         size: lockSize, color: Colors.grey)
+              //       //     : Icon(Icons.lock, size: lockSize, color: Colors.grey),
+              //       child: thought.isPublic ? Text("×") : Text("∘")),
+              // ),
             ],
           ),
         ),

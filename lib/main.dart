@@ -4,8 +4,7 @@ import 'package:comind/color_picker.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
-import 'package:flutter_markdown/flutter_markdown.dart'; // TODO Probably actually use this at some point instead of MarkdownBody
-import 'package:intl/intl.dart';
+// import 'package:flutter_markdown/flutter_markdown.dart'; // TODO Probably actually use this at some point instead of MarkdownBody
 import 'package:provider/provider.dart';
 // import 'package:comind/comind_div.dart';
 // Expand button
@@ -98,7 +97,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   TextEditingController _primaryController = TextEditingController();
 
   // Set up public/private writing mode
-  bool publicMode = false;
   bool searchMode = false;
 
   @override
@@ -128,8 +126,10 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   // Make a new thought and go to the text editor
   void _addNote(BuildContext context) {
     // This function will be called when you want to add a new note.
-    final newThought = Thought.fromString("",
-        Provider.of<AuthProvider>(context, listen: false).username, publicMode);
+    final newThought = Thought.fromString(
+        "",
+        Provider.of<AuthProvider>(context, listen: false).username,
+        Provider.of<ComindColorsNotifier>(context).publicMode);
 
     setState(() {
       thoughts.add(newThought);
@@ -148,27 +148,27 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   }
 
   // Add a note
-  void _sendThought(BuildContext context, String body,
-      {String? parentId, String? childId}) async {
-    // This function will be called when you want to add a new note.
-    final newThought =
-        await saveQuickThought(body, publicMode, parentId, childId);
+  // void _sendThought(BuildContext context, String body,
+  //     {String? parentId, String? childId}) async {
+  //   // This function will be called when you want to add a new note.
+  //   final newThought =
+  //       await saveQuickThought(body, publicMode, parentId, childId);
 
-    setState(() {
-      thoughts.add(newThought);
-      editVisibilityList.add(false);
-      expandedVisibilityList.add(false);
-      verbBarHoverList.add(false);
-      _controllers.add(TextEditingController());
-    });
+  //   setState(() {
+  //     thoughts.add(newThought);
+  //     editVisibilityList.add(false);
+  //     expandedVisibilityList.add(false);
+  //     verbBarHoverList.add(false);
+  //     _controllers.add(TextEditingController());
+  //   });
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ThoughtEditorScreen(thought: newThought),
-      ),
-    );
-  }
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => ThoughtEditorScreen(thought: newThought),
+  //     ),
+  //   );
+  // }
 
   // Fetch concepts
   void _fetchConcepts(BuildContext context) {
@@ -187,6 +187,8 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   // Delete a note
   @override
   Widget build(BuildContext context) {
+    bool publicMode = Provider.of<ComindColorsNotifier>(context).publicMode;
+
     // Check if we're still loading
     if (!loaded) {
       return Scaffold(
@@ -213,6 +215,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (thoughts.isNotEmpty) {
+          const edgeInsets = const EdgeInsets.fromLTRB(8, 2, 8, 2);
           return Scaffold(
             backgroundColor: Provider.of<ComindColorsNotifier>(context)
                 .colorScheme
@@ -224,26 +227,125 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                   .background,
               child: const Nav(),
             ),
-            bottomNavigationBar: Container(
-              height: 100,
-              color: Provider.of<ComindColorsNotifier>(context)
-                  .colorScheme
-                  .background,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            bottomNavigationBar: SizedBox(
+              height: 30,
+              // color: Provider.of<ComindColorsNotifier>(context)
+              //     .colorScheme
+              //     .background,
+              child: Flex(
+                direction: Axis.horizontal,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // Add a note button
-                  ComindTextButton(
-                    text: "Think",
-                    onPressed: () {
-                      _addNote(context); // Call _addNote with the context
-                    },
-                    colorIndex: 2,
-                    opacity: 0.8,
-                    textStyle: const TextStyle(
-                        fontFamily: "Bungee",
-                        fontSize: 16,
-                        color: Colors.white),
+                  // Add a text field
+                  // MainTextField(primaryController: _primaryController),
+
+                  // Add a public/private button
+                  // ComindTextButton(
+                  //   text: Provider.of<ComindColorsNotifier>(context).publicMode
+                  //       ? "Public"
+                  //       : "Private",
+                  //   onPressed: () {
+                  //     Provider.of<ComindColorsNotifier>(context, listen: false)
+                  //         .togglePublicMode(!publicMode);
+                  //   },
+                  //   colorIndex: 2,
+                  //   opacity: 0.8,
+                  //   textStyle: const TextStyle(
+                  //       fontFamily: "Bungee",
+                  //       fontSize: 16,
+                  //       color: Colors.white),
+                  // ),
+
+                  // Add current color scheme dot
+                  Material(
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .primary,
+                    borderRadius: BorderRadius.circular(10),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () {
+                        colorDialog(context);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .colorScheme
+                              .primary,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        width: 30,
+                        height: 20,
+                        margin: const EdgeInsets.all(0),
+                      ),
+                    ),
+                  ),
+                  // Container(
+                  //   width: 20,
+                  //   height: 20,
+                  //   decoration: BoxDecoration(
+                  //     color: Provider.of<ComindColorsNotifier>(context)
+                  //         .colorScheme
+                  //         .primary,
+                  //     borderRadius: BorderRadius.circular(10),
+                  //   ),
+                  // ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: VerticalDivider(
+                      color: Provider.of<ComindColorsNotifier>(context)
+                          .colorScheme
+                          .onPrimary
+                          ?.withAlpha(32),
+                      thickness: 1,
+                      width: 1,
+                    ),
+                  ),
+
+                  // Separate public and private buttons.
+                  // The public button is on the left, the private button is on the right.
+                  // when one is active, the other has no line
+                  Row(
+                    children: [
+                      Padding(
+                        padding: edgeInsets,
+                        child: ComindTextButton(
+                          text: "Public",
+                          onPressed: () {
+                            Provider.of<ComindColorsNotifier>(context,
+                                    listen: false)
+                                .togglePublicMode(true);
+                          },
+                          colorIndex: publicMode ? 1 : 0,
+                          opacity: publicMode ? 1.0 : 0.4,
+                          // opacity: 1,
+                          textStyle: const TextStyle(
+                              fontFamily: "Bungee", fontSize: 16),
+                        ),
+                      ),
+
+                      // Add a private button
+                      Padding(
+                        padding: edgeInsets,
+                        child: ComindTextButton(
+                          text: "Private",
+                          onPressed: () {
+                            Provider.of<ComindColorsNotifier>(context,
+                                    listen: false)
+                                .togglePublicMode(false);
+                          },
+                          colorIndex: !publicMode ? 1 : 0,
+                          opacity: !publicMode ? 1.0 : 0.4,
+                          // opacity: 1,
+                          textStyle: const TextStyle(
+                            fontFamily: "Bungee",
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -316,6 +418,182 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     );
   }
 
+  Future<dynamic> colorDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // Get the current color scheme
+        final colorScheme =
+            Provider.of<ComindColorsNotifier>(context).colorScheme;
+
+        var fontSize = 14.0;
+        var unselectedOpacity = 0.4;
+        return AlertDialog(
+          backgroundColor: colorScheme.background,
+          title: const Text('Current Color Scheme'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Color scheme  ',
+                      style: Provider.of<ComindColorsNotifier>(context)
+                          .textTheme
+                          .labelLarge),
+                  // TODO #6 Support left line location for text buttons
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: ComindTextButton(
+                            lineLocation: LineLocation.left,
+                            colorIndex:
+                                Provider.of<ComindColorsNotifier>(context)
+                                            .colorMethod ==
+                                        ColorMethod.triadic
+                                    ? 1
+                                    : 0,
+                            opacity: Provider.of<ComindColorsNotifier>(context)
+                                        .colorMethod ==
+                                    ColorMethod.triadic
+                                ? 1
+                                : unselectedOpacity,
+                            fontSize: fontSize,
+                            text: "triadic",
+                            onPressed: () {
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .setColorMethod(ColorMethod.triadic);
+                            }),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: ComindTextButton(
+                            lineLocation: LineLocation.left,
+                            colorIndex:
+                                Provider.of<ComindColorsNotifier>(context)
+                                            .colorMethod ==
+                                        ColorMethod.complementary
+                                    ? 1
+                                    : 0,
+                            opacity: Provider.of<ComindColorsNotifier>(context)
+                                        .colorMethod ==
+                                    ColorMethod.complementary
+                                ? 1
+                                : unselectedOpacity,
+                            fontSize: fontSize,
+                            text: "complementary",
+                            onPressed: () {
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .setColorMethod(ColorMethod.complementary);
+                            }),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: ComindTextButton(
+                            lineLocation: LineLocation.left,
+                            colorIndex:
+                                Provider.of<ComindColorsNotifier>(context)
+                                            .colorMethod ==
+                                        ColorMethod.splitComplementary
+                                    ? 1
+                                    : 0,
+                            opacity: Provider.of<ComindColorsNotifier>(context)
+                                        .colorMethod ==
+                                    ColorMethod.splitComplementary
+                                ? 1
+                                : unselectedOpacity,
+                            fontSize: fontSize,
+                            text: "split complementary",
+                            onPressed: () {
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .setColorMethod(
+                                      ColorMethod.splitComplementary);
+                            }),
+                      ),
+                      // Analogous
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: ComindTextButton(
+                            lineLocation: LineLocation.left,
+                            colorIndex:
+                                Provider.of<ComindColorsNotifier>(context)
+                                            .colorMethod ==
+                                        ColorMethod.analogous
+                                    ? 1
+                                    : 0,
+                            opacity: Provider.of<ComindColorsNotifier>(context)
+                                        .colorMethod ==
+                                    ColorMethod.analogous
+                                ? 1
+                                : unselectedOpacity,
+                            fontSize: fontSize,
+                            text: "analogous",
+                            onPressed: () {
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .setColorMethod(ColorMethod.analogous);
+                            }),
+                      ),
+
+                      // Monochromatic
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: ComindTextButton(
+                            lineLocation: LineLocation.left,
+                            colorIndex:
+                                Provider.of<ComindColorsNotifier>(context)
+                                            .colorMethod ==
+                                        ColorMethod.monochromatic
+                                    ? 1
+                                    : 0,
+                            opacity: Provider.of<ComindColorsNotifier>(context)
+                                        .colorMethod ==
+                                    ColorMethod.monochromatic
+                                ? 1
+                                : unselectedOpacity,
+                            fontSize: fontSize,
+                            text: "monochromatic",
+                            onPressed: () {
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .setColorMethod(ColorMethod.monochromatic);
+                            }),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            // TextButton(
+            //   child: Text('Close'),
+            //   onPressed: () {
+            //     Navigator.of(context).pop();
+            //   },
+            // ),
+
+            // ComindTextButton
+            ComindTextButton(
+              text: "Close",
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              colorIndex: 2,
+              opacity: 0.8,
+              fontSize: 16,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   SizedBox centerColumn(BuildContext context, BoxConstraints constraints) {
     return SizedBox(
       width: min(600, MediaQuery.of(context).size.width),
@@ -328,53 +606,34 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           // Text("Set colors"),
 
           // TODO #4 Find a design for the color picker that works.
-          // ColorPicker(onColorSelected: (Color color) {
-          //   Provider.of<ComindColorsNotifier>(context, listen: false)
-          //       .modifyColors(color);
-          // }),
+          ColorPicker(onColorSelected: (Color color) {
+            Provider.of<ComindColorsNotifier>(context, listen: false)
+                .modifyColors(color);
+          }),
 
           // Main text field
           MainTextField(
               onThoughtSubmitted: (Thought thought) async {
                 // Send the thought
-                await saveThought(thought, newThought: true);
+                // await saveThought(thought, newThought: true);
 
                 // Add the new thought to the list
                 setState(() {
                   // DEBUG replace thoughts with just new thought
-                  // thoughts = [thought];
+                  thoughts = [thought];
 
                   // thoughts.add(thought);
                   // editVisibilityList.add(false);
                   // expandedVisibilityList.add(false);
                   // verbBarHoverList.add(false);
                   // _controllers.add(TextEditingController());
-                  _fetchThoughts();
+                  // _fetchThoughts();
                 });
               },
               primaryController: _primaryController,
-              colorIndex: publicMode ? 2 : 1),
-
-          // Single row with time on the right
-          // Time
-          Container(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-              child: Opacity(
-                opacity: 0.5,
-                child: Text(
-                  DateFormat('h:mm a').format(DateTime.now()),
-                  style: Provider.of<ComindColorsNotifier>(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(
-                        fontSize: 12,
-                      ),
-                ),
-              ),
-            ),
-          ),
+              colorIndex: Provider.of<ComindColorsNotifier>(context).publicMode
+                  ? 2
+                  : 1),
 
           /// THOUGHTS LIST VIEW / STREAM OF CONCIOUSNESS
           ///////////////////////////
@@ -397,20 +656,20 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     return constraints.maxWidth > 600 ? 16 : 14;
   } // Edit a note
 
-  void _editNote(BuildContext context, int index) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ThoughtEditorScreen(thought: thoughts[index]),
-      ),
-    ).then((updatedThought) {
-      if (updatedThought != null) {
-        setState(() {
-          thoughts[index] = updatedThought;
-        });
-      }
-    });
-  }
+  // void _editNote(BuildContext context, int index) {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => ThoughtEditorScreen(thought: thoughts[index]),
+  //     ),
+  //   ).then((updatedThought) {
+  //     if (updatedThought != null) {
+  //       setState(() {
+  //         thoughts[index] = updatedThought;
+  //       });
+  //     }
+  //   });
+  // }
 
   Widget thoughtBox(BuildContext context, int index,
       {required BoxConstraints constraints}) {
@@ -520,7 +779,8 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                   },
                   opacity: 0.8,
                   text: expandedVisibilityList[index] ? "Less" : "More",
-                  textStyle: TextStyle(fontFamily: "Bungee", fontSize: 16)),
+                  textStyle:
+                      const TextStyle(fontFamily: "Bungee", fontSize: 16)),
             ],
           ),
         ),
@@ -550,87 +810,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           child: child,
         ));
-  }
-
-  Padding nameAndDate(int index, BuildContext context, {bool compact = false}) {
-    return Padding(
-      padding: compact
-          ? const EdgeInsets.fromLTRB(0, 0, 0, 8)
-          : const EdgeInsets.fromLTRB(0, 0, 12, 0),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              thoughts[index].username,
-              style: const TextStyle(
-                fontFamily: "Bungee",
-                fontSize: 12,
-              ),
-            ),
-            VerticalDivider(
-              color: Provider.of<ComindColorsNotifier>(context)
-                  .colorScheme
-                  .onBackground
-                  .withAlpha(64),
-              thickness: 2,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-              child: Opacity(
-                opacity: 0.8,
-                child: Text(
-                  thoughts[index].isPublic ? "Public" : "Private",
-                  style: TextStyle(
-                    fontFamily: "Bungee",
-                    fontSize: 12,
-                    decorationThickness: 2,
-                    decoration: TextDecoration.underline,
-                    // decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
-                    decorationColor: thoughts[index].isPublic
-                        ? Provider.of<ComindColorsNotifier>(context)
-                            .currentColors
-                            .secondaryColor
-                        : Provider.of<ComindColorsNotifier>(context)
-                            .currentColors
-                            .tertiaryColor,
-                  ),
-                ),
-              ),
-            ),
-            // Divider line
-            Visibility(
-              // visible: !editVisibilityList[index],
-              visible: true,
-              child: Expanded(
-                child: Container(
-                  height: 2,
-                  color: Provider.of<ComindColorsNotifier>(context)
-                      .colorScheme
-                      .onBackground
-                      .withAlpha(32),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: Opacity(
-                opacity: 0.5,
-                child: Text(
-                  formatTimestamp(thoughts[index].dateUpdated),
-                  style: Provider.of<ComindColorsNotifier>(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(
-                        fontSize: 12,
-                      ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
 

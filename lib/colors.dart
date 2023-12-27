@@ -235,23 +235,45 @@ class ComindColors {
     return [primaryColor, analogous1.toColor(), analogous2.toColor()];
   }
 
+  List<Color> generateComplementaryColors(Color primaryColor) {
+    // Convert the color to HSL
+    HSLColor hslPrimary = HSLColor.fromColor(primaryColor);
+
+    // Calculate the complementary color
+    HSLColor complementary = HSLColor.fromAHSL(
+      hslPrimary.alpha,
+      (hslPrimary.hue + 180) %
+          360, // Add 180 degrees to get the complementary hue
+      hslPrimary.saturation,
+      hslPrimary.lightness,
+    );
+
+    // Create a third color, a lighter variation of the primary color
+    HSLColor thirdColor = HSLColor.fromAHSL(
+      hslPrimary.alpha,
+      hslPrimary.hue, // Keep the same hue
+      hslPrimary.saturation,
+      (hslPrimary.lightness * 1.2).clamp(0, 1), // Increase lightness
+    );
+
+    // Convert back to Color objects and return the color scheme
+    return [primaryColor, complementary.toColor(), thirdColor.toColor()];
+  }
+
   // Add color scheme generation method
   List<Color> setColorScheme(Color primaryColor) {
     // Calculate complementary colors
-    // if (colorMethod == ColorMethod.complementary) {
-    //   print("Complementary");
-    //   return generateComplementaryColors(primaryColor);
-    // }
+    if (colorMethod == ColorMethod.complementary) {
+      return generateComplementaryColors(primaryColor);
+    }
 
     // Calculate triadic colors
     if (colorMethod == ColorMethod.triadic) {
-      print("Triadic");
       return generateTriadicColors(primaryColor);
     }
 
     // Calculate analogous colors
     if (colorMethod == ColorMethod.analogous) {
-      print("Analogous");
       return generateAnalogousColors(primaryColor);
     }
 
@@ -312,7 +334,7 @@ class ComindColors {
 
   // Modify existing colors with from primar
   void modifyColors(Color primary) {
-    final newColors = generateSplitComplementaryColors(primary);
+    final newColors = setColorScheme(primary);
     setColors(newColors[0], newColors[1], newColors[2]);
   }
 }
@@ -348,21 +370,21 @@ class ComindColorsNotifier extends ChangeNotifier {
 
   get textStyle => null;
 
+  get colorMethod => currentColors.colorMethod;
+
   set currentColors(ComindColors newColors) {
-    print("New colors. Primary is ${newColors.primaryColor}");
     _currentColors = newColors;
     notifyListeners();
   }
 
+  // Toggle public mode
+  void togglePublicMode(bool value) {
+    _currentColors.publicMode = value;
+    notifyListeners();
+  }
+
   void toggleTheme(bool value) {
-    print("Toggling theme");
-    print("Current is ${_currentColors.darkMode}, new is ${value}");
-    print("The prior text color is ${_currentColors.textColor}");
-
     _currentColors.darkMode = value;
-
-    print("Now is ${_currentColors.darkMode}");
-    print("The text color is ${_currentColors.textColor}");
     notifyListeners();
   }
 
@@ -378,6 +400,11 @@ class ComindColorsNotifier extends ChangeNotifier {
 
   void shiftColors() {
     _currentColors = ComindColors.fromPrimary(_currentColors.secondary);
+    notifyListeners();
+  }
+
+  void setColorMethod(ColorMethod method) {
+    _currentColors.colorMethod = method;
     notifyListeners();
   }
 }

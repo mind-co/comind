@@ -20,14 +20,14 @@ class _ColorPickerState extends State<ColorPicker> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text("What color are you today?",
-            style: Provider.of<ComindColorsNotifier>(context)
-                .textTheme
-                .titleMedium),
+        // Text("What color are you today?",
+        //     style: Provider.of<ComindColorsNotifier>(context)
+        //         .textTheme
+        //         .titleMedium),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildColorButton(const Color.fromARGB(255, 32, 61, 77)),
+            _buildColorButton(Color.fromARGB(255, 151, 0, 251)),
 
             //
             _buildColorButton(const Color.fromARGB(255, 157, 46, 46)),
@@ -63,8 +63,11 @@ class _ColorPickerState extends State<ColorPicker> {
               color: color,
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color:
-                    selectedColor == color ? Colors.white : Colors.transparent,
+                color: selectedColor == color
+                    ? Provider.of<ComindColorsNotifier>(context)
+                        .onBackground
+                        .withAlpha(128)
+                    : Colors.transparent,
                 width: 2,
               ),
             ),

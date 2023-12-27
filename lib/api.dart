@@ -90,17 +90,15 @@ Future<void> saveThought(Thought thought, {bool? newThought}) async {
       'origin': "app",
     });
 
-    final response = await http.post(
+    await http.post(
       url,
       headers: headers,
       body: body,
     );
 
-    String rawData = await response.bodyBytes.toString();
-
     // Try to parse the response as json
     try {
-      final jsonResponse = json.decode(response.body);
+      // final jsonResponse = json.decode(response.body);
     } catch (e) {
       throw Exception('Failed to parse new thought as JSON');
     }
@@ -131,12 +129,9 @@ Future<void> saveThought(Thought thought, {bool? newThought}) async {
 
     // Try to parse the response as json
     try {
-      final jsonResponse = json.decode(response.body);
-      print(Thought.fromJson(jsonResponse));
+      // final jsonResponse = json.decode(response.body);
     } catch (e) {
-      print(e);
-      print("Failed to parse response as JSON, printing response body.");
-      print(response.body);
+      throw Exception('Failed to parse new thought as JSON');
     }
   }
 }
@@ -154,17 +149,10 @@ Future<void> deleteThought(String thoughtId) async {
   if (response.statusCode != 200) {
     throw Exception('Failed to delete thought');
   }
-  print(response.body);
-
   // Try to parse the response as json
   try {
-    final jsonResponse = json.decode(response.body);
-    print(Thought.fromJson(jsonResponse));
-  } catch (e) {
-    print(e);
-    print("Failed to parse response as JSON, printing response body.");
-    print(response.body);
-  }
+    // final jsonResponse = json.decode(response.body);
+  } catch (e) {}
 }
 
 // The basic version of authentication
@@ -183,11 +171,7 @@ Future<bool> newUser(String username, String email, String password) async {
     'ComindEmail': email,
   };
 
-  print(headers);
-
-  final response = await http.post(url, headers: headers);
-
-  print(response.body);
+  await http.post(url, headers: headers);
 
   // if (response.statusCode != 200) {
   //   return false;

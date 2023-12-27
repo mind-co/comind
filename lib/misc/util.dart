@@ -2,8 +2,6 @@
 import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/misc/comind_logo.dart';
-import 'package:comind/providers.dart';
-import 'package:comind/comind_div.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -39,9 +37,6 @@ AppBar comindAppBar(BuildContext context) {
   // Get the colors
   ComindColorsNotifier colors = Provider.of<ComindColorsNotifier>(context);
 
-  // Whether we're public or private
-  var isPublic = colors.publicMode ? 'Public' : 'Private';
-
   // Determine whether to use the long or short logo
   var title = Column(
     mainAxisAlignment: MainAxisAlignment.center,
@@ -55,13 +50,11 @@ AppBar comindAppBar(BuildContext context) {
               key: UniqueKey(),
               colors: colors,
             ),
-
-      Text(
-        isPublic,
-        style: colors.textTheme.titleSmall,
-      ),
+      // Text(
+      //   isPublic,
+      //   style: colors.textTheme.titleSmall,
+      // ),
       // MSmall grey divider
-      Container(height: 5, width: 50, color: colors.surface),
       //
     ],
   );
@@ -99,10 +92,8 @@ AppBar comindAppBar(BuildContext context) {
             ? const Icon(Icons.dark_mode)
             : const Icon(Icons.light_mode),
         onPressed: () {
-          print(colors.darkMode);
           Provider.of<ComindColorsNotifier>(context, listen: false)
               .toggleTheme(!colors.darkMode);
-          print(colors.darkMode);
         },
       ),
     ],

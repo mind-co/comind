@@ -6,6 +6,7 @@ import 'package:comind/text_button.dart';
 import 'package:comind/types/thought.dart';
 import 'package:comind/api.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 // Enums for type of text field
@@ -108,7 +109,8 @@ class _MainTextFieldState extends State<MainTextField> {
                       onKey: (RawKeyEvent event) async {
                         if (event is RawKeyDownEvent &&
                             event.logicalKey == LogicalKeyboardKey.enter &&
-                            event.isControlPressed) {
+                            event.isControlPressed &&
+                            widget.type == TextFieldType.main) {
                           // Make a new thought
                           final Thought newThought = Thought.fromString(
                               _primaryController.text,
@@ -231,19 +233,19 @@ class _MainTextFieldState extends State<MainTextField> {
 
                 // Send button
                 Positioned(
-                  bottom: 0,
-                  right: 8,
+                  bottom: 4,
+                  right: 16,
                   child: Container(
                     color: Provider.of<ComindColorsNotifier>(context)
                         .colorScheme
                         .background,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
-                      child: Row(
-                        children: [
-                          // Cancel button
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                    child: Row(
+                      children: [
+                        // Cancel button
+                        Visibility(
+                          visible: widget.type == TextFieldType.edit,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
                             child: Visibility(
                               visible: widget.type == TextFieldType.edit,
                               child: ComindTextButton(
@@ -260,76 +262,98 @@ class _MainTextFieldState extends State<MainTextField> {
                               ),
                             ),
                           ),
+                        ),
 
-                          // Send button
-                          ComindTextButton(
-                            text: widget.type == TextFieldType.main
-                                ? "Think"
-                                : "Save",
-                            lineLocation: LineLocation.top,
-                            onPressed: widget.type == TextFieldType.main
-                                ? () {
-                                    widget.onThoughtSubmitted!(
-                                        Thought.fromString(
-                                            _primaryController.text,
-                                            Provider.of<AuthProvider>(context,
-                                                    listen: false)
-                                                .username,
-                                            Provider.of<AuthProvider>(context,
-                                                    listen: false)
-                                                .publicMode));
-                                  }
-                                : widget.type == TextFieldType.edit
-                                    ? () {
-                                        // TODO
-                                        // This is the editor save button, which
-                                        // should save the thought and close the
-                                        // editor.
+                        // Send button
+                        ComindTextButton(
+                          text: widget.type == TextFieldType.main
+                              ? "Think"
+                              : "Save",
+                          lineLocation: LineLocation.top,
+                          onPressed: widget.type == TextFieldType.main
+                              ? () {
+                                  widget.onThoughtSubmitted!(Thought.fromString(
+                                      _primaryController.text,
+                                      Provider.of<AuthProvider>(context,
+                                              listen: false)
+                                          .username,
+                                      Provider.of<AuthProvider>(context,
+                                              listen: false)
+                                          .publicMode));
+                                }
+                              : widget.type == TextFieldType.edit
+                                  ? () {
+                                      // TODO
+                                      // This is the editor save button, which
+                                      // should save the thought and close the
+                                      // editor.
 
-                                        // First, let's update the thought if it
-                                        // exists
-                                        if (widget.thought != null) {
-                                          widget.thought?.body =
-                                              _primaryController.text;
+                                      // First, let's update the thought if it
+                                      // exists
+                                      if (widget.thought != null) {
+                                        widget.thought?.body =
+                                            _primaryController.text;
 
-                                          // Clear the text field
-                                          _primaryController.clear();
+                                        // Clear the text field
+                                        _primaryController.clear();
 
-                                          // Close the editor
-                                          if (widget.toggleEditor != null) {
-                                            widget.toggleEditor!();
-                                          }
-
-                                          // Return the new thought
-                                          if (widget.onThoughtEdited != null &&
-                                              widget.thought != null) {
-                                            widget.onThoughtEdited!(
-                                                widget.thought!);
-                                          }
-                                        } else {
-                                          // TODO no thought was passed but we are in edit mode
-                                          throw Exception(
-                                              "No thought was passed but we are in edit mode");
+                                        // Close the editor
+                                        if (widget.toggleEditor != null) {
+                                          widget.toggleEditor!();
                                         }
+
+                                        // Return the new thought
+                                        if (widget.onThoughtEdited != null &&
+                                            widget.thought != null) {
+                                          widget.onThoughtEdited!(
+                                              widget.thought!);
+                                        }
+                                      } else {
+                                        // TODO no thought was passed but we are in edit mode
+                                        throw Exception(
+                                            "No thought was passed but we are in edit mode");
                                       }
-                                    : () {
-                                        // TODO
-                                        // This should probably handle the case
-                                        // where the editor is fullscreen.
-                                      },
-                            colorIndex:
-                                widget.type == TextFieldType.main ? 1 : 2,
-                            opacity: 1.0,
-                            fontSize: 10,
-                          ),
-                        ],
-                      ),
+                                    }
+                                  : () {
+                                      // TODO
+                                      // This should probably handle the case
+                                      // where the editor is fullscreen.
+                                    },
+                          colorIndex: widget.type == TextFieldType.main ? 1 : 2,
+                          opacity: 1.0,
+                          fontSize: 10,
+                        ),
+                      ],
                     ),
                   ),
                 ),
 
-                // Search result display.
-                // If we have any elements in search results, show them to the user.
+                // Add the current time on the bottom left,
+                // formatted as 1:23pm
+                Positioned(
+                  bottom: 8,
+                  left: 12,
+                  child: Container(
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .background,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+                      child: Text(
+                        DateFormat('h:mm a').format(DateTime.now()),
+                        style: Provider.of<ComindColorsNotifier>(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(
+                              color: Provider.of<ComindColorsNotifier>(context)
+                                  .colorScheme
+                                  .onPrimary
+                                  .withAlpha(180),
+                            ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
 
