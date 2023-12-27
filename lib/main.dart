@@ -428,6 +428,8 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
 
         var fontSize = 14.0;
         var unselectedOpacity = 0.4;
+        const edgeInsets = EdgeInsets.fromLTRB(0, 4, 0, 4);
+
         return AlertDialog(
           backgroundColor: colorScheme.background,
           title: const Text('Current Color Scheme'),
@@ -437,50 +439,74 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text("Hey, pick a color! It's fun probably",
+                      style: Provider.of<ComindColorsNotifier>(context)
+                          .textTheme
+                          .bodyMedium),
+                  const SizedBox(height: 16),
+                  ComindLogo(
+                      colors: Provider.of<ComindColorsNotifier>(context)),
+                  const SizedBox(height: 16),
+                  Text('Primary color  ',
+                      style: Provider.of<ComindColorsNotifier>(context)
+                          .textTheme
+                          .labelLarge),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    child: Divider(
+                      color: colorScheme.onPrimary.withAlpha(32),
+                      thickness: 1,
+                      height: 1,
+                    ),
+                  ),
+                  ColorPicker(onColorSelected: (Color color) {
+                    Provider.of<ComindColorsNotifier>(context, listen: false)
+                        .modifyColors(color);
+                  }),
+                  const SizedBox(height: 16),
                   Text('Color scheme  ',
                       style: Provider.of<ComindColorsNotifier>(context)
                           .textTheme
                           .labelLarge),
-                  // TODO #6 Support left line location for text buttons
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    child: Divider(
+                      color: colorScheme.onPrimary.withAlpha(32),
+                      thickness: 1,
+                      height: 1,
+                    ),
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        padding: edgeInsets,
                         child: ComindTextButton(
                             lineLocation: LineLocation.left,
-                            colorIndex:
-                                Provider.of<ComindColorsNotifier>(context)
-                                            .colorMethod ==
-                                        ColorMethod.triadic
-                                    ? 1
-                                    : 0,
-                            opacity: Provider.of<ComindColorsNotifier>(context)
-                                        .colorMethod ==
-                                    ColorMethod.triadic
-                                ? 1
-                                : unselectedOpacity,
+                            colorIndex: isTriadic(context) ? 1 : 0,
+                            opacity: isTriadic(context) ? 1 : unselectedOpacity,
                             fontSize: fontSize,
                             text: "triadic",
                             onPressed: () {
                               Provider.of<ComindColorsNotifier>(context,
                                       listen: false)
                                   .setColorMethod(ColorMethod.triadic);
+
+                              // Calculate the new scheme for the primary color
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .modifyColors(
+                                      Provider.of<ComindColorsNotifier>(context)
+                                          .currentColors
+                                          .primaryColor);
                             }),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        padding: edgeInsets,
                         child: ComindTextButton(
                             lineLocation: LineLocation.left,
-                            colorIndex:
-                                Provider.of<ComindColorsNotifier>(context)
-                                            .colorMethod ==
-                                        ColorMethod.complementary
-                                    ? 1
-                                    : 0,
-                            opacity: Provider.of<ComindColorsNotifier>(context)
-                                        .colorMethod ==
-                                    ColorMethod.complementary
+                            colorIndex: isComplementary(context) ? 1 : 0,
+                            opacity: isComplementary(context)
                                 ? 1
                                 : unselectedOpacity,
                             fontSize: fontSize,
@@ -492,7 +518,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                             }),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        padding: edgeInsets,
                         child: ComindTextButton(
                             lineLocation: LineLocation.left,
                             colorIndex:
@@ -517,7 +543,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                       ),
                       // Analogous
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        padding: edgeInsets,
                         child: ComindTextButton(
                             lineLocation: LineLocation.left,
                             colorIndex:
@@ -542,7 +568,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
 
                       // Monochromatic
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        padding: edgeInsets,
                         child: ComindTextButton(
                             lineLocation: LineLocation.left,
                             colorIndex:
@@ -592,6 +618,16 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
         );
       },
     );
+  }
+
+  bool isComplementary(BuildContext context) {
+    return Provider.of<ComindColorsNotifier>(context).colorMethod ==
+        ColorMethod.complementary;
+  }
+
+  bool isTriadic(BuildContext context) {
+    return Provider.of<ComindColorsNotifier>(context).colorMethod ==
+        ColorMethod.triadic;
   }
 
   SizedBox centerColumn(BuildContext context, BoxConstraints constraints) {

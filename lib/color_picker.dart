@@ -49,6 +49,7 @@ class _ColorPickerState extends State<ColorPicker> {
 
   Widget _buildColorButton(Color color) {
     return Material(
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(10),
         child: InkWell(
           borderRadius: BorderRadius.circular(10),
@@ -64,15 +65,13 @@ class _ColorPickerState extends State<ColorPicker> {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: selectedColor == color
-                    ? Provider.of<ComindColorsNotifier>(context)
-                        .onBackground
-                        .withAlpha(128)
+                    ? Colors.white.withAlpha(64)
                     : Colors.transparent,
                 width: 2,
               ),
             ),
-            width: 20,
-            height: 20,
+            width: 40,
+            height: 40,
             margin: const EdgeInsets.all(8),
           ),
         ));
