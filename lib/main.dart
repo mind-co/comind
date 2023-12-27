@@ -28,7 +28,7 @@ void main() {
   runApp(ChangeNotifierProvider(
     create: (_) => ComindColorsNotifier(),
     child: ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+      create: (_) => AuthProvider(),
       child: const ComindApp(),
     ),
   ));
@@ -39,8 +39,8 @@ class ComindApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ThemeProvider, ComindColorsNotifier>(
-      builder: (context, themeProvider, colorNotifier, child) {
+    return Consumer2<AuthProvider, ComindColorsNotifier>(
+      builder: (context, authProvider, colorNotifier, child) {
         return MaterialApp(
           // home: const LoginScreen(),
           // home: ThoughtEditorScreen(
@@ -63,7 +63,7 @@ class ComindApp extends StatelessWidget {
             ),
           ),
           debugShowCheckedModeBanner: false,
-          themeMode: themeProvider.isDarkMode
+          themeMode: colorNotifier.darkMode
               ? ThemeMode.dark
               : ThemeMode.light, // This line is changed
         );
@@ -125,10 +125,12 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     loaded = true;
   }
 
-  // Add a note
+  // Make a new thought and go to the text editor
   void _addNote(BuildContext context) {
     // This function will be called when you want to add a new note.
-    final newThought = Thought.basic();
+    final newThought = Thought.fromString("",
+        Provider.of<AuthProvider>(context, listen: false).username, publicMode);
+
     setState(() {
       thoughts.add(newThought);
       editVisibilityList.add(false);
@@ -136,6 +138,30 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
       verbBarHoverList.add(false);
       _controllers.add(TextEditingController());
     });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ThoughtEditorScreen(thought: newThought),
+      ),
+    );
+  }
+
+  // Add a note
+  void _sendThought(BuildContext context, String body,
+      {String? parentId, String? childId}) async {
+    // This function will be called when you want to add a new note.
+    final newThought =
+        await saveQuickThought(body, publicMode, parentId, childId);
+
+    setState(() {
+      thoughts.add(newThought);
+      editVisibilityList.add(false);
+      expandedVisibilityList.add(false);
+      verbBarHoverList.add(false);
+      _controllers.add(TextEditingController());
+    });
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -156,22 +182,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     //     builder: (context) => const ThoughtEditorScreen(thought: newThought),
     //   ),
     // );
-  }
-
-  // Edit a note
-  void _editNote(BuildContext context, int index) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ThoughtEditorScreen(thought: thoughts[index]),
-      ),
-    ).then((updatedThought) {
-      if (updatedThought != null) {
-        setState(() {
-          thoughts[index] = updatedThought;
-        });
-      }
-    });
   }
 
   // Delete a note
@@ -224,7 +234,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                 children: [
                   // Add a note button
                   ComindTextButton(
-                    text: "Add note",
+                    text: "Think",
                     onPressed: () {
                       _addNote(context); // Call _addNote with the context
                     },
@@ -242,9 +252,12 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Add all the columns
+
                   // Left column
-                  if (false) //MediaQuery.of(context).size.width > 800)
-                    OutsideColumn(
+                  Visibility(
+                    visible: MediaQuery.of(context).size.width > 800,
+                    child: OutsideColumn(
                       child: Column(
                         children: [
                           // Add a note button
@@ -263,13 +276,15 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                         ],
                       ),
                     ),
+                  ),
 
                   // Center column
                   centerColumn(context, constraints),
 
                   // Right column
-                  if (false) //MediaQuery.of(context).size.width > 800)
-                    OutsideColumn(
+                  Visibility(
+                    visible: MediaQuery.of(context).size.width > 800,
+                    child: OutsideColumn(
                       child: Column(
                         children: [
                           // Add a note button
@@ -289,6 +304,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                         ],
                       ),
                     ),
+                  ),
                 ],
               ),
             ),
@@ -302,7 +318,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
 
   SizedBox centerColumn(BuildContext context, BoxConstraints constraints) {
     return SizedBox(
-      width: 600,
+      width: min(600, MediaQuery.of(context).size.width),
       child: Column(
         children: [
           // DEBUG FOR PIXEL WIDTH PIXEL HEIGHT
@@ -319,6 +335,23 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
 
           // Main text field
           MainTextField(
+              onThoughtSubmitted: (Thought thought) async {
+                // Send the thought
+                await saveThought(thought, newThought: true);
+
+                // Add the new thought to the list
+                setState(() {
+                  // DEBUG replace thoughts with just new thought
+                  // thoughts = [thought];
+
+                  // thoughts.add(thought);
+                  // editVisibilityList.add(false);
+                  // expandedVisibilityList.add(false);
+                  // verbBarHoverList.add(false);
+                  // _controllers.add(TextEditingController());
+                  _fetchThoughts();
+                });
+              },
               primaryController: _primaryController,
               colorIndex: publicMode ? 2 : 1),
 
@@ -362,155 +395,26 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
 
   double buttonSize(BoxConstraints constraints) {
     return constraints.maxWidth > 600 ? 16 : 14;
+  } // Edit a note
+
+  void _editNote(BuildContext context, int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ThoughtEditorScreen(thought: thoughts[index]),
+      ),
+    ).then((updatedThought) {
+      if (updatedThought != null) {
+        setState(() {
+          thoughts[index] = updatedThought;
+        });
+      }
+    });
   }
 
   Widget thoughtBox(BuildContext context, int index,
       {required BoxConstraints constraints}) {
     return MarkdownThought(thought: thoughts[index], context: context);
-
-    // return Padding(
-    //   padding: constraints.maxWidth > 600
-    //       ? const EdgeInsets.fromLTRB(0, 0, 0, 32)
-    //       : const EdgeInsets.fromLTRB(16, 8, 16, 24),
-    //   child: Container(
-    //       decoration: BoxDecoration(
-    //           border:
-    //               Border.all(color: Provider.of<ComindColorsNotifier>(context).dialogBackgroundColor)),
-    //       child: Column(
-    //         mainAxisAlignment: MainAxisAlignment.start,
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: [
-    //           // Show name & date
-    //           nameAndDate(index, context, compact: constraints.maxWidth < 600),
-
-    //           // Thought body
-    //           Column(
-    //             crossAxisAlignment: CrossAxisAlignment.start,
-    //             children: [
-    //               Padding(
-    //                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-    //                   child: MarkdownThought(
-    //                       thought: thoughts[index], context: context)),
-    //             ],
-    //           ),
-
-    //           // Text editing row, thought box
-    //           Visibility(
-    //             visible: editVisibilityList[index],
-    //             child: Row(
-    //               crossAxisAlignment: CrossAxisAlignment.center,
-    //               children: [
-    //                 Expanded(
-    //                   child: Padding(
-    //                     padding: const EdgeInsets.fromLTRB(0, 2, 0, 4),
-    //                     child: TextField(
-    //                       autofocus: false,
-    //                       controller: _controllers[index],
-    //                       maxLines: null,
-    //                       style: Provider.of<ComindColorsNotifier>(context)
-    //                           .textTheme
-    //                           .bodyMedium
-    //                           ?.copyWith(fontSize: 16),
-    //                       cursorColor: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
-    //                       decoration: InputDecoration(
-    //                         contentPadding:
-    //                             const EdgeInsets.fromLTRB(8, 8, 8, 8),
-    //                         enabledBorder: OutlineInputBorder(
-    //                           borderSide: BorderSide(
-    //                             color: Provider.of<ComindColorsNotifier>(context)
-    //                                 .colorScheme
-    //                                 .onPrimary
-    //                                 .withAlpha(32),
-    //                           ),
-    //                         ),
-    //                         focusedBorder: OutlineInputBorder(
-    //                           borderSide: BorderSide(
-    //                             color: Provider.of<ComindColorsNotifier>(context)
-    //                                 .colorScheme
-    //                                 .onPrimary
-    //                                 .withAlpha(64),
-    //                           ),
-    //                         ),
-    //                       ),
-    //                     ),
-    //                   ),
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-
-    //           ///////////////////////
-    //           // Verbs (hehe vebs) //
-    //           ///////////////////////
-    //           MouseRegion(
-    //             onEnter: (event) {
-    //               setState(() {
-    //                 verbBarHoverList[index] = true;
-    //               });
-    //             },
-    //             onExit: (event) {
-    //               setState(() {
-    //                 verbBarHoverList[index] = false;
-    //               });
-    //             },
-    //             child: Opacity(
-    //               opacity: verbBarHoverList[index] ? 1.0 : 0.5,
-    //               child: Padding(
-    //                 padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-    //                 child: Row(
-    //                   mainAxisAlignment: editVisibilityList[index]
-    //                       ? MainAxisAlignment.end
-    //                       : MainAxisAlignment.center,
-    //                   children: [
-    //                     // User name
-    //                     // Padding(
-    //                     //     padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-    //                     //     child: constraints.maxWidth > 600
-    //                     //         ? nameAndDate(index, context)
-    //                     //         : nameAndDate(index, context, compact: true)),
-
-    //                     // Divider line
-    //                     // Visibility(
-    //                     //   // visible: !editVisibilityList[index],
-    //                     //   visible: true,
-    //                     //   child: Expanded(
-    //                     //     child: Container(
-    //                     //       height: 2,
-    //                     //       color: Provider.of<ComindColorsNotifier>(context)
-    //                     //           .colorScheme
-    //                     //           .onBackground
-    //                     //           .withAlpha(32),
-    //                     //     ),
-    //                     //   ),
-    //                     // ),
-
-    //                     // Divider line
-    //                     // Visibility(
-    //                     //   // visible: !editVisibilityList[index],
-    //                     //   visible: true,
-    //                     //   child: Expanded(
-    //                     //     child: Container(
-    //                     //       height: 2,
-    //                     //       color: Provider.of<ComindColorsNotifier>(context)
-    //                     //           .colorScheme
-    //                     //           .onBackground
-    //                     //           .withAlpha(32),
-    //                     //     ),
-    //                     //   ),
-    //                     // ),
-
-    //                     //////////////////////////
-    //                     /// VERB ROW BUTTONS ///
-    //                     //////////////////////////
-    //                     thoughtBoxVerbBar(context, index),
-    //                   ],
-    //                 ),
-    //               ),
-    //             ),
-    //           ),
-    //         ],
-    //       )),
-    // );
   }
 
   Expanded thoughtBoxVerbBar(BuildContext context, int index) {
@@ -521,49 +425,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           opacity: 1,
           child: Row(
             children: [
-              /////////////////
-              // EDIT BUTTON //
-              /////////////////
-              // IconButton.outlined(
-              //   onPressed: () {
-              //     setState(() {
-              //       editVisibilityList[index] = !editVisibilityList[index];
-              //     });
-              //   },
-              //   icon: Icon(
-              //     Icons.edit,
-              //     color: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
-              //   ),
-              //   iconSize: 16,
-              //   splashRadius: 16,
-              //   padding: const EdgeInsets.all(8),
-              //   constraints: const BoxConstraints(),
-              //   color: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
-              //   hoverColor: Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
-              //   focusColor: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
-              //   highlightColor: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
-              //   disabledColor: Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary,
-              //   // shape: RoundedRectangleBorder(
-              //   //   borderRadius: BorderRadius.circular(10),
-              //   // ),
-              // ),
-              ComindTextButton(
-                  text: "Edit",
-                  onPressed: () {
-                    _editNote(
-                        context, index); // Call _editNote with the context
-                  },
-                  colorIndex: 2,
-                  // lineOnly: !verbBarHoverList[index],
-                  opacity: 0.8,
-                  textStyle:
-                      const TextStyle(fontFamily: "Bungee", fontSize: 16)),
-
-              ///////////////////
-              // DELETE BUTTON //
-              ///////////////////
-              // if (expandedVisibilityList[index])
-
               ComindTextButton(
                   // lineOnly: !verbBarHoverList[index],
                   colorIndex: 3,
@@ -661,67 +522,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                   text: expandedVisibilityList[index] ? "Less" : "More",
                   textStyle: TextStyle(fontFamily: "Bungee", fontSize: 16)),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // the fun hyperlink button
-  Material funButton(int index,
-      {void Function()? onTap,
-      String text = "No clue",
-      bool comma = false,
-      int color = 1,
-      bool hovering = false,
-      double size = 16,
-      bool underline = true}) {
-    return Material(
-      // color: Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
-      borderRadius: BorderRadius.circular(10),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(10),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(4),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: color == 1
-                            ? Provider.of<ComindColorsNotifier>(context)
-                                .currentColors
-                                .secondaryColor
-                                .withAlpha(200)
-                            : color == 3
-                                ? Provider.of<ComindColorsNotifier>(context)
-                                    .currentColors
-                                    .tertiaryColor
-                                    .withAlpha(200)
-                                : color == 0
-                                    ? Colors.transparent
-                                    : ComindColors()
-                                        .primaryColor
-                                        .withAlpha(200),
-                        width: hovering ? 5.0 : 2.5,
-                      ),
-                    ),
-                  ),
-                  child: Text(text,
-                      style: TextStyle(
-                        fontFamily: "Bungee",
-                        fontSize: size,
-                      )),
-                ),
-                if (comma)
-                  const Text(",",
-                      style: TextStyle(fontSize: 12, fontFamily: "Bungee")),
-              ],
-            ),
           ),
         ),
       ),

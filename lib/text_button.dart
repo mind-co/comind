@@ -85,10 +85,10 @@ class _ComindTextButtonState extends State<ComindTextButton> {
           // shiftColor();
 
           // Turn ispressed on and disable it after 100ms
-          setState(() {});
-          Future.delayed(const Duration(milliseconds: 100), () {
-            setState(() {});
-          });
+          // setState(() {});
+          // Future.delayed(const Duration(milliseconds: 100), () {
+          //   setState(() {});
+          // });
         },
         child: Opacity(
           opacity: _isHovered ? widget.opacityOnHover : widget.opacity,

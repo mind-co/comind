@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 // Generate a new UUID5
@@ -61,40 +62,24 @@ class Thought {
   }
 
   // Constructor to accept a string and return a thought
-  factory Thought.fromString(String text) {
+  factory Thought.fromString(String text, String username, bool isPublic) {
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-ddTHH:mm:ss');
+    var formattedDate = formatter.format(now);
+
     // https://pub.dev/packages/uuid
     return Thought(
       title: "",
       body: text,
-      username: 'cameron',
-      dateCreated: '2021-10-10T00:00:00.000000Z',
-      dateUpdated: '2021-10-10T00:00:00.000000Z',
+      username: username,
+      dateCreated: formattedDate,
+      dateUpdated: formattedDate,
       revision: 0,
       // Generate a UUID5
       id: generateUUID5(),
-      isPublic: false,
+      isPublic: isPublic,
       isSynthetic: false,
       origin: '',
-      accepts: 0,
-      rejects: 0,
-      rethinks: 0,
-      refs: 0,
-    );
-  }
-
-  // Make a basic thought constructor for testing
-  factory Thought.basic() {
-    return Thought(
-      title: 'Test Thought',
-      body: 'This is a test thought.',
-      username: 'cameron',
-      dateCreated: '2021-10-10T00:00:00.000000Z',
-      dateUpdated: '2021-10-10T00:00:00.000000Z',
-      revision: 0,
-      id: generateUUID5(),
-      isPublic: true,
-      isSynthetic: false,
-      origin: '0',
       accepts: 0,
       rejects: 0,
       rethinks: 0,
@@ -109,14 +94,19 @@ class Thought {
       var uuid = Uuid();
       return uuid.v5(Uuid.NAMESPACE_URL, 'example.com');
     }
+
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-ddTHH:mm:ss');
+    var formattedDate = formatter.format(now);
+
     // https://pub.dev/packages/uuid
 
     return Thought(
       title: '',
       body: '',
       username: '',
-      dateCreated: '',
-      dateUpdated: '',
+      dateCreated: formattedDate,
+      dateUpdated: formattedDate,
       revision: 0,
       // Generate a UUID5
       id: generateUUID5(),

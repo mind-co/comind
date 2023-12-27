@@ -149,69 +149,115 @@ class ComindColors {
 
   // Color generating type
   // NOTE triadic is weird rn
-  ColorMethod colorMethod = ColorMethod.monochromatic;
+  ColorMethod colorMethod = ColorMethod.splitComplementary;
 
   // Set color generating type
   void setColorMethod(ColorMethod newMethod) {
     colorMethod = newMethod;
   }
 
-  // Add color scheme generation method
   List<Color> generateSplitComplementaryColors(Color primaryColor) {
-    // Extract RGB values from the primaryColor
-    int primaryRed = primaryColor.red;
-    int primaryGreen = primaryColor.green;
-    int primaryBlue = primaryColor.blue;
+    // Convert the color to HSL
+    HSLColor hslPrimary = HSLColor.fromColor(primaryColor);
 
+    // Calculate the complementary color
+    HSLColor complementary = HSLColor.fromAHSL(
+      hslPrimary.alpha,
+      (hslPrimary.hue + 180) %
+          360, // Add 180 degrees to get the complementary hue
+      hslPrimary.saturation,
+      hslPrimary.lightness,
+    );
+
+    // Calculate the split complementary colors, 30 degrees apart from the complementary
+    HSLColor splitComp1 = HSLColor.fromAHSL(
+      complementary.alpha,
+      (complementary.hue + 30) % 360, // Adjust hue by 30 degrees
+      complementary.saturation,
+      complementary.lightness,
+    );
+    HSLColor splitComp2 = HSLColor.fromAHSL(
+      complementary.alpha,
+      (complementary.hue - 30 + 360) % 360, // Adjust hue by -30 degrees
+      complementary.saturation,
+      complementary.lightness,
+    );
+
+    // Convert back to Color objects
+    return [primaryColor, splitComp1.toColor(), splitComp2.toColor()];
+  }
+
+  List<Color> generateTriadicColors(Color primaryColor) {
+    // Convert the color to HSL
+    HSLColor hslPrimary = HSLColor.fromColor(primaryColor);
+
+    // Calculate the two triadic colors, 120 degrees apart from the primary color
+    HSLColor triadic1 = HSLColor.fromAHSL(
+      hslPrimary.alpha,
+      (hslPrimary.hue + 120) %
+          360, // Add 120 degrees to get the first triadic color
+      hslPrimary.saturation,
+      hslPrimary.lightness,
+    );
+    HSLColor triadic2 = HSLColor.fromAHSL(
+      hslPrimary.alpha,
+      (hslPrimary.hue + 240) %
+          360, // Add 240 degrees to get the second triadic color
+      hslPrimary.saturation,
+      hslPrimary.lightness,
+    );
+
+    // Convert back to Color objects and return the triadic color scheme
+    return [primaryColor, triadic1.toColor(), triadic2.toColor()];
+  }
+
+  List<Color> generateAnalogousColors(Color primaryColor) {
+    // Convert the color to HSL
+    HSLColor hslPrimary = HSLColor.fromColor(primaryColor);
+
+    // Calculate the two analogous colors, 30 degrees apart from the primary color
+    HSLColor analogous1 = HSLColor.fromAHSL(
+      hslPrimary.alpha,
+      (hslPrimary.hue + 30) %
+          360, // Add 30 degrees to get the first analogous color
+      hslPrimary.saturation,
+      hslPrimary.lightness,
+    );
+    HSLColor analogous2 = HSLColor.fromAHSL(
+      hslPrimary.alpha,
+      (hslPrimary.hue - 30 + 360) %
+          360, // Subtract 30 degrees to get the second analogous color
+      hslPrimary.saturation,
+      hslPrimary.lightness,
+    );
+
+    // Convert back to Color objects and return the analogous color scheme
+    return [primaryColor, analogous1.toColor(), analogous2.toColor()];
+  }
+
+  // Add color scheme generation method
+  List<Color> setColorScheme(Color primaryColor) {
     // Calculate complementary colors
-    print("Primary color is ${primaryColor}");
-    print("The theme is ${colorMethod}");
-    if (colorMethod == ColorMethod.complementary) {
-      print("Complementary");
-      Color secondaryColor1 = Color.fromRGBO((primaryRed + 128) % 256,
-          (primaryGreen + 128) % 256, primaryBlue, 1.0);
-      Color secondaryColor2 = Color.fromRGBO(primaryRed,
-          (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
-
-      // Return the list of colors
-      return [primaryColor, secondaryColor1, secondaryColor2];
-    }
+    // if (colorMethod == ColorMethod.complementary) {
+    //   print("Complementary");
+    //   return generateComplementaryColors(primaryColor);
+    // }
 
     // Calculate triadic colors
     if (colorMethod == ColorMethod.triadic) {
       print("Triadic");
-      Color secondaryColor1 = Color.fromRGBO((primaryRed + -10) % 256,
-          (primaryGreen - 128) % 256, primaryBlue, 1.0);
-      Color secondaryColor2 = Color.fromRGBO((primaryRed + 0) % 256,
-          primaryGreen - 8, (primaryBlue + 10) % 256, 1.0);
-
-      // Return the list of colors
-      return [primaryColor, secondaryColor1, secondaryColor2];
+      return generateTriadicColors(primaryColor);
     }
 
     // Calculate analogous colors
     if (colorMethod == ColorMethod.analogous) {
       print("Analogous");
-      Color secondaryColor1 = Color.fromRGBO((primaryRed + 128) % 256,
-          (primaryGreen + 128) % 256, primaryBlue, 1.0);
-      Color secondaryColor2 = Color.fromRGBO(primaryRed,
-          (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
-
-      // Return the list of colors
-      return [primaryColor, secondaryColor1, secondaryColor2];
+      return generateAnalogousColors(primaryColor);
     }
 
     // Calculate split-complementary colors
     if (colorMethod == ColorMethod.splitComplementary) {
-      print("Split complementary");
-      // Calculate split-complementary colors
-      Color secondaryColor1 = Color.fromRGBO((primaryRed + 128) % 256,
-          (primaryGreen + 128) % 256, primaryBlue, 1.0);
-      Color secondaryColor2 = Color.fromRGBO(primaryRed,
-          (primaryGreen + 128) % 256, (primaryBlue + 128) % 256, 1.0);
-
-      // Return the list of colors
-      return [primaryColor, secondaryColor1, secondaryColor2];
+      return generateSplitComplementaryColors(primaryColor);
     }
 
     // Calculate monocromatic colors

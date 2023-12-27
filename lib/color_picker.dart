@@ -9,6 +9,7 @@ class ColorPicker extends StatefulWidget {
       : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _ColorPickerState createState() => _ColorPickerState();
 }
 
@@ -26,16 +27,16 @@ class _ColorPickerState extends State<ColorPicker> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildColorButton(Color.fromARGB(255, 32, 61, 77)),
+            _buildColorButton(const Color.fromARGB(255, 32, 61, 77)),
 
             //
-            _buildColorButton(Color.fromARGB(255, 157, 46, 46)),
+            _buildColorButton(const Color.fromARGB(255, 157, 46, 46)),
 
             // from #51AE5F
-            _buildColorButton(Color.fromARGB(255, 76, 198, 95)),
+            _buildColorButton(const Color.fromARGB(255, 76, 198, 95)),
 
             // #3B5EDA, RGB: 59, 94, 218
-            _buildColorButton(Color.fromARGB(255, 59, 94, 218)),
+            _buildColorButton(const Color.fromARGB(255, 59, 94, 218)),
             // _buildColorButton(Colors.yellow),
             // _buildColorButton(Colors.purple),
             // _buildColorButton(Colors.orange),
@@ -48,45 +49,29 @@ class _ColorPickerState extends State<ColorPicker> {
 
   Widget _buildColorButton(Color color) {
     return Material(
+        borderRadius: BorderRadius.circular(10),
         child: InkWell(
-      splashColor: color,
-      borderRadius: BorderRadius.circular(10),
-      onTap: () {
-        setState(() {
-          selectedColor = color;
-        });
-        widget.onColorSelected(color);
-      },
-      child: Container(
-        color: color,
-        width: 20,
-        height: 20,
-        margin: EdgeInsets.all(8),
-      ),
-    ));
-
-    // return GestureDetector(
-    //   onTap: () {
-    //     setState(() {
-    //       selectedColor = color;
-    //     });
-    //     widget.onColorSelected(color);
-    //   },
-    //   // child: Center(
-    //   //   child: Container(
-    //   //     width: 30,
-    //   //     height: 30,
-    //   //     margin: EdgeInsets.all(8),
-    //   //     decoration: BoxDecoration(
-    //   //       color: color,
-    //   //       shape: BoxShape.circle,
-    //   //       border: Border.all(
-    //   //         color: selectedColor == color ? Colors.black : Colors.transparent,
-    //   //         width: 6,
-    //   //       ),
-    //   //     ),
-    //   //   ),
-    //   // ),
-    // );
+          borderRadius: BorderRadius.circular(10),
+          onTap: () {
+            setState(() {
+              selectedColor = color;
+            });
+            widget.onColorSelected(color);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color:
+                    selectedColor == color ? Colors.white : Colors.transparent,
+                width: 2,
+              ),
+            ),
+            width: 20,
+            height: 20,
+            margin: const EdgeInsets.all(8),
+          ),
+        ));
   }
 }

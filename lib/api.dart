@@ -27,7 +27,7 @@ Future<List<Thought>> fetchThoughts() async {
 
 // Method to save a quick thought that has only
 // body, isPublic, and an optional parentThoughtId
-Future<void> saveQuickThought(String body, bool isPublic,
+Future<Thought> saveQuickThought(String body, bool isPublic,
     String? parentThoughtId, String? childThoughtId) async {
   // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
@@ -66,21 +66,19 @@ Future<void> saveQuickThought(String body, bool isPublic,
   // Try to parse the response as json
   try {
     final jsonResponse = json.decode(response.body);
-    print(Thought.fromJson(jsonResponse));
+    return Thought.fromJson(jsonResponse);
   } catch (e) {
-    print(e);
-    print("Failed to parse response as JSON, printing response body.");
-    print(response.body);
+    throw Exception('Failed to parse new thought as JSON');
   }
 }
 
-Future<void> saveThought(Thought thought) async {
+Future<void> saveThought(Thought thought, {bool? newThought}) async {
   // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
 
   // If the thought has an ID, we're updating an existing thought.
   // By default empty thoughts have and ID of length 0.
-  if (thought.id.isEmpty) {
+  if (newThought == true) {
     final headers = {
       'ComindUsername': 'cameron',
     };
@@ -99,16 +97,12 @@ Future<void> saveThought(Thought thought) async {
     );
 
     String rawData = await response.bodyBytes.toString();
-    print(rawData);
 
     // Try to parse the response as json
     try {
       final jsonResponse = json.decode(response.body);
-      print(Thought.fromJson(jsonResponse));
     } catch (e) {
-      print(e);
-      print("Failed to parse response as JSON, printing response body.");
-      print(response.body);
+      throw Exception('Failed to parse new thought as JSON');
     }
   } else {
     // Otherwise, we are updating an existing thought.
