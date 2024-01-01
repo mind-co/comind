@@ -84,83 +84,125 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
       // Using the basic text field if the note has been loaded,
       // or display a loading indicator if it hasn't
       body: widget.thought != null
-          ? Container(
-              width: 600,
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  // Text(
-                  //   "Thought",
-                  //   style: GoogleFonts.roboto(
-                  //     fontSize: 30,
-                  //     fontWeight: FontWeight.bold,
-                  //     color: Colors.black,
-                  //   ),
-                  // ),
-                  // SizedBox(height: 20),
-                  MarkdownThought(
-                      context: context,
-                      thought: widget.thought!,
-                      selectable: false),
-
-                  // Header for "Linked"
-                  Row(
+          ? SingleChildScrollView(
+              child: Center(
+                child: Container(
+                  width: 600,
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        "Linked",
-                        style: Provider.of<ComindColorsNotifier>(context)
-                            .textTheme
-                            .titleSmall,
+                      // SizedBox(height: 20),
+                      MarkdownThought(
+                          type: MarkdownDisplayType.fullScreen,
+                          context: context,
+                          thought: widget.thought!,
+                          selectable: false),
+
+                      // Header for "Linked"
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 64, 0, 0),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Divider(
+                                height: height,
+                                color:
+                                    Provider.of<ComindColorsNotifier>(context)
+                                        .colorScheme
+                                        .onBackground
+                                        .withAlpha(64),
+                              ),
+                            ),
+                            Positioned(
+                              left: 14,
+                              top: 0,
+                              child: Container(
+                                color:
+                                    Provider.of<ComindColorsNotifier>(context)
+                                        .colorScheme
+                                        .background,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(4, 0, 4, 0),
+                                  child: Text(
+                                    "Linked",
+                                    style: Provider.of<ComindColorsNotifier>(
+                                            context)
+                                        .textTheme
+                                        .titleSmall,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      // const Spacer(),
-                      // IconButton(
-                      //   icon: const Icon(Icons.add),
-                      //   onPressed: () {
-                      //     // TODO
-                      //   },
+                      // Padding(
+                      //   padding: const EdgeInsets.fromLTRB(8, 32, 8, 0),
+                      //   child: Row(
+                      //     children: [
+                      //       Text(
+                      //         "Linked",
+                      //         style: Provider.of<ComindColorsNotifier>(context)
+                      //             .textTheme
+                      //             .titleSmall,
+                      //       ),
+                      //       // const Spacer(),
+                      //       // IconButton(
+                      //       //   icon: const Icon(Icons.add),
+                      //       //   onPressed: () {
+                      //       //     // TODO
+                      //       //   },
+                      //       // ),
+                      //     ],
+                      //   ),
+                      // ),
+
+                      // // Divider
+                      // Row(
+                      //   children: [
+                      //     Expanded(
+                      //       child: Container(
+                      //         height: height,
+                      //         color: Provider.of<ComindColorsNotifier>(context)
+                      //             .currentColors
+                      //             .primaryColor,
+                      //       ),
+                      //     ),
+                      //     Expanded(
+                      //       child: Container(
+                      //         height: height,
+                      //         color: Provider.of<ComindColorsNotifier>(context)
+                      //             .currentColors
+                      //             .secondaryColor,
+                      //       ),
+                      //     ),
+                      //     Expanded(
+                      //       child: Container(
+                      //         height: height,
+                      //         color: Provider.of<ComindColorsNotifier>(context)
+                      //             .currentColors
+                      //             .tertiaryColor,
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+
+                      // // List of linked thoughts
+                      // Expanded(
+                      //   child: ListView(
+                      //     children: [
+                      //       // TODO
+                      //     ],
+                      //   ),
                       // ),
                     ],
                   ),
-
-                  // Divider
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: height,
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .currentColors
-                              .primaryColor,
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: height,
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .currentColors
-                              .secondaryColor,
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: height,
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .currentColors
-                              .tertiaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // List of linked thoughts
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        // TODO
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
             )
           : const Center(

@@ -645,8 +645,10 @@ class _LoginScreenState extends State<LoginScreen> {
           // If the login was unsuccessful, show an error message
           // ignore: use_build_context_synchronously
           if (loginResult.success && loginResult.token != null) {
-            SharedPreferences.getInstance()
-                .then((value) => value.setString('token', loginResult.token!));
+            SharedPreferences.getInstance().then((value) => {
+                  value.setString('token', loginResult.token!),
+                  Provider.of<AuthProvider>(context, listen: false).login()
+                });
 
             // Go home, '/'
             // ignore: use_build_context_synchronously
@@ -656,7 +658,7 @@ class _LoginScreenState extends State<LoginScreen> {
             //   ),
             // );
             // ignore: use_build_context_synchronously
-            Navigator.of(context).pop(false);
+            // Navigator.of(context).pop(false);
           } else {
             // ignore: library_private_types_in_public_api, use_build_context_synchronously
             ScaffoldMessenger.of(context).showSnackBar(

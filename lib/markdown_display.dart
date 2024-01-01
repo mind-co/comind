@@ -11,6 +11,11 @@ import 'package:comind/types/thought.dart';
 import 'package:comind/colors.dart';
 import 'package:provider/provider.dart';
 
+enum MarkdownDisplayType {
+  fullScreen,
+  inline,
+}
+
 //
 // ignore: must_be_immutable
 class MarkdownThought extends StatefulWidget {
@@ -19,6 +24,7 @@ class MarkdownThought extends StatefulWidget {
       required this.thought,
       required this.context,
       //Opacity/hover opacity, default to 1/1
+      this.type = MarkdownDisplayType.inline,
       this.opacity = 1.0,
       this.opacityOnHover = 1.0,
       this.infoMode = false,
@@ -34,6 +40,7 @@ class MarkdownThought extends StatefulWidget {
   bool infoMode;
   bool relatedMode;
   bool viewOnly;
+  MarkdownDisplayType type;
   bool showTextBox = false;
 
   // store whether hovered
@@ -81,263 +88,243 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     const edgeInsets = EdgeInsets.fromLTRB(8, 0, 8, 0); // between buttons
     const edgeInsets2 = EdgeInsets.fromLTRB(1, 0, 1, 0); // inside buttons
     double buttonFontSize = 10;
-    double buttonOpacity = hovered
+    double buttonOpacity = hovered ||
+            widget.showTextBox ||
+            widget.infoMode ||
+            widget.type == MarkdownDisplayType.fullScreen
         ? 1
         : widget.showTextBox
             ? 1
             : 0.6;
 
-    return MouseRegion(
-      onHover: (event) {
-        setState(() {
-          hovered = true;
-        });
-      },
-      onEnter: (event) {
-        hovered = true;
-        // var newColors =
-        // ComindColors.generateSplitComplementaryColors(Colors.purple);
+    return Padding(
+      padding: widget.type == MarkdownDisplayType.fullScreen
+          ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
+          : const EdgeInsets.fromLTRB(16, 16, 16, 32),
+      child: Column(children: [
+        // Main text box
+        Visibility(
+          // visible: true,
+          visible: !widget.showTextBox,
+          child: Card(
+            // color: Colors.red,
+            color: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+              child: SizedBox(
+                width: double.infinity,
+                // Maximum 600 width
+                // preferredSize: const Size(600, double.infinity),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Add thought body
+                    SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              // Main body
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                                child: Container(
+                                  // Add border
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Provider.of<ComindColorsNotifier>(
+                                            context)
+                                        .background,
+                                    // color: colors.primaryColor,
+                                    // Top/bottom border only
+                                    border: Border(
+                                        top: BorderSide(
+                                          color:
+                                              Provider.of<ComindColorsNotifier>(
+                                                      context)
+                                                  .colorScheme
+                                                  .onBackground
+                                                  .withAlpha(80),
+                                          width: 1,
+                                        ),
+                                        bottom: BorderSide(
+                                          color:
+                                              Provider.of<ComindColorsNotifier>(
+                                                      context)
+                                                  .colorScheme
+                                                  .onBackground
+                                                  .withAlpha(80),
+                                        )),
 
-        // Set the colors to the new one
-        // colors.setColors(newColors[0], newColors[1], newColors[2]);
-
-        // To rotate colors
-        // colors.setColors(
-        //     colors.secondaryColor, colors.tertiaryColor, colors.primaryColor);
-      },
-      onExit: (event) {
-        setState(() {
-          hovered = false;
-        });
-      },
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 16, 8, 32),
-        child: Column(children: [
-          // Main text box
-          Visibility(
-            // visible: true,
-            visible: !widget.showTextBox,
-            child: Card(
-              // color: Colors.red,
-              color: Colors.transparent,
-              surfaceTintColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-                child: SizedBox(
-                  width: double.infinity,
-                  // Maximum 600 width
-                  // preferredSize: const Size(600, double.infinity),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Add thought body
-                      SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                // Main body
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                                  child: Container(
-                                    // Add border
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Provider.of<ComindColorsNotifier>(
-                                              context)
-                                          .background,
-                                      // color: colors.primaryColor,
-                                      // Top/bottom border only
-                                      border: Border(
-                                          top: BorderSide(
-                                            color: Provider.of<
-                                                        ComindColorsNotifier>(
-                                                    context)
-                                                .colorScheme
-                                                .onBackground
-                                                .withAlpha(80),
-                                            width: 1,
-                                          ),
-                                          bottom: BorderSide(
-                                            color: Provider.of<
-                                                        ComindColorsNotifier>(
-                                                    context)
-                                                .colorScheme
-                                                .onBackground
-                                                .withAlpha(80),
-                                          )),
-
-                                      // All border
-                                      // border: Border.all(
-                                      //   width: 1,
-                                      //   color:
-                                      //       Provider.of<ComindColorsNotifier>(
-                                      //               context)
-                                      //           .onBackground
-                                      //           .withAlpha(hovered
-                                      //               ? outlineAlphaHover
-                                      //               : outlineAlpha),
-                                      // ),
-                                      // borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Material(
+                                    // All border
+                                    // border: Border.all(
+                                    //   width: 1,
+                                    //   color:
+                                    //       Provider.of<ComindColorsNotifier>(
+                                    //               context)
+                                    //           .onBackground
+                                    //           .withAlpha(hovered
+                                    //               ? outlineAlphaHover
+                                    //               : outlineAlpha),
+                                    // ),
+                                    // borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Material(
+                                    borderRadius: BorderRadius.circular(0),
+                                    child: InkWell(
+                                      splashColor: Colors.transparent,
+                                      hoverColor: widget.selectable
+                                          ? Provider.of<ComindColorsNotifier>(
+                                                  context)
+                                              .colorScheme
+                                              .onBackground
+                                              .withAlpha(16)
+                                          : Colors.transparent,
+                                      onTap: () => {
+                                        // Expand the thought view, onyl if selectable
+                                        if (widget.selectable)
+                                          {
+                                            Navigator.pushNamed(context,
+                                                '/thoughts/${thought.id}')
+                                          }
+                                        else if (widget.viewOnly)
+                                          {
+                                            // Otherwise, open edit mode
+                                            // Snack bar edit
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'You can\'t edit this thought. View only: ${widget.viewOnly}'),
+                                              duration:
+                                                  const Duration(seconds: 1),
+                                            )),
+                                          }
+                                        else
+                                          {
+                                            setState(() {
+                                              widget.showTextBox = true;
+                                              _editController.text =
+                                                  thought.body;
+                                            })
+                                          }
+                                      },
                                       borderRadius: BorderRadius.circular(0),
-                                      child: InkWell(
-                                        splashColor: Colors.transparent,
-                                        hoverColor: widget.selectable
-                                            ? Provider.of<ComindColorsNotifier>(
-                                                    context)
-                                                .colorScheme
-                                                .onBackground
-                                                .withAlpha(16)
-                                            : Colors.transparent,
-                                        onTap: () => {
-                                          // Expand the thought view, onyl if selectable
-                                          if (widget.selectable)
-                                            {
-                                              Navigator.pushNamed(context,
-                                                  '/thoughts/${thought.id}')
-                                            }
-                                          else if (widget.viewOnly)
-                                            {
-                                              // Otherwise, open edit mode
-                                              // Snack bar edit
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    'You can\'t edit this thought. View only: ${widget.viewOnly}'),
-                                                duration:
-                                                    const Duration(seconds: 1),
-                                              )),
-                                            }
-                                          else
-                                            {
-                                              setState(() {
-                                                widget.showTextBox = true;
-                                                _editController.text =
-                                                    thought.body;
-                                              })
-                                            }
-                                        },
-                                        borderRadius: BorderRadius.circular(0),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16.0),
-                                          child: Column(
-                                            children: [
-                                              // Markdown body
-                                              TheMarkdownBox(thought: thought),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Column(
+                                          children: [
+                                            // Markdown body
+                                            TheMarkdownBox(thought: thought),
 
-                                              // Info mode display
-                                              InfoCard(
-                                                  widget: widget,
-                                                  thought: thought),
-                                            ],
-                                          ),
+                                            // Info mode display
+                                            InfoCard(
+                                                widget: widget,
+                                                thought: thought),
+                                          ],
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
+                              ),
 
-                                // Username on border
-                                borderUsername(context),
+                              // Username on border
+                              borderUsername(context),
 
-                                // Add the action row on bottom
-                                Visibility(
-                                  visible: !widget.viewOnly,
-                                  child: Positioned(
-                                    bottom: -6,
-                                    right: 0,
-                                    child: actionRow(
-                                        context,
-                                        edgeInsets2,
-                                        edgeInsets,
-                                        buttonFontSize,
-                                        buttonOpacity),
-                                  ),
-                                ),
-
-                                // Add the date chunk on bottom
-                                Positioned(
+                              // Add the action row on bottom
+                              Visibility(
+                                visible: !widget.viewOnly,
+                                child: Positioned(
                                   bottom: -6,
-                                  left: 12,
-                                  child: dateChunk(context, buttonFontSize),
+                                  right: 0,
+                                  child: actionRow(
+                                      context,
+                                      edgeInsets2,
+                                      edgeInsets,
+                                      buttonFontSize,
+                                      buttonOpacity),
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+
+                              // Add the date chunk on bottom
+                              Positioned(
+                                bottom: -6,
+                                left: 12,
+                                child: dateChunk(context, buttonFontSize),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
+        ),
 
-          // Show a vertical divider
-          // Visibility(
-          //   visible: widget.showTextBox,
-          //   child: Column(
-          //     children: [
-          //       Padding(
-          //           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-          //           child: Container(
-          //             width: 2,
-          //             height: 32,
-          //             color: Provider.of<ComindColorsNotifier>(context)
-          //                 .colorScheme
-          //                 .onBackground
-          //                 .withAlpha(
-          //                     hovered ? outlineAlphaHover : outlineAlpha),
-          //           )),
-          //     ],
-          //   ),
-          // ),
+        // Show a vertical divider
+        // Visibility(
+        //   visible: widget.showTextBox,
+        //   child: Column(
+        //     children: [
+        //       Padding(
+        //           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        //           child: Container(
+        //             width: 2,
+        //             height: 32,
+        //             color: Provider.of<ComindColorsNotifier>(context)
+        //                 .colorScheme
+        //                 .onBackground
+        //                 .withAlpha(
+        //                     hovered ? outlineAlphaHover : outlineAlpha),
+        //           )),
+        //     ],
+        //   ),
+        // ),
 
-          // Show the edit box
-          Visibility(
-            visible: !widget.viewOnly && widget.showTextBox,
-            child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                child: MainTextField(
-                    thought: thought,
-                    onThoughtEdited: (Thought thought) async {
-                      // Update the thought
-                      await saveThought(context, thought);
-                    },
-                    primaryController: _editController,
-                    toggleEditor: () {
-                      // Close the text box
-                      setState(() {
-                        widget.showTextBox = false;
-                      });
-                    },
-                    type: TextFieldType.edit)),
-          ),
+        // Show the edit box
+        Visibility(
+          visible: !widget.viewOnly && widget.showTextBox,
+          child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+              child: MainTextField(
+                  thought: thought,
+                  onThoughtEdited: (Thought thought) async {
+                    // Update the thought
+                    await saveThought(context, thought);
+                  },
+                  primaryController: _editController,
+                  toggleEditor: () {
+                    // Close the text box
+                    setState(() {
+                      widget.showTextBox = false;
+                    });
+                  },
+                  type: TextFieldType.edit)),
+        ),
 
-          // Add the action row on bottom
-          // actionRow(
-          //     context, edgeInsets2, edgeInsets, buttonFontSize, buttonOpacity),
+        // Add the action row on bottom
+        // actionRow(
+        //     context, edgeInsets2, edgeInsets, buttonFontSize, buttonOpacity),
 
-          // Display the related results
-          if (widget.relatedMode && relatedResults.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Text("Some other notes for ya",
-                //     style: Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall),
-                ThoughtTable(
-                  thoughts: relatedResults,
-                  parentThought: thought,
-                ),
-              ],
-            )
-        ]),
-      ),
+        // Display the related results
+        if (widget.relatedMode && relatedResults.isNotEmpty)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Text("Some other notes for ya",
+              //     style: Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall),
+              ThoughtTable(
+                thoughts: relatedResults,
+                parentThought: thought,
+              ),
+            ],
+          )
+      ]),
     );
   }
 
@@ -359,11 +346,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                 text: thought.username,
                 colorIndex: 1,
                 lineLocation: LineLocation.bottom,
-                opacity: hovered
-                    ? 1
-                    : widget.showTextBox
-                        ? opacityOnHover
-                        : 0.6,
+                opacity: opacity,
                 opacityOnHover: outlineAlphaHover / 255,
                 onPressed: () {
                   // Navigate to the user's profile
@@ -735,11 +718,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
               text: thought.isPublic ? "Public" : "Private",
               colorIndex: thought.isPublic ? 1 : 3,
               lineLocation: LineLocation.top,
-              opacity: hovered
-                  ? 1
-                  : widget.showTextBox
-                      ? opacityOnHover
-                      : 0.6,
+              opacity: opacity,
               opacityOnHover: outlineAlphaHover / 255,
               onPressed: () {
                 // Navigate to the user's profile

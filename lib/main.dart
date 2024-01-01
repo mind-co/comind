@@ -51,60 +51,11 @@ class ComindApp extends StatelessWidget {
           // home: const ThoughtListScreen(),
 
           // Set up the routes
-          // routes: {
-          //   '/': (context) => const Dispatch(),
-
-          //   // Go to the the thought list first
-          //   // '/': (context) => const ThoughtListScreen(),
-          //   // '/': (context) => ThoughtEditorScreen(
-          //   //       id: "ba5c223a-4380-52e3-8fa4-16928a18dc2a",
-          //   //     ),
-          //   '/login': (context) => const LoginScreen(),
-          // },
-
-          onGenerateRoute: (settings) {
-            // DEBUG
-            // return MaterialPageRoute(
-            //   builder: (context) => ThoughtEditorScreen(
-            //     id: "ba5c223a-4380-52e3-8fa4-16928a18dc2a",
-            //   ),
-            // );
-
-            // Handle '/'
-            if (settings.name == '/') {
-              return MaterialPageRoute(
-                builder: (context) => const Dispatch(),
-              );
-            }
-
-            // Handle '/login'
-            if (settings.name == '/login') {
-              return MaterialPageRoute(
-                builder: (context) => const LoginScreen(),
-              );
-            }
-
-            // Handle '/thoughts'
-            if (settings.name == '/thoughts') {
-              return MaterialPageRoute(
-                builder: (context) => const ThoughtListScreen(),
-              );
-            }
-
-            // Handle '/thoughts/:id'
-            var uri = Uri.parse(settings.name!);
-            if (uri.pathSegments.length == 2 &&
-                uri.pathSegments.first == 'thoughts') {
-              var id = uri.pathSegments[1];
-              return MaterialPageRoute(
-                builder: (context) => ThoughtEditorScreen(id: id),
-              );
-            }
-
-            // Handle '/'
-            return MaterialPageRoute(
-              builder: (context) => const ThoughtListScreen(),
-            );
+          routes: {
+            // '/': (context) =>
+            //     ThoughtEditorScreen(id: "881750f4-cb3d-521a-92ce-70024e6fb3fe"),
+            '/': (context) => const Dispatch(),
+            '/login': (context) => const LoginScreen(),
           },
 
           // home: StreamScreen(),
@@ -206,16 +157,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   void initState() {
     super.initState();
     _fetchThoughts();
-
-    // Go to the first available note
-    // if (thoughts.isNotEmpty) {
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => ThoughtEditorScreen(thought: thoughts[0]),
-    //     ),
-    //   );
-    // }
   }
 
   // Fetch thoughts
@@ -260,29 +201,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     );
   }
 
-  // Add a note
-  // void _sendThought(BuildContext context, String body,
-  //     {String? parentId, String? childId}) async {
-  //   // This function will be called when you want to add a new note.
-  //   final newThought =
-  //       await saveQuickThought(body, publicMode, parentId, childId);
-
-  //   setState(() {
-  //     thoughts.add(newThought);
-  //     editVisibilityList.add(false);
-  //     expandedVisibilityList.add(false);
-  //     verbBarHoverList.add(false);
-  //     _controllers.add(TextEditingController());
-  //   });
-
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => ThoughtEditorScreen(thought: newThought),
-  //     ),
-  //   );
-  // }
-
   // Fetch concepts
   void _fetchConcepts(BuildContext context) {
     // This function will be called when the page loads.
@@ -301,6 +219,11 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   @override
   Widget build(BuildContext context) {
     bool publicMode = Provider.of<ComindColorsNotifier>(context).publicMode;
+
+    // Check if we're logged in
+    if (!Provider.of<AuthProvider>(context).isLoggedIn) {
+      return const LoginScreen();
+    }
 
     // Check if we're still loading
     if (!loaded) {

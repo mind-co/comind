@@ -40,9 +40,10 @@ AppBar comindAppBar(BuildContext context) {
 
   // Determine whether to use the long or short logo
   var title = Column(
-    mainAxisAlignment: MainAxisAlignment.center,
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      MediaQuery.of(context).size.width > 550
+      MediaQuery.of(context).size.width > 600
           ? ComindLogo(
               key: UniqueKey(),
               colors: colors,
@@ -62,42 +63,43 @@ AppBar comindAppBar(BuildContext context) {
 
   // Determine when to use
   return AppBar(
-    backgroundColor: colors.background,
+    backgroundColor: Colors.transparent,
     // backgroundColor: Colors.white,
 
     // If the width of the screen is less than 550 pixels, use the
     // ComindLogo class, otherwise use the original definition
     title: title,
-    centerTitle: true,
+    centerTitle: false,
     scrolledUnderElevation: 0,
+    elevation: 0,
 
     // Add toolbar
-    toolbarHeight: 100,
-    actions: [
-      // Add a toggle for handedness
-      IconButton(
-        icon: colors.rightHanded
-            ? const Icon(Icons.format_align_left)
-            : const Icon(Icons.format_align_right),
-        onPressed: () {
-          colors.rightHanded
-              ? Provider.of<ComindColorsNotifier>(context, listen: false)
-                  .toggleHandedness(true)
-              : Provider.of<ComindColorsNotifier>(context, listen: false)
-                  .toggleHandedness(false);
-        },
-      ),
-      // Add dark mode toggle
-      IconButton(
-        icon: colors.darkMode
-            ? const Icon(Icons.dark_mode)
-            : const Icon(Icons.light_mode),
-        onPressed: () {
-          Provider.of<ComindColorsNotifier>(context, listen: false)
-              .toggleTheme(!colors.darkMode);
-        },
-      ),
-    ],
+    toolbarHeight: 90,
+    // actions: [
+    //   // Add a toggle for handedness
+    //   IconButton(
+    //     icon: colors.rightHanded
+    //         ? const Icon(Icons.format_align_left)
+    //         : const Icon(Icons.format_align_right),
+    //     onPressed: () {
+    //       colors.rightHanded
+    //           ? Provider.of<ComindColorsNotifier>(context, listen: false)
+    //               .toggleHandedness(true)
+    //           : Provider.of<ComindColorsNotifier>(context, listen: false)
+    //               .toggleHandedness(false);
+    //     },
+    //   ),
+    //   // Add dark mode toggle
+    //   IconButton(
+    //     icon: colors.darkMode
+    //         ? const Icon(Icons.dark_mode)
+    //         : const Icon(Icons.light_mode),
+    //     onPressed: () {
+    //       Provider.of<ComindColorsNotifier>(context, listen: false)
+    //           .toggleTheme(!colors.darkMode);
+    //     },
+    //   ),
+    // ],
   );
 }
 
