@@ -306,19 +306,19 @@ class _ComindIsLoadingState extends State<ComindIsLoading>
   late Animation<double> _animation;
 
   static const size = 84.0;
-  static const double moveRange = 5.0;
+  static const double moveRange = 30.0;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
       vsync: this,
     )..repeat(reverse: true);
     _animation = Tween(begin: -moveRange, end: moveRange).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Curves.elasticOut,
+        curve: Curves.bounceOut,
       ),
     );
   }
@@ -342,29 +342,31 @@ class _ComindIsLoadingState extends State<ComindIsLoading>
           AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {
+              var textStyle = TextStyle(
+                fontSize: size,
+                fontFamily: "Bungee Pop",
+                fontWeight: FontWeight.normal,
+                color: Provider.of<ComindColorsNotifier>(context)
+                    .currentColors
+                    .primaryColor,
+              );
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Transform.translate(
-                    offset: Offset(_animation.value, 0),
-                    child: Text(
-                      '{',
-                      style: GoogleFonts.bungeeShade(
-                        fontSize: size,
-                        color: Provider.of<ComindColorsNotifier>(context)
-                            .currentColors
-                            .primaryColor,
-                      ),
-                    ),
+                    offset: Offset(_animation.value - 20, 0),
+                    child: Text('{',
+                        style: textStyle.copyWith(
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .currentColors
+                              .primaryColor,
+                        )),
                   ),
                   // Add space between the two characters
                   const SizedBox(width: 4),
                   Text(
                     'O',
-                    style: TextStyle(
-                      fontSize: size,
-                      fontFamily: "Bungee",
-                      fontWeight: FontWeight.normal,
+                    style: textStyle.copyWith(
                       color: Provider.of<ComindColorsNotifier>(context)
                           .currentColors
                           .secondaryColor,
@@ -372,13 +374,10 @@ class _ComindIsLoadingState extends State<ComindIsLoading>
                   ),
                   const SizedBox(width: 4),
                   Transform.translate(
-                      offset: Offset(-_animation.value, 0),
+                      offset: Offset(-_animation.value + 20, 0),
                       child: Text(
                         '}',
-                        style: TextStyle(
-                          fontSize: size,
-                          fontFamily: "Bungee",
-                          fontWeight: FontWeight.normal,
+                        style: textStyle.copyWith(
                           color: Provider.of<ComindColorsNotifier>(context)
                               .currentColors
                               .tertiaryColor,

@@ -1,5 +1,5 @@
 import 'package:comind/api.dart';
-import 'package:comind/concept_syntax.dart';
+// import 'package:comind/concept_syntax.dart';
 import 'package:comind/input_field.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/text_button.dart';
@@ -14,23 +14,26 @@ import 'package:provider/provider.dart';
 //
 // ignore: must_be_immutable
 class MarkdownThought extends StatefulWidget {
-  MarkdownThought({
-    super.key,
-    required this.thought,
-    required this.context,
-    //Opacity/hover opacity, default to 1/1
-    this.opacity = 1.0,
-    this.opacityOnHover = 1.0,
-    this.infoMode = false,
-    this.relatedMode = false,
-  });
+  MarkdownThought(
+      {super.key,
+      required this.thought,
+      required this.context,
+      //Opacity/hover opacity, default to 1/1
+      this.opacity = 1.0,
+      this.opacityOnHover = 1.0,
+      this.infoMode = false,
+      this.relatedMode = false,
+      this.viewOnly = false,
+      this.selectable = true});
 
   final Thought thought;
   final BuildContext context;
   final double opacity;
   final double opacityOnHover;
+  bool selectable;
   bool infoMode;
   bool relatedMode;
+  bool viewOnly;
   bool showTextBox = false;
 
   // store whether hovered
@@ -115,11 +118,12 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             // visible: true,
             visible: !widget.showTextBox,
             child: Card(
+              // color: Colors.red,
               color: Colors.transparent,
               surfaceTintColor: Colors.transparent,
               shadowColor: Colors.transparent,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
                 child: SizedBox(
                   width: double.infinity,
                   // Maximum 600 width
@@ -146,41 +150,85 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                               context)
                                           .background,
                                       // color: colors.primaryColor,
-                                      // Top border only
-                                      // border: Border(
-                                      //     top: BorderSide(
-                                      //   color: Provider.of<ComindColorsNotifier>(context)
-                                      //       .colorScheme
-                                      //       .onBackground
-                                      //       .withAlpha(80),
-                                      // )),
+                                      // Top/bottom border only
+                                      border: Border(
+                                          top: BorderSide(
+                                            color: Provider.of<
+                                                        ComindColorsNotifier>(
+                                                    context)
+                                                .colorScheme
+                                                .onBackground
+                                                .withAlpha(80),
+                                            width: 1,
+                                          ),
+                                          bottom: BorderSide(
+                                            color: Provider.of<
+                                                        ComindColorsNotifier>(
+                                                    context)
+                                                .colorScheme
+                                                .onBackground
+                                                .withAlpha(80),
+                                          )),
 
                                       // All border
-                                      border: Border.all(
-                                        width: 1,
-                                        color:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context)
-                                                .onBackground
-                                                .withAlpha(hovered
-                                                    ? outlineAlphaHover
-                                                    : outlineAlpha),
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
+                                      // border: Border.all(
+                                      //   width: 1,
+                                      //   color:
+                                      //       Provider.of<ComindColorsNotifier>(
+                                      //               context)
+                                      //           .onBackground
+                                      //           .withAlpha(hovered
+                                      //               ? outlineAlphaHover
+                                      //               : outlineAlpha),
+                                      // ),
+                                      // borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Material(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(0),
                                       child: InkWell(
-                                        onTap: () => {},
-                                        borderRadius: BorderRadius.circular(10),
+                                        splashColor: Colors.transparent,
+                                        hoverColor: widget.selectable
+                                            ? Provider.of<ComindColorsNotifier>(
+                                                    context)
+                                                .colorScheme
+                                                .onBackground
+                                                .withAlpha(16)
+                                            : Colors.transparent,
+                                        onTap: () => {
+                                          // Expand the thought view, onyl if selectable
+                                          if (widget.selectable)
+                                            {
+                                              Navigator.pushNamed(context,
+                                                  '/thoughts/${thought.id}')
+                                            }
+                                          else if (widget.viewOnly)
+                                            {
+                                              // Otherwise, open edit mode
+                                              // Snack bar edit
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    'You can\'t edit this thought. View only: ${widget.viewOnly}'),
+                                                duration:
+                                                    const Duration(seconds: 1),
+                                              )),
+                                            }
+                                          else
+                                            {
+                                              setState(() {
+                                                widget.showTextBox = true;
+                                                _editController.text =
+                                                    thought.body;
+                                              })
+                                            }
+                                        },
+                                        borderRadius: BorderRadius.circular(0),
                                         child: Padding(
                                           padding: const EdgeInsets.all(16.0),
                                           child: Column(
                                             children: [
                                               // Markdown body
-                                              TheMarkdownBox(
-                                                  widget: widget,
-                                                  thought: thought),
+                                              TheMarkdownBox(thought: thought),
 
                                               // Info mode display
                                               InfoCard(
@@ -198,22 +246,25 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                 borderUsername(context),
 
                                 // Add the action row on bottom
-                                Positioned(
-                                  bottom: -4,
-                                  right: 0,
-                                  child: actionRow(
-                                      context,
-                                      edgeInsets2,
-                                      edgeInsets,
-                                      buttonFontSize,
-                                      buttonOpacity),
+                                Visibility(
+                                  visible: !widget.viewOnly,
+                                  child: Positioned(
+                                    bottom: -6,
+                                    right: 0,
+                                    child: actionRow(
+                                        context,
+                                        edgeInsets2,
+                                        edgeInsets,
+                                        buttonFontSize,
+                                        buttonOpacity),
+                                  ),
                                 ),
 
                                 // Add the date chunk on bottom
                                 Positioned(
-                                  bottom: 0,
+                                  bottom: -6,
                                   left: 12,
-                                  child: dateChunk(context),
+                                  child: dateChunk(context, buttonFontSize),
                                 ),
                               ],
                             ),
@@ -249,14 +300,14 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
           // Show the edit box
           Visibility(
-            visible: widget.showTextBox,
+            visible: !widget.viewOnly && widget.showTextBox,
             child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                 child: MainTextField(
                     thought: thought,
                     onThoughtEdited: (Thought thought) async {
                       // Update the thought
-                      await saveThought(thought);
+                      await saveThought(context, thought);
                     },
                     primaryController: _editController,
                     toggleEditor: () {
@@ -301,7 +352,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           borderRadius: BorderRadius.circular(4),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+          padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
           child: Row(
             children: [
               ComindTextButton(
@@ -473,7 +524,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             onPressed: () async {
               if (relatedResults.isEmpty) {
                 // Semantic search on the body of the text
-                var res = await searchThoughts(thought.body,
+                var res = await searchThoughts(context, thought.body,
                     associatedId: thought.id);
 
                 // Toggle info mode
@@ -617,12 +668,15 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                     backgroundColor: Provider.of<ComindColorsNotifier>(context)
                         .colorScheme
                         .background,
-                    surfaceTintColor: Colors.black,
+                    surfaceTintColor: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .secondary
+                        .withAlpha(64),
                     title: const Text(
-                      'Delete thought',
+                      'Delete thought?',
                       style: TextStyle(
                           fontFamily: "Bungee",
-                          fontSize: 18,
+                          fontSize: 36,
                           fontWeight: FontWeight.w400),
                     ),
                     content: const Text(
@@ -630,31 +684,31 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                     actions: <Widget>[
                       ComindTextButton(
                         text: "Cancel",
-                        fontSize: buttonFontSize,
+                        opacity: 1,
+                        fontSize: 18,
                         colorIndex: 1,
-                        textStyle:
-                            const TextStyle(fontFamily: "Bungee", fontSize: 14),
                         onPressed: () {
                           Navigator.of(context).pop(false);
                         },
                       ),
                       ComindTextButton(
                         text: "Delete",
-                        fontSize: buttonFontSize,
-                        colorIndex: 2,
-                        textStyle:
-                            const TextStyle(fontFamily: "Bungee", fontSize: 14),
+                        opacity: 1,
+                        fontSize: 18,
+                        colorIndex: 3,
                         onPressed: () {
                           Navigator.of(context).pop(true);
                         },
                       ),
                     ],
+                    actionsAlignment: MainAxisAlignment.spaceBetween,
                   );
                 },
               );
 
               if (shouldDelete == true) {
-                deleteThought(thought.id);
+                // ignore: use_build_context_synchronously
+                deleteThought(context, thought.id);
               }
             },
             // lineLocation: LineLocation.top,
@@ -664,77 +718,38 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     );
   }
 
-  Container dateChunk(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-      decoration: BoxDecoration(
-        color:
-            Provider.of<ComindColorsNotifier>(context).colorScheme.background,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Opacity(
-        opacity: hovered
-            ? 0.9
-            : widget.showTextBox
-                ? 0.9
-                : 0.6,
-        child: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: thought.isPublic ? "public" : "private",
-                style: Provider.of<ComindColorsNotifier>(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(
-                      color: thought.isPublic
-                          ? Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                          : Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground,
-                      decoration: TextDecoration.underline,
-                      decorationThickness: 4,
-                      decorationColor: thought.isPublic
-                          ? Provider.of<ComindColorsNotifier>(context).primary
-                          : Provider.of<ComindColorsNotifier>(context)
-                              .secondary,
-                    ),
-              ),
-              TextSpan(
-                text: ", ${formatTimestamp(thought.dateUpdated)}",
-                style: Provider.of<ComindColorsNotifier>(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(
-                      color: thought.isPublic
-                          ? Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                          : Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground,
-                    ),
-              ),
-            ],
+  Row dateChunk(BuildContext context, double buttonSize) {
+    return Row(
+      children: [
+        // Public/private
+        Container(
+          decoration: BoxDecoration(
+            color: Provider.of<ComindColorsNotifier>(context)
+                .colorScheme
+                .background,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Visibility(
+            visible: !widget.viewOnly,
+            child: ComindTextButton(
+              text: thought.isPublic ? "Public" : "Private",
+              colorIndex: thought.isPublic ? 1 : 3,
+              lineLocation: LineLocation.top,
+              opacity: hovered
+                  ? 1
+                  : widget.showTextBox
+                      ? opacityOnHover
+                      : 0.6,
+              opacityOnHover: outlineAlphaHover / 255,
+              onPressed: () {
+                // Navigate to the user's profile
+                Navigator.pushNamed(context, '/thinkers/${thought.username}');
+              },
+              fontSize: buttonSize,
+            ),
           ),
         ),
-        // : Text(
-        //     (thought.isPublic ? "public, " : "private, ") +
-        //         formatTimestamp(thought.dateUpdated),
-        //     style: Provider.of<ComindColorsNotifier>(context)
-        //         .textTheme
-        //         .bodyMedium
-        //         ?.copyWith(
-        //           decoration: TextDecoration.underline,
-        //           decorationThickness: 8,
-        //           decorationColor:
-        //               Provider.of<ComindColorsNotifier>(context).primary,
-        //           fontSize: 12,
-        //         ),
-        //   ),
-      ),
+      ],
     );
   }
 }
@@ -742,17 +757,14 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 class TheMarkdownBox extends StatelessWidget {
   const TheMarkdownBox({
     super.key,
-    required this.widget,
     required this.thought,
   });
 
-  final MarkdownThought widget;
   final Thought thought;
 
   @override
   Widget build(BuildContext context) {
     // Custom inline syntax to match {text}
-    var customSyntax = ConceptSyntax();
 
     // Generate html
     // var html = md.markdownToHtml(
@@ -776,7 +788,7 @@ class TheMarkdownBox extends StatelessWidget {
       child: MarkdownBody(
         // Use the thought content
         data: thought.body,
-        selectable: true,
+        selectable: false,
 
         // Set the markdown styling
         styleSheet: MarkdownStyleSheet(
@@ -843,7 +855,7 @@ class InfoCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Divider(),
+            const Divider(),
 
             // Here's some information for ya, pal
             // Created at.
@@ -899,4 +911,15 @@ class InfoCard extends StatelessWidget {
       ),
     );
   }
+}
+
+MarkdownThought coThought(BuildContext context, String text) {
+  return MarkdownThought(
+    thought: Thought.fromString(text, "Co", true),
+    context: context,
+    opacity: 1,
+    opacityOnHover: 1,
+    selectable: false,
+    viewOnly: true,
+  );
 }

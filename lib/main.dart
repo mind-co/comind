@@ -1,12 +1,10 @@
 import 'dart:math';
 
 import 'package:comind/color_picker.dart';
+import 'package:comind/login.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
-// import 'package:flutter_markdown/flutter_markdown.dart'; // TODO Probably actually use this at some point instead of MarkdownBody
 import 'package:provider/provider.dart';
-// import 'package:comind/comind_div.dart';
 // Expand button
 
 // Comind imports
@@ -22,6 +20,7 @@ import 'package:comind/thought_editor_basic.dart';
 // import 'package:comind/thought_editor_super.dart';
 // import 'package:comind/thought_editor_quill.dart';
 import 'package:comind/misc/util.dart';
+import 'package:comind/dispatch.dart';
 
 void main() {
   runApp(ChangeNotifierProvider(
@@ -38,31 +37,135 @@ class ComindApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<AuthProvider, ComindColorsNotifier>(
-      builder: (context, authProvider, colorNotifier, child) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ComindColorsNotifier()),
+      ],
+      builder: (context, child) {
         return MaterialApp(
           // home: const LoginScreen(),
           // home: ThoughtEditorScreen(
           //   thought: Thought.basic(),
           // ),
-          home: const ThoughtListScreen(),
+          // home: const ThoughtListScreen(),
+
+          // Set up the routes
+          // routes: {
+          //   '/': (context) => const Dispatch(),
+
+          //   // Go to the the thought list first
+          //   // '/': (context) => const ThoughtListScreen(),
+          //   // '/': (context) => ThoughtEditorScreen(
+          //   //       id: "ba5c223a-4380-52e3-8fa4-16928a18dc2a",
+          //   //     ),
+          //   '/login': (context) => const LoginScreen(),
+          // },
+
+          onGenerateRoute: (settings) {
+            // DEBUG
+            // return MaterialPageRoute(
+            //   builder: (context) => ThoughtEditorScreen(
+            //     id: "ba5c223a-4380-52e3-8fa4-16928a18dc2a",
+            //   ),
+            // );
+
+            // Handle '/'
+            if (settings.name == '/') {
+              return MaterialPageRoute(
+                builder: (context) => const Dispatch(),
+              );
+            }
+
+            // Handle '/login'
+            if (settings.name == '/login') {
+              return MaterialPageRoute(
+                builder: (context) => const LoginScreen(),
+              );
+            }
+
+            // Handle '/thoughts'
+            if (settings.name == '/thoughts') {
+              return MaterialPageRoute(
+                builder: (context) => const ThoughtListScreen(),
+              );
+            }
+
+            // Handle '/thoughts/:id'
+            var uri = Uri.parse(settings.name!);
+            if (uri.pathSegments.length == 2 &&
+                uri.pathSegments.first == 'thoughts') {
+              var id = uri.pathSegments[1];
+              return MaterialPageRoute(
+                builder: (context) => ThoughtEditorScreen(id: id),
+              );
+            }
+
+            // Handle '/'
+            return MaterialPageRoute(
+              builder: (context) => const ThoughtListScreen(),
+            );
+          },
+
           // home: StreamScreen(),
           theme: ThemeData(
             useMaterial3: true,
-            colorScheme: colorNotifier.currentColors.colorScheme,
-            textTheme: colorNotifier.currentColors.textTheme,
-          ),
-          darkTheme: ThemeData(
-            useMaterial3: true,
-            // colorScheme: ComindColors.darkColorScheme,
-            colorScheme: colorNotifier.currentColors.colorScheme,
-            textTheme: colorNotifier.currentColors.textTheme,
-            dialogTheme: DialogTheme(
-              backgroundColor: colorNotifier.currentColors.colorScheme.surface,
+            colorScheme: Provider.of<ComindColorsNotifier>(context).colorScheme,
+            textTheme: Provider.of<ComindColorsNotifier>(context)
+                .currentColors
+                .textTheme,
+            snackBarTheme: SnackBarThemeData(
+              backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .surfaceVariant,
+              contentTextStyle: Provider.of<ComindColorsNotifier>(context)
+                  .currentColors
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .onSurface,
+                  ),
+            ),
+            bottomSheetTheme: const BottomSheetThemeData(
+              surfaceTintColor: Colors.transparent,
+              backgroundColor: Colors.transparent,
             ),
           ),
+          darkTheme: ThemeData(
+              useMaterial3: true,
+              // colorScheme: ComindColors.darkColorScheme,
+              colorScheme:
+                  Provider.of<ComindColorsNotifier>(context).colorScheme,
+              textTheme: Provider.of<ComindColorsNotifier>(context)
+                  .currentColors
+                  .textTheme,
+              snackBarTheme: SnackBarThemeData(
+                backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .surfaceVariant,
+                contentTextStyle: Provider.of<ComindColorsNotifier>(context)
+                    .currentColors
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(
+                      color: Provider.of<ComindColorsNotifier>(context)
+                          .colorScheme
+                          .onSurface,
+                    ),
+              ),
+              dialogTheme: DialogTheme(
+                backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .surface,
+              ),
+              bottomSheetTheme: const BottomSheetThemeData(
+                surfaceTintColor: Colors.transparent,
+                backgroundColor: Colors.transparent,
+              )),
           debugShowCheckedModeBanner: false,
-          themeMode: colorNotifier.darkMode
+          themeMode: Provider.of<ComindColorsNotifier>(context).darkMode
               ? ThemeMode.dark
               : ThemeMode.light, // This line is changed
         );
@@ -93,8 +196,8 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   bool moreMenuExpanded = false;
 
   // List of text controllers
-  List<TextEditingController> _controllers = [];
-  TextEditingController _primaryController = TextEditingController();
+  final List<TextEditingController> _controllers = [];
+  final TextEditingController _primaryController = TextEditingController();
 
   // Set up public/private writing mode
   bool searchMode = false;
@@ -103,12 +206,22 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   void initState() {
     super.initState();
     _fetchThoughts();
+
+    // Go to the first available note
+    // if (thoughts.isNotEmpty) {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => ThoughtEditorScreen(thought: thoughts[0]),
+    //     ),
+    //   );
+    // }
   }
 
   // Fetch thoughts
   void _fetchThoughts() async {
     // Replace with your API call
-    List<Thought> fetchedThoughts = await fetchThoughts();
+    List<Thought> fetchedThoughts = await fetchThoughts(context);
     setState(() {
       thoughts = fetchedThoughts;
       editVisibilityList = List<bool>.filled(thoughts.length, false);
@@ -215,7 +328,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (thoughts.isNotEmpty) {
-          const edgeInsets = const EdgeInsets.fromLTRB(8, 2, 8, 2);
+          const edgeInsets = EdgeInsets.fromLTRB(8, 2, 8, 2);
           return Scaffold(
             backgroundColor: Provider.of<ComindColorsNotifier>(context)
                 .colorScheme
@@ -227,129 +340,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                   .background,
               child: const Nav(),
             ),
-            bottomNavigationBar: SizedBox(
-              height: 30,
-              // color: Provider.of<ComindColorsNotifier>(context)
-              //     .colorScheme
-              //     .background,
-              child: Flex(
-                direction: Axis.horizontal,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  // Add a text field
-                  // MainTextField(primaryController: _primaryController),
-
-                  // Add a public/private button
-                  // ComindTextButton(
-                  //   text: Provider.of<ComindColorsNotifier>(context).publicMode
-                  //       ? "Public"
-                  //       : "Private",
-                  //   onPressed: () {
-                  //     Provider.of<ComindColorsNotifier>(context, listen: false)
-                  //         .togglePublicMode(!publicMode);
-                  //   },
-                  //   colorIndex: 2,
-                  //   opacity: 0.8,
-                  //   textStyle: const TextStyle(
-                  //       fontFamily: "Bungee",
-                  //       fontSize: 16,
-                  //       color: Colors.white),
-                  // ),
-
-                  // Add current color scheme dot
-                  Material(
-                    color: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .primary,
-                    borderRadius: BorderRadius.circular(10),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(10),
-                      onTap: () {
-                        colorDialog(context);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .primary,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        width: 30,
-                        height: 20,
-                        margin: const EdgeInsets.all(0),
-                      ),
-                    ),
-                  ),
-                  // Container(
-                  //   width: 20,
-                  //   height: 20,
-                  //   decoration: BoxDecoration(
-                  //     color: Provider.of<ComindColorsNotifier>(context)
-                  //         .colorScheme
-                  //         .primary,
-                  //     borderRadius: BorderRadius.circular(10),
-                  //   ),
-                  // ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: VerticalDivider(
-                      color: Provider.of<ComindColorsNotifier>(context)
-                          .colorScheme
-                          .onPrimary
-                          ?.withAlpha(32),
-                      thickness: 1,
-                      width: 1,
-                    ),
-                  ),
-
-                  // Separate public and private buttons.
-                  // The public button is on the left, the private button is on the right.
-                  // when one is active, the other has no line
-                  Row(
-                    children: [
-                      Padding(
-                        padding: edgeInsets,
-                        child: ComindTextButton(
-                          text: "Public",
-                          onPressed: () {
-                            Provider.of<ComindColorsNotifier>(context,
-                                    listen: false)
-                                .togglePublicMode(true);
-                          },
-                          colorIndex: publicMode ? 1 : 0,
-                          opacity: publicMode ? 1.0 : 0.4,
-                          // opacity: 1,
-                          textStyle: const TextStyle(
-                              fontFamily: "Bungee", fontSize: 16),
-                        ),
-                      ),
-
-                      // Add a private button
-                      Padding(
-                        padding: edgeInsets,
-                        child: ComindTextButton(
-                          text: "Private",
-                          onPressed: () {
-                            Provider.of<ComindColorsNotifier>(context,
-                                    listen: false)
-                                .togglePublicMode(false);
-                          },
-                          colorIndex: !publicMode ? 1 : 0,
-                          opacity: !publicMode ? 1.0 : 0.4,
-                          // opacity: 1,
-                          textStyle: const TextStyle(
-                            fontFamily: "Bungee",
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            bottomNavigationBar: bottomBar(context, edgeInsets, publicMode),
             body: Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -415,6 +406,144 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
         // Add your else condition here if needed
         return Container(); // Return an empty container if thoughts is empty
       },
+    );
+  }
+
+  Container bottomBar(
+      BuildContext context, EdgeInsets edgeInsets, bool publicMode) {
+    return Container(
+      decoration: BoxDecoration(
+        color:
+            Provider.of<ComindColorsNotifier>(context).colorScheme.background,
+        border: Border(
+          top: BorderSide(
+            color: Provider.of<ComindColorsNotifier>(context)
+                .colorScheme
+                .onBackground
+                .withAlpha(128),
+            width: 1,
+          ),
+        ),
+      ),
+      height: 40,
+      width: 600,
+      // color: Provider.of<ComindColorsNotifier>(context)
+      //     .colorScheme
+      //     .background,
+      child: Flex(
+        direction: Axis.horizontal,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          // Add a text field
+          // MainTextField(primaryController: _primaryController),
+
+          // Add a public/private button
+          // ComindTextButton(
+          //   text: Provider.of<ComindColorsNotifier>(context).publicMode
+          //       ? "Public"
+          //       : "Private",
+          //   onPressed: () {
+          //     Provider.of<ComindColorsNotifier>(context, listen: false)
+          //         .togglePublicMode(!publicMode);
+          //   },
+          //   colorIndex: 2,
+          //   opacity: 0.8,
+          //   textStyle: const TextStyle(
+          //       fontFamily: "Bungee",
+          //       fontSize: 16,
+          //       color: Colors.white),
+          // ),
+
+          // Add current color scheme dot
+          Material(
+            color:
+                Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
+            borderRadius: BorderRadius.circular(10),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: () {
+                colorDialog(context);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Provider.of<ComindColorsNotifier>(context)
+                      .colorScheme
+                      .primary,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                width: 30,
+                height: 20,
+                margin: const EdgeInsets.all(0),
+              ),
+            ),
+          ),
+          // Container(
+          //   width: 20,
+          //   height: 20,
+          //   decoration: BoxDecoration(
+          //     color: Provider.of<ComindColorsNotifier>(context)
+          //         .colorScheme
+          //         .primary,
+          //     borderRadius: BorderRadius.circular(10),
+          //   ),
+          // ),
+
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: VerticalDivider(
+              color: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .onPrimary
+                  .withAlpha(32),
+              thickness: 1,
+              width: 1,
+            ),
+          ),
+
+          // Separate public and private buttons.
+          // The public button is on the left, the private button is on the right.
+          // when one is active, the other has no line
+          Row(
+            children: [
+              Padding(
+                padding: edgeInsets,
+                child: ComindTextButton(
+                  text: "Public",
+                  onPressed: () {
+                    Provider.of<ComindColorsNotifier>(context, listen: false)
+                        .togglePublicMode(true);
+                  },
+                  colorIndex: publicMode ? 1 : 0,
+                  opacity: publicMode ? 1.0 : 0.4,
+                  // opacity: 1,
+                  textStyle:
+                      const TextStyle(fontFamily: "Bungee", fontSize: 16),
+                ),
+              ),
+
+              // Add a private button
+              Padding(
+                padding: edgeInsets,
+                child: ComindTextButton(
+                  text: "Private",
+                  onPressed: () {
+                    Provider.of<ComindColorsNotifier>(context, listen: false)
+                        .togglePublicMode(false);
+                  },
+                  colorIndex: !publicMode ? 1 : 0,
+                  opacity: !publicMode ? 1.0 : 0.4,
+                  // opacity: 1,
+                  textStyle: const TextStyle(
+                    fontFamily: "Bungee",
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -645,7 +774,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           MainTextField(
               onThoughtSubmitted: (Thought thought) async {
                 // Send the thought
-                await saveThought(thought, newThought: true);
+                await saveThought(context, thought, newThought: true);
 
                 // Refresh the thought list
                 // TODO this should be adjusted to only refresh the thought that
@@ -717,11 +846,11 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          backgroundColor:
-                              Provider.of<ComindColorsNotifier>(context)
-                                  .colorScheme
-                                  .background,
-                          surfaceTintColor: Colors.black,
+                          // backgroundColor:
+                          //     Provider.of<ComindColorsNotifier>(context)
+                          //         .colorScheme
+                          //         .background,
+                          // surfaceTintColor: Colors.black,
                           title: const Text(
                             'Delete thought',
                             style: TextStyle(
@@ -756,7 +885,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                     );
 
                     if (shouldDelete == true) {
-                      deleteThought(thoughts[index].id);
+                      deleteThought(context, thoughts[index].id);
                       _fetchThoughts();
                     }
                   },
@@ -907,6 +1036,7 @@ class Nav extends StatelessWidget {
                                 /// ///////////
                                 ComindTextButton(
                                   text: "You",
+                                  colorIndex: 0,
                                   onPressed: () {
                                     // _addNote(context); // Call _addNote with the context
                                   },
@@ -925,7 +1055,7 @@ class Nav extends StatelessWidget {
                                   children: [
                                     ComindTextButton(
                                       text: "About",
-                                      colorIndex: 1,
+                                      colorIndex: 0,
                                       onPressed: () {
                                         // Navigate to the about page
                                       },
@@ -936,6 +1066,7 @@ class Nav extends StatelessWidget {
                                     /// ///////////
                                     ComindTextButton(
                                       text: "Settings",
+                                      colorIndex: 0,
                                       onPressed: () {
                                         // Navigate to the settings page
                                       },
@@ -945,7 +1076,14 @@ class Nav extends StatelessWidget {
                                     ///LOGOUT ////
                                     /// ///////////
                                     ComindTextButton(
-                                        text: "Logout", onPressed: () {}),
+                                        text: "Logout",
+                                        colorIndex: 0,
+                                        onPressed: () {
+                                          // Logout
+                                          Provider.of<AuthProvider>(context,
+                                                  listen: false)
+                                              .logout();
+                                        }),
                                   ],
                                 ),
                               ],

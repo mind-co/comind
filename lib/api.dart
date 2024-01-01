@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:comind/misc/util.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:comind/types/thought.dart';
 import 'package:dio/dio.dart';
@@ -6,7 +8,7 @@ import 'package:dio/dio.dart';
 // Initialize Dio
 final dio = Dio();
 
-Future<List<Thought>> fetchThoughts() async {
+Future<List<Thought>> fetchThoughts(BuildContext context) async {
   // TODO convert to dio
   final url =
       Uri.parse('http://nimbus.pfiffer.org:8000/api/user-thoughts/cameron/');
@@ -27,8 +29,8 @@ Future<List<Thought>> fetchThoughts() async {
 
 // Method to save a quick thought that has only
 // body, isPublic, and an optional parentThoughtId
-Future<Thought> saveQuickThought(String body, bool isPublic,
-    String? parentThoughtId, String? childThoughtId) async {
+Future<Thought> saveQuickThought(BuildContext context, String body,
+    bool isPublic, String? parentThoughtId, String? childThoughtId) async {
   // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
 
@@ -72,7 +74,8 @@ Future<Thought> saveQuickThought(String body, bool isPublic,
   }
 }
 
-Future<void> saveThought(Thought thought, {bool? newThought}) async {
+Future<void> saveThought(BuildContext context, Thought thought,
+    {bool? newThought}) async {
   // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
 
@@ -136,7 +139,7 @@ Future<void> saveThought(Thought thought, {bool? newThought}) async {
   }
 }
 
-Future<void> deleteThought(String thoughtId) async {
+Future<void> deleteThought(BuildContext context, String thoughtId) async {
   // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
   final headers = {
@@ -201,6 +204,7 @@ Future<bool> userExists(String username) async {
 Future<bool> emailExists(String email) async {
   // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/email-taken/');
+
   final headers = {
     'ComindEmail': email,
   };
@@ -251,7 +255,7 @@ class SearchResult {
   }
 }
 
-Future<List<Thought>> searchThoughts(String query,
+Future<List<Thought>> searchThoughts(BuildContext context, String query,
     {String? associatedId}) async {
   final url = Uri.parse("http://nimbus.pfiffer.org:8000/api/search");
   final body = associatedId == null
@@ -269,10 +273,12 @@ Future<List<Thought>> searchThoughts(String query,
 
   final encodedBody = utf8.encode(body);
 
+  String token = await getToken(context);
   final headers = {
     'ComindUsername': 'cameron',
     "Content-Type": "application/json",
-    "Content-Length": "${encodedBody.length}"
+    "Content-Length": "${encodedBody.length}",
+    'Authorization': 'Bearer $token'
   };
 
   final response = await dio.post(
@@ -301,4 +307,67 @@ Future<List<Thought>> searchThoughts(String query,
   } else {
     throw Exception('Failed to search');
   }
+}
+
+// Asks the database for a specific thought by ID
+Future<Thought> fetchThought(BuildContext context, String id) async {
+  final url = Uri.parse("http://nimbus.pfiffer.org:8000/api/thoughts/");
+  final headers = {
+    'ComindUsername': 'cameron',
+    'ComindThoughtId': id,
+    "Content-Type": "application/json",
+  };
+
+  final response = await dio.get(
+    url.toString(),
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    final jsonResponse = response.data;
+    return Thought.fromJson(jsonResponse);
+  } else {
+    throw Exception('Failed to load thought');
+  }
+}
+
+// Login method
+class LoginResponse {
+  final bool success;
+  final String? message;
+  final String? token;
+
+  LoginResponse({
+    required this.success,
+    this.token,
+    this.message,
+  });
+
+  static LoginResponse fromJson(Map<String, dynamic> json) {
+    return LoginResponse(
+      success: json['success'],
+      token: json['token'],
+      message: json['message'],
+    );
+  }
+}
+
+Future<LoginResponse> login(String username, String password) async {
+  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/login/');
+
+  final body = jsonEncode(<String, dynamic>{
+    'username': username,
+    'password': password,
+  });
+
+  final response = await http.post(url, body: body);
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to login');
+  }
+
+  final jsonResponse = json.decode(response.body);
+  return LoginResponse.fromJson(jsonResponse);
 }

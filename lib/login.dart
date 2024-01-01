@@ -15,15 +15,19 @@
 import 'package:comind/api.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/main.dart';
+import 'package:comind/markdown_display.dart';
 import 'package:comind/misc/comind_logo.dart';
 import 'package:comind/misc/util.dart';
+import 'package:comind/providers.dart';
 import 'package:comind/text_button.dart';
+import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
-import 'package:provider/provider.dart'; // for the utf8.encode method
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // for the utf8.encode method
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -34,23 +38,54 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController(text: "test@mindco.link");
-  final _usernameController = TextEditingController(text: "test");
-  final _passwordController = TextEditingController(text: "testing");
-  final _passwordConfirmationController =
-      TextEditingController(text: "testing");
+  final _emailController = TextEditingController(text: "cameron");
+  final _usernameController = TextEditingController(text: "cameron");
+  final _passwordController = TextEditingController(text: "abc");
+  final _passwordConfirmationController = TextEditingController(text: "abc");
   static const double fontSize = 18;
-  bool signUpMode = true;
+  bool signUpMode = false;
   bool usernameAvailable = false;
   bool emailAvailable = false;
   static const double cursorWidth = 12;
 
+  final edgeInsets = const EdgeInsets.fromLTRB(12, 16, 12, 16);
+
   @override
   Widget build(BuildContext context) {
+    // Get the colors
+    var colors = Provider.of<ComindColorsNotifier>(context).colorScheme;
+
     return Scaffold(
       // ignore: library_private_types_in_public_api
-      appBar: comindAppBar(context),
+      appBar: AppBar(
+        backgroundColor: colors.background,
+        // backgroundColor: Colors.white,
+
+        // If the width of the screen is less than 550 pixels, use the
+        // ComindLogo class, otherwise use the original definition
+        title: ComindLogo(
+          key: UniqueKey(),
+          colors: Provider.of<ComindColorsNotifier>(context),
+        ),
+        centerTitle: true,
+        scrolledUnderElevation: 0,
+      ),
+
       body: signUpMode ? signUpPage(context) : loginPage(context),
+      bottomSheet: Container(
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+              "made with ❤️ by mindco. powered by mania, weed, and coffee.",
+              style: TextStyle(
+                  fontSize: 12,
+                  color: Provider.of<ComindColorsNotifier>(context)
+                      .colorScheme
+                      .onBackground
+                      .withAlpha(150))),
+        ),
+      ),
     );
   }
 
@@ -93,45 +128,26 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Center loginPage(BuildContext context) {
+    var textStyle = TextStyle(
+        fontFamily: "Bungee",
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onBackground
+            .withAlpha(150));
     return Center(
       child: SizedBox(
         width: 600,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 16),
-                child: SelectableText(
-                    "Hey pal, I see that you're not logged in.",
-                    style: TextStyle(fontSize: fontSize)),
-              ),
-
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                child: SelectableText(
-                    "It's like kind of hard to do stuff here unless you're logged in.",
-                    style: TextStyle(fontSize: fontSize)),
-              ),
-
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                child: SelectableText(
-                    "Idk we may relax that later, but right now I'd appreciate it if you told me who you are. It's kind of fun in here. I promise.",
-                    style: TextStyle(fontSize: fontSize)),
-              ),
-
-              // My name is Co, by the way.
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                child: SelectableText("My name is Co, by the way.",
-                    style: TextStyle(fontSize: fontSize)),
-              ),
+              // coThought(context, "Welcome to Comind!"),
 
               // Email field
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                padding: edgeInsets,
                 child: TextFormField(
                   cursorWidth: cursorWidth,
                   controller: _emailController,
@@ -144,14 +160,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   // ignore: library_private_types_in_public_api
                   onSaved: (val) => _emailController.text = val!,
                   decoration: InputDecoration(
-                    labelStyle: TextStyle(
-                        color: Provider.of<ComindColorsNotifier>(context)
-                            .colorScheme
-                            .onBackground
-                            .withAlpha(150)),
+                    labelStyle: textStyle,
                     // ignore: library_private_types_in_public_api
-                    border: OutlineInputBorder(),
-                    labelText: signUpMode ? 'Email' : 'Email or Username',
+                    border: const OutlineInputBorder(),
+                    labelText: 'Email or Username',
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                           color: Provider.of<ComindColorsNotifier>(context)
@@ -178,36 +190,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              // If the email has an @ symbol in it, print out
-              // "Got it. We'll send emails to $email"
-              if (EmailValidator.validate(_emailController.text))
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
-                  child: SelectableText(
-                      "Got it. We'll send emails to ${_emailController.text}.",
-                      style: TextStyle(fontSize: fontSize)),
-                ),
-
-              if (!EmailValidator.validate(_emailController.text))
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
-                  child: SelectableText(
-                      "Type your email up there for me, please.",
-                      style: TextStyle(fontSize: fontSize)),
-                ),
-
-              // Divider
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                child: Divider(
-                  height: 2,
-                  color: Colors.grey,
-                ),
-              ),
-
               // Password field
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                padding: edgeInsets,
                 child: TextFormField(
                   cursorWidth: cursorWidth,
                   controller: _passwordController,
@@ -218,11 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onSaved: (val) => _passwordController.text = val!,
                   obscureText: true,
                   decoration: InputDecoration(
-                    labelStyle: TextStyle(
-                        color: Provider.of<ComindColorsNotifier>(context)
-                            .colorScheme
-                            .onBackground
-                            .withAlpha(150)),
+                    labelStyle: textStyle,
                     // ignore: library_private_types_in_public_api
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -252,88 +233,46 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              // Password confirmation field
-              if (signUpMode)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
-                  child: TextFormField(
-                    cursorWidth: cursorWidth,
-                    controller: _passwordConfirmationController,
-                    // ignore: library_private_types_in_public_api
-                    validator: (val) =>
-                        val!.length < 6 ? 'Password too short' : null,
-                    // ignore: library_private_types_in_public_api
-                    onSaved: (val) => _passwordController.text = val!,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      // ignore: library_private_types_in_public_api
-                      border: OutlineInputBorder(),
-                      labelText: 'Confirm Password',
-                      labelStyle: TextStyle(
+              SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  // padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Login button
+                      loginButton(1),
+
+                      // Divider line
+                      // horizontalSpacerLine(context),
+
+                      //////////////
+                      // orTextLoginRow(context),
+
+                      // Vertical spacer
+                      Container(
+                          height: 16,
+                          width: 1,
                           color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(150)),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onBackground
-                                .withAlpha(150),
-                            width: 1.0,
-                            style: BorderStyle.solid),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onBackground
-                                .withAlpha(50),
-                            width: 1.0,
-                            style: BorderStyle.solid),
-                      ),
-                      // icon: Icon(
-                      //   Icons.lock,
-                      //   color: Colors.grey,
-                      // ),
-                    ),
+
+                      // Divider line
+                      // horizontalSpacerLine(context),
+
+                      //////////////
+                      /// Sign up  button
+                      ///
+                      signupButton(0.5),
+                    ],
                   ),
-                ),
-
-              if (_passwordController.text !=
-                  _passwordConfirmationController.text)
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                  child: Text("Passwords don't match",
-                      style: TextStyle(color: Colors.red)),
-                ),
-
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    //////////////
-                    /// Sign up  button
-                    ///
-                    signupButton(),
-
-                    // Divider line
-                    horizontalSpacerLine(context),
-
-                    //////////////
-                    orTextLoginRow(context),
-
-                    // Divider line
-                    horizontalSpacerLine(context),
-
-                    // Login button
-                    loginButton(),
-                  ],
                 ),
               ),
 
-              sorry(),
+              // sorry(),
             ],
           ),
         ),
@@ -346,42 +285,21 @@ class _LoginScreenState extends State<LoginScreen> {
       child: SizedBox(
         width: 600,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 16),
-                child: SelectableText("Welcome to Comind!",
-                    style: TextStyle(fontSize: fontSize)),
+              Text(
+                "Sign up",
+                style: Provider.of<ComindColorsNotifier>(context)
+                    .textTheme
+                    .titleSmall,
               ),
-
-              // const Padding(
-              //   padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-              //   child: SelectableText(
-              //       "I'm glad you're here. Comind is a place for you to share your thoughts and muck around with this whole being human thing. Well, there's robots too, but they're mostly friendly. And a bit dumb but mostly friendly.",
-              //       style: TextStyle(fontSize: fontSize)),
-              // ),
-
-              // // const Padding(
-              // //   padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-              // //   child: SelectableText(
-              // //       "To sign up, I need an email, a username, and a password. I'll send you an email to confirm your email address, and then you'll be good to go. Let's see your username now.",
-              // //       style: TextStyle(fontSize: fontSize)),
-              // // ),
-
-              // // My name is Co, by the way.
-              // const Padding(
-              //   padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-              //   child: SelectableText(
-              //       "My name is Co, by the way. What's yours?",
-              //       style: TextStyle(fontSize: fontSize)),
-              // ),
 
               // Username field
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                padding: edgeInsets,
                 child: TextFormField(
                   cursorWidth: cursorWidth,
                   controller: _usernameController,
@@ -438,7 +356,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // Email field
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                padding: edgeInsets,
                 child: TextFormField(
                   cursorWidth: cursorWidth,
                   controller: _emailController,
@@ -500,9 +418,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               // Divider
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                child: Divider(
+              Padding(
+                padding: edgeInsets,
+                child: const Divider(
                   height: 2,
                   color: Colors.grey,
                 ),
@@ -510,7 +428,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // Password field
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                padding: edgeInsets,
                 child: TextFormField(
                   cursorWidth: cursorWidth,
                   controller: _passwordController,
@@ -557,57 +475,59 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // Password confirmation field
               if (signUpMode)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
-                  child: TextFormField(
-                    cursorWidth: cursorWidth,
-                    controller: _passwordConfirmationController,
-                    // ignore: library_private_types_in_public_api
-                    validator: (val) =>
-                        val!.length < 6 ? 'Password too short' : null,
-                    // ignore: library_private_types_in_public_api
-                    onSaved: (val) => _passwordController.text = val!,
-                    obscureText: true,
-                    decoration: InputDecoration(
+                Center(
+                  child: Padding(
+                    padding: edgeInsets,
+                    child: TextFormField(
+                      cursorWidth: cursorWidth,
+                      controller: _passwordConfirmationController,
                       // ignore: library_private_types_in_public_api
-                      border: OutlineInputBorder(),
-                      labelText: 'Confirm Password',
-                      labelStyle: TextStyle(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(150)),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
+                      validator: (val) =>
+                          val!.length < 6 ? 'Password too short' : null,
+                      // ignore: library_private_types_in_public_api
+                      onSaved: (val) => _passwordController.text = val!,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        // ignore: library_private_types_in_public_api
+                        border: OutlineInputBorder(),
+                        labelText: 'Confirm Password',
+                        labelStyle: TextStyle(
                             color: Provider.of<ComindColorsNotifier>(context)
                                 .colorScheme
                                 .onBackground
-                                .withAlpha(150),
-                            width: 1.0,
-                            style: BorderStyle.solid),
+                                .withAlpha(150)),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Provider.of<ComindColorsNotifier>(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withAlpha(150),
+                              width: 1.0,
+                              style: BorderStyle.solid),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Provider.of<ComindColorsNotifier>(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withAlpha(50),
+                              width: 1.0,
+                              style: BorderStyle.solid),
+                        ),
+                        // icon: Icon(
+                        //   Icons.lock,
+                        //   color: Colors.grey,
+                        // ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onBackground
-                                .withAlpha(50),
-                            width: 1.0,
-                            style: BorderStyle.solid),
-                      ),
-                      // icon: Icon(
-                      //   Icons.lock,
-                      //   color: Colors.grey,
-                      // ),
                     ),
                   ),
                 ),
 
               if (_passwordController.text !=
                   _passwordConfirmationController.text)
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                  child: Text("Passwords don't match",
+                Padding(
+                  padding: edgeInsets,
+                  child: const Text("Passwords don't match",
                       style: TextStyle(color: Colors.red)),
                 ),
 
@@ -623,7 +543,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       //////////////
                       /// Sign up  button
                       ///
-                      signupButton(),
+                      signupButton(1),
 
                       // Divider line
                       // horizontalSpacerLine(context),
@@ -644,7 +564,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       // horizontalSpacerLine(context),
 
                       // Login button
-                      loginButton(),
+                      loginButton(0.4),
                     ],
                   ),
                 ),
@@ -688,36 +608,79 @@ class _LoginScreenState extends State<LoginScreen> {
         color: Provider.of<ComindColorsNotifier>(context)
             .colorScheme
             .onBackground
-            .withAlpha(32),
+            .withAlpha(16),
       ),
     );
   }
 
-  Padding loginButton() {
+  Padding loginButton(double opacity) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ComindTextButton(
         text: "Login",
         colorIndex: 2,
-        opacity: 1,
-        onPressed: () {
+        opacity: opacity,
+        fontSize: signUpMode ? fontSize : fontSize * 2,
+        onPressed: () async {
           setState(() {
             signUpMode = false;
           });
+
+          // Send the login request
+          var loginResult =
+              await login(_emailController.text, _passwordController.text);
+
+          // If the login was successful, go to the home page
+          // if (loginResult.success && loginResult.token != null) {
+          //   SharedPreferences prefs = await SharedPreferences.getInstance();
+          //   await prefs.setString('token', loginResult.token!);
+          //   Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (context) => const MyHomePage(title: 'Comind'),
+          //     ),
+          //   );
+          // }
+
+          // If the login was unsuccessful, show an error message
+          // ignore: use_build_context_synchronously
+          if (loginResult.success && loginResult.token != null) {
+            SharedPreferences.getInstance()
+                .then((value) => value.setString('token', loginResult.token!));
+
+            // Go home, '/'
+            // ignore: use_build_context_synchronously
+            // Navigator.of(context).pushReplacement<void, MaterialPageRoute>(
+            //   MaterialPageRoute(
+            //     builder: (context) => const ThoughtListScreen(),
+            //   ),
+            // );
+            // ignore: use_build_context_synchronously
+            Navigator.of(context).pop(false);
+          } else {
+            // ignore: library_private_types_in_public_api, use_build_context_synchronously
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                showCloseIcon: true,
+                content: Text("${loginResult.message}"),
+              ),
+            );
+          }
         },
         textStyle: TextStyle(
             fontFamily: "Bungee",
-            fontSize: signUpMode ? fontSize : fontSize * 2),
+            fontSize: signUpMode ? fontSize : fontSize * 4),
       ),
     );
   }
 
-  Padding signupButton() {
+  Padding signupButton(double opacity) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ComindTextButton(
         text: "Sign up",
-        opacity: 1,
+        opacity: opacity,
+        fontSize: signUpMode ? fontSize * 2 : fontSize,
         onPressed: () async {
           if (signUpMode) {
             // Validate the fields

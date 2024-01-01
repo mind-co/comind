@@ -1,6 +1,4 @@
-import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ColorPicker extends StatefulWidget {
   final Function(Color) onColorSelected;
@@ -27,7 +25,7 @@ class _ColorPickerState extends State<ColorPicker> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildColorButton(Color.fromARGB(255, 151, 0, 251)),
+            _buildColorButton(const Color.fromARGB(255, 151, 0, 251)),
 
             //
             _buildColorButton(const Color.fromARGB(255, 157, 46, 46)),

@@ -30,7 +30,7 @@ class ComindColors {
   }
 
   // What public/private mode the user is in
-  bool publicMode = true;
+  bool publicMode = false;
 
   // Dark mode tracker
   bool darkMode = true;

@@ -13,6 +13,7 @@ dependencies:
   # firebase_auth: ^4.15.3
   # firebase_core: ^2.24.2
   # firebase_ui_auth: ^1.11.0
+  dart_jsonwebtoken: ^2.12.2
   dio: ^5.4.0
   email_validator: ^2.1.17
   flutter:
@@ -28,6 +29,7 @@ dependencies:
   # markdown: ^7.1.1
   markdown: ^7.1.1
   provider: ^6.1.1
+  shared_preferences: ^2.2.2
   shelf: ^1.4.1
   uuid: ^4.3.1
   wakelock_web: ^0.4.0
@@ -52,7 +54,7 @@ flutter:
   fonts:
     - family: "Bungee Pop"
       fonts:
-        - asset: fonts/BungeePop.ttf
+        - asset: fonts/BungeePop-3.ttf
     - family: "Bungee"
       fonts:
         - asset: fonts/Bungee-Regular.ttf

@@ -111,18 +111,7 @@ class _MainTextFieldState extends State<MainTextField> {
                             event.logicalKey == LogicalKeyboardKey.enter &&
                             event.isControlPressed &&
                             widget.type == TextFieldType.main) {
-                          // Make a new thought
-                          final Thought newThought = Thought.fromString(
-                              _primaryController.text,
-                              Provider.of<AuthProvider>(context, listen: false)
-                                  .username,
-                              Provider.of<AuthProvider>(context, listen: false)
-                                  .publicMode);
-
-                          // Ctrl + Enter was pressed, send the contents of the text field
-                          if (widget.onThoughtSubmitted != null) {
-                            widget.onThoughtSubmitted!(newThought);
-                          }
+                          _submit(context)();
                         }
                       },
                       child: TextField(
@@ -166,7 +155,7 @@ class _MainTextFieldState extends State<MainTextField> {
                             // Next, handle the commands
                             if (uiMode == "search") {
                               // Search
-                              var res = await searchThoughts(value);
+                              var res = await searchThoughts(context, value);
                               setState(() {
                                 searchResults = res;
                               });
@@ -208,7 +197,7 @@ class _MainTextFieldState extends State<MainTextField> {
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
-                              width: 2,
+                              width: 1,
                               color: Provider.of<ComindColorsNotifier>(context)
                                   .colorScheme
                                   .onPrimary
@@ -218,7 +207,7 @@ class _MainTextFieldState extends State<MainTextField> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
-                              width: 2,
+                              width: 1,
                               color: Provider.of<ComindColorsNotifier>(context)
                                   .colorScheme
                                   .onPrimary
@@ -270,55 +259,7 @@ class _MainTextFieldState extends State<MainTextField> {
                               ? "Think"
                               : "Save",
                           lineLocation: LineLocation.top,
-                          onPressed: widget.type == TextFieldType.main
-                              ? () {
-                                  widget.onThoughtSubmitted!(Thought.fromString(
-                                      _primaryController.text,
-                                      Provider.of<AuthProvider>(context,
-                                              listen: false)
-                                          .username,
-                                      Provider.of<AuthProvider>(context,
-                                              listen: false)
-                                          .publicMode));
-                                }
-                              : widget.type == TextFieldType.edit
-                                  ? () {
-                                      // TODO
-                                      // This is the editor save button, which
-                                      // should save the thought and close the
-                                      // editor.
-
-                                      // First, let's update the thought if it
-                                      // exists
-                                      if (widget.thought != null) {
-                                        widget.thought?.body =
-                                            _primaryController.text;
-
-                                        // Clear the text field
-                                        _primaryController.clear();
-
-                                        // Close the editor
-                                        if (widget.toggleEditor != null) {
-                                          widget.toggleEditor!();
-                                        }
-
-                                        // Return the new thought
-                                        if (widget.onThoughtEdited != null &&
-                                            widget.thought != null) {
-                                          widget.onThoughtEdited!(
-                                              widget.thought!);
-                                        }
-                                      } else {
-                                        // TODO no thought was passed but we are in edit mode
-                                        throw Exception(
-                                            "No thought was passed but we are in edit mode");
-                                      }
-                                    }
-                                  : () {
-                                      // TODO
-                                      // This should probably handle the case
-                                      // where the editor is fullscreen.
-                                    },
+                          onPressed: _submit(context),
                           colorIndex: widget.type == TextFieldType.main ? 1 : 2,
                           opacity: 1.0,
                           fontSize: 10,
@@ -369,6 +310,52 @@ class _MainTextFieldState extends State<MainTextField> {
     );
   }
 
+  Function _submit(BuildContext context) {
+    return widget.type == TextFieldType.main
+        ? () {
+            widget.onThoughtSubmitted!(Thought.fromString(
+                _primaryController.text,
+                Provider.of<AuthProvider>(context, listen: false).username,
+                Provider.of<AuthProvider>(context, listen: false).publicMode));
+          }
+        : widget.type == TextFieldType.edit
+            ? () {
+                // TODO
+                // This is the editor save button, which
+                // should save the thought and close the
+                // editor.
+
+                // First, let's update the thought if it
+                // exists
+                if (widget.thought != null) {
+                  widget.thought?.body = _primaryController.text;
+
+                  // Clear the text field
+                  _primaryController.clear();
+
+                  // Close the editor
+                  if (widget.toggleEditor != null) {
+                    widget.toggleEditor!();
+                  }
+
+                  // Return the new thought
+                  if (widget.onThoughtEdited != null &&
+                      widget.thought != null) {
+                    widget.onThoughtEdited!(widget.thought!);
+                  }
+                } else {
+                  // TODO no thought was passed but we are in edit mode
+                  throw Exception(
+                      "No thought was passed but we are in edit mode");
+                }
+              }
+            : () {
+                // TODO
+                // This should probably handle the case
+                // where the editor is fullscreen.
+              };
+  }
+
   Color colorMap(BuildContext context) {
     return widget.colorIndex == 0
         ? Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary
@@ -393,8 +380,8 @@ class _MainTextFieldState extends State<MainTextField> {
     // Save the parent thought if the text has length > 0
     if (_primaryController.text.isNotEmpty) {
       // Send the thought with the parent/child if they exist
-      saveQuickThought(_primaryController.text, false, widget.parentThought?.id,
-          widget.childThought?.id);
+      saveQuickThought(context, _primaryController.text, false,
+          widget.parentThought?.id, widget.childThought?.id);
 
       // Clear the text field
       _primaryController.clear();

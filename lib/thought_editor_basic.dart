@@ -1,21 +1,30 @@
 import 'package:comind/colors.dart';
+import 'package:comind/comind_div.dart';
+import 'package:comind/input_field.dart';
+import 'package:comind/markdown_display.dart';
+import 'package:comind/misc/loading.dart';
 import 'package:comind/misc/util.dart';
+import 'package:comind/providers.dart';
 import 'package:flutter/material.dart';
-import 'package:comind/misc/comind_logo.dart';
+import 'package:comind/markdown_display.dart';
 import 'package:comind/types/thought.dart';
 import 'package:comind/api.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'dart:async';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+// Convenience function gets a thought from an ID
+
 // FIXME remove this ignore
 // ignore: must_be_immutable
 class ThoughtEditorScreen extends StatefulWidget {
-  Thought thought;
+  Thought? thought;
+  String? id;
 
-  ThoughtEditorScreen({required this.thought, Key? key}) : super(key: key);
+  ThoughtEditorScreen({this.thought, this.id, Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -42,97 +51,122 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
   @override
   void initState() {
     super.initState();
-    _textEditingController.text = widget.thought.body;
-
-    // // Autosave every n_sec seconds
-    // const nSec = 5;
-
-    // _timer = Timer.periodic(const Duration(seconds: nSec), (timer) async {
-    //   if (_textEditingController.text != _originalContent) {
-    //     // Save the thought
-    //     widget.thought.body = _textEditingController.text;
-    //     await saveThought(widget.thought);
-
-    //     // Handle the time since last save
-    //     // timeSinceLastSave += nSec;
-
-    //     // ignore: use_build_context_synchronously
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(
-    //         content: const Row(
-    //           children: [
-    //             Text("{",
-    //                 style: TextStyle(
-    //                     fontFamily: "Bungee Pop",
-    //                     fontSize: 46,
-    //                     color: Provider.of<ComindColorsNotifier>(context).primaryColor)),
-    //             Text("O",
-    //                 style: TextStyle(
-    //                     fontFamily: "Bungee Pop",
-    //                     fontSize: 46,
-    //                     color: Provider.of<ComindColorsNotifier>(context).secondaryColor)),
-    //             Text("}",
-    //                 style: TextStyle(
-    //                     fontFamily: "Bungee Pop",
-    //                     fontSize: 46,
-    //                     color: Provider.of<ComindColorsNotifier>(context).tertiaryColor)),
-    //           ],
-    //         ),
-    //         backgroundColor: Provider.of<ComindColorsNotifier>(context).colorScheme.background,
-    //       ),
-    //     );
-    //     _originalContent = _textEditingController.text;
-    //   }
-    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Extract the current colors
-    var colors = Provider.of<ComindColorsNotifier>(context);
+    // Check if we if a thought. If so, use it's content directly.
+    // Otherwise, use the id to fetch the thought from the API, using async
+    // and await to wait for the response.
+    if (widget.thought != null) {
+      // _textEditingController.text = widget.thought!.body;
+    } else if (widget.id != null) {
+      fetchThought(context, widget.id!).then((thought) {
+        setState(() {
+          _textEditingController.text = thought.body;
+          widget.thought = thought;
+        });
+      });
+    } else {
+      // Provide a blank note
+      _textEditingController.text = '';
+      widget.thought = Thought.fromString(
+          '', // body
+          Provider.of<AuthProvider>(context, listen: false).username,
+          false);
+    }
 
     // App bar widget
+    double height = 2;
     return Scaffold(
-      key: _scaffoldKey,
-      appBar: comindAppBar(context),
+      key: _scaffoldKey, appBar: comindAppBar(context),
 
-      // Using the basic text field
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Text(
-            //   widget.thought.id,
-            //   style: TextStyle(
-            //     color: Provider.of<ComindColorsNotifier>(context).getTextColorBasedOnBackground(
-            //       Provider.of<ComindColorsNotifier>(context).colorScheme.background,
-            //     ),
-            //   ),
-            // ),
-            Expanded(
-              child: Center(
-                child: SizedBox(
-                  width: 600, // Set your desired maximum width here
-                  child: TextField(
-                    // style: Provider.of<ComindColorsNotifier>(context).textTheme.bodyMedium,
-                    // style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w300),
-                    controller: _textEditingController,
-                    maxLines:
-                        null, // Allows the text field to expand to multiple lines
-                    expands: true, // Expands the text field as needed
-                    // cursorColor: Colors.white,
-                    decoration: const InputDecoration(
-                      hintText: 'Get thinky...',
-                    ),
-                    // Initialize to thought body
+      // Using the basic text field if the note has been loaded,
+      // or display a loading indicator if it hasn't
+      body: widget.thought != null
+          ? Container(
+              width: 600,
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  // Text(
+                  //   "Thought",
+                  //   style: GoogleFonts.roboto(
+                  //     fontSize: 30,
+                  //     fontWeight: FontWeight.bold,
+                  //     color: Colors.black,
+                  //   ),
+                  // ),
+                  // SizedBox(height: 20),
+                  MarkdownThought(
+                      context: context,
+                      thought: widget.thought!,
+                      selectable: false),
+
+                  // Header for "Linked"
+                  Row(
+                    children: [
+                      Text(
+                        "Linked",
+                        style: Provider.of<ComindColorsNotifier>(context)
+                            .textTheme
+                            .titleSmall,
+                      ),
+                      // const Spacer(),
+                      // IconButton(
+                      //   icon: const Icon(Icons.add),
+                      //   onPressed: () {
+                      //     // TODO
+                      //   },
+                      // ),
+                    ],
                   ),
-                ),
+
+                  // Divider
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: height,
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .currentColors
+                              .primaryColor,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: height,
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .currentColors
+                              .secondaryColor,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: height,
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .currentColors
+                              .tertiaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // List of linked thoughts
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        // TODO
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      ),
+            )
+          : const Center(
+              child: Loading(
+              text: "Thought",
+            )),
     );
   }
 
