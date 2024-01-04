@@ -56,7 +56,7 @@ class ComindColors {
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
     surface: tertiaryColorDefault,
-    background: Color.fromRGBO(8, 8, 8, 1),
+    background: Color.fromRGBO(34, 34, 34, 1),
     error: secondaryColorDefault,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
@@ -95,38 +95,51 @@ class ComindColors {
   // static final bodyStyle = GoogleFonts.hankenGrotesk(
   // static final bodyStyle = GoogleFonts.ibmPlexSans(
   // Ignore formatted
-  static final bodyStyle = GoogleFonts.nunito(
-      // static final bodyStyle = GoogleFonts.questrial(
-      fontWeight: FontWeight.w400,
-      height: 1.2);
+  // static final bodyStyle = GoogleFonts.nunito(
+  static final bodyStyle =
+      GoogleFonts.questrial(fontWeight: FontWeight.w400, height: 1.2);
 
   static final titleStyle = GoogleFonts.bungee(
     fontWeight: FontWeight.w400,
     fontSize: 20,
   );
 
+  static final labelStyle = GoogleFonts.ibmPlexMono(
+    fontWeight: FontWeight.w500,
+    fontSize: 20,
+  );
+
+  static const fontScalar = 1.0;
+  static const double maxWidth = 600;
+  static const double bubbleRadius = 10;
+
   TextTheme textTheme = TextTheme(
     // Nunito is good
 
+    // Label style
+    labelSmall: labelStyle.copyWith(fontSize: fontScalar * 8),
+    labelMedium: labelStyle.copyWith(fontSize: fontScalar * 12),
+    labelLarge: labelStyle.copyWith(fontSize: fontScalar * 14),
+
     // Body style
-    bodySmall: bodyStyle.copyWith(fontSize: 12),
-    bodyMedium: bodyStyle.copyWith(fontSize: 14),
-    bodyLarge: bodyStyle.copyWith(fontSize: 16),
+    bodySmall: bodyStyle.copyWith(fontSize: fontScalar * 10),
+    bodyMedium: bodyStyle.copyWith(fontSize: fontScalar * 14),
+    bodyLarge: bodyStyle.copyWith(fontSize: fontScalar * 18),
 
     // Title style
-    titleSmall: titleStyle.copyWith(fontSize: 14),
-    titleMedium: titleStyle.copyWith(fontSize: 16),
-    titleLarge: titleStyle.copyWith(fontSize: 18),
+    titleSmall: titleStyle.copyWith(fontSize: fontScalar * 10),
+    titleMedium: titleStyle.copyWith(fontSize: fontScalar * 14),
+    titleLarge: titleStyle.copyWith(fontSize: fontScalar * 18),
 
     // Header style
-    headlineLarge: titleStyle.copyWith(fontSize: 20),
-    headlineMedium: titleStyle.copyWith(fontSize: 24),
-    headlineSmall: titleStyle.copyWith(fontSize: 28),
+    headlineLarge: titleStyle.copyWith(fontSize: fontScalar * 20),
+    headlineMedium: titleStyle.copyWith(fontSize: fontScalar * 24),
+    headlineSmall: titleStyle.copyWith(fontSize: fontScalar * 28),
 
     // Display style
-    displayLarge: titleStyle.copyWith(fontSize: 32),
-    displayMedium: titleStyle.copyWith(fontSize: 36),
-    displaySmall: titleStyle.copyWith(fontSize: 40),
+    displayLarge: titleStyle.copyWith(fontSize: fontScalar * 32),
+    displayMedium: titleStyle.copyWith(fontSize: fontScalar * 36),
+    displaySmall: titleStyle.copyWith(fontSize: fontScalar * 40),
   );
 
   static const Color _textColor = Colors.black;

@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:comind/misc/util.dart';
+import 'package:comind/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:comind/types/thought.dart';
 import 'package:dio/dio.dart';
+import 'package:provider/provider.dart';
 
 // Initialize Dio
 final dio = Dio();
@@ -297,11 +299,15 @@ Future<List<Thought>> searchThoughts(BuildContext context, String query,
     final jsonResponse = response.data as List;
     var result = jsonResponse.map((thought) {
       if (thought is Map<String, dynamic>) {
+        // Sort in descending order by cosine similarity
         return Thought.fromJson(thought);
       } else {
         throw Exception('Invalid data format');
       }
     }).toList();
+
+    // Sort in descending order by cosine similarity
+    result.sort((a, b) => b.cosineSimilarity!.compareTo(a.cosineSimilarity!));
 
     return result;
   } else {
@@ -370,4 +376,123 @@ Future<LoginResponse> login(String username, String password) async {
 
   final jsonResponse = json.decode(response.body);
   return LoginResponse.fromJson(jsonResponse);
+}
+
+Future<bool> linkThoughts(context, String fromId, String toId) async {
+  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/link/');
+
+  String token = getToken(context);
+  final headers = {
+    'ComindUsername':
+        Provider.of<AuthProvider>(context, listen: false).username,
+    'Authorization': 'Bearer $token',
+    'ComindFromId': fromId,
+    'ComindToId': toId,
+  };
+
+  final response = await dio.post(
+    url.toString(),
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    return true;
+  } else {
+    throw Exception('Failed to link thoughts');
+  }
+}
+
+// TODO #7 Add children and parent API calls
+
+// Fetch children
+Future<List<Thought>> fetchChildren(
+    BuildContext context, String thoughtId) async {
+  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/children/');
+  final headers = {
+    'ComindUsername':
+        Provider.of<AuthProvider>(context, listen: false).username,
+    'ComindThoughtId': thoughtId,
+  };
+
+  final response = await dio.get(
+    url.toString(),
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.data);
+    return jsonResponse
+        .map<Thought>((thought) => Thought.fromJson(thought))
+        .toList();
+  } else {
+    throw Exception('Failed to load children');
+  }
+}
+
+// Fetch parents
+Future<List<Thought>> fetchParents(
+    BuildContext context, String thoughtId) async {
+  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/parents/');
+  final headers = {
+    'ComindUsername':
+        Provider.of<AuthProvider>(context, listen: false).username,
+    'ComindThoughtId': thoughtId,
+  };
+
+  final response = await dio.get(
+    url.toString(),
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  print(response.data);
+
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.data);
+    if (jsonResponse is List) {
+      return jsonResponse
+          .map((thought) => Thought.fromJson(thought))
+          .toList()
+          .cast<Thought>();
+    } else {
+      throw Exception('Decoded data is not a list');
+    }
+  } else {
+    throw Exception('Failed to load parents');
+  }
+}
+
+// Toggle public. To do this, we send a PATCH request to the server
+// with the thought ID and the new public value.
+Future<void> setPublic(
+    BuildContext context, String thoughtId, bool isPublic) async {
+  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
+  final headers = {
+    'ComindUsername':
+        Provider.of<AuthProvider>(context, listen: false).username,
+    'ComindThoughtId': thoughtId,
+  };
+
+  final body = jsonEncode(<String, dynamic>{
+    'public': isPublic,
+  });
+
+  final response = await dio.patch(
+    url.toString(),
+    data: body,
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to toggle public');
+  } else {
+    print('Successfully toggled public');
+  }
 }

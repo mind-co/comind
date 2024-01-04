@@ -1,5 +1,6 @@
 import 'package:comind/colors.dart';
 import 'package:comind/providers.dart';
+import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:comind/text_button.dart';
@@ -85,8 +86,8 @@ class _MainTextFieldState extends State<MainTextField> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 600,
-      // width: min(600, MediaQuery.of(context).size.width),
+      width: ComindColors.maxWidth,
+      // width: min(ComindColors.maxWidth, MediaQuery.of(context).size.width),
       child: Padding(
         padding: widget.type == TextFieldType.main
             ? const EdgeInsets.fromLTRB(8, 8, 8, 8)
@@ -400,7 +401,7 @@ class ComindSearchResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 600,
+      width: ComindColors.maxWidth,
       height: 100,
       child: ListView.builder(
         itemCount: searchResults.length,
@@ -463,7 +464,7 @@ class ComindSearchResultTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 600,
+      width: ComindColors.maxWidth,
       height: 200,
       child: ListView.builder(
         itemCount: searchResults.length,
@@ -564,163 +565,6 @@ class ComindSearchResultTable extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-}
-
-// ThoughtTable shows a list of searched thoughts
-class ThoughtTable extends StatelessWidget {
-  const ThoughtTable({
-    Key? key,
-    required this.thoughts,
-    this.parentThought,
-  }) : super(key: key);
-
-  final List<Thought> thoughts;
-  final Thought? parentThought;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
-      child: Stack(clipBehavior: Clip.none, children: [
-        Container(
-          width: 600,
-          height: 300,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            // Border color
-            border: Border.all(
-              color: Provider.of<ComindColorsNotifier>(context)
-                  .colorScheme
-                  .primary
-                  .withAlpha(255),
-            ),
-          ),
-
-          // If there are no thoughts, show a message
-          child: thoughts.isEmpty
-              ? Center(
-                  // "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
-                  // child: Text(
-                  //   "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
-                  //   style: Provider.of<ComindColorsNotifier>(context)
-                  //       .textTheme
-                  //       .bodyMedium,
-                  // ),
-
-                  // Using text span
-                  child: RichText(
-                    textAlign: TextAlign.start,
-                    text: TextSpan(
-                      text: "No thoughts found! \n\n",
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .headlineMedium
-                          ?.copyWith(
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onPrimary
-                                .withAlpha(180),
-                          ),
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: "Y'all should make some. \n\n",
-                          style: Provider.of<ComindColorsNotifier>(context)
-                              .textTheme
-                              .bodyLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              "I would. But I am just a lame, boring computer.\n\n",
-                          style: Provider.of<ComindColorsNotifier>(context)
-                              .textTheme
-                              .bodyLarge,
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ListView.builder(
-                      itemCount: thoughts.length + 1,
-                      itemBuilder: (context, index) {
-                        // return Text("ABC");
-                        if (index < thoughts.length) {
-                          return MarkdownThought(
-                              thought: thoughts[index], context: context);
-                        } else {
-                          return Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Do you want to see ",
-                                  style:
-                                      Provider.of<ComindColorsNotifier>(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                ),
-                                // TODO #5 add more thoughts button
-                                ComindTextButton(
-                                  text: "More",
-                                  onPressed: () {},
-                                  opacity: 1.0,
-                                  fontSize: 12,
-                                ),
-                                Text(
-                                  " thoughts?",
-                                  style:
-                                      Provider.of<ComindColorsNotifier>(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      }),
-                ),
-        ),
-
-        // Display ("Search results") at top left corner
-        Positioned(
-          top: -8,
-          left: 10,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
-            child: Row(
-              children: [
-                // Send button
-                Container(
-                  decoration: BoxDecoration(
-                    color: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .background,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: Text(
-                      "Results",
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .titleSmall
-                          ?.copyWith(
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onPrimary
-                                .withAlpha(180),
-                          ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ]),
     );
   }
 }

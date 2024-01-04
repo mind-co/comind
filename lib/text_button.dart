@@ -2,7 +2,7 @@ import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum LineLocation { top, bottom, left, right }
+enum LineLocation { top, bottom, left, right, none }
 
 // ignore: must_be_immutable
 class ComindTextButton extends StatefulWidget {
@@ -23,13 +23,13 @@ class ComindTextButton extends StatefulWidget {
     this.opacityOnHover = 1.0,
     this.textStyle = const TextStyle(
       fontFamily: "Bungee",
-      fontSize: 14,
+      fontSize: 16,
     ),
     required this.onPressed,
     this.opacity = 0.5,
     this.colorIndex = 1, // 1 = primary, 2 = secondary, 3 = tertiary
     this.lineLocation = LineLocation.top,
-    this.fontSize = 16,
+    this.fontSize = 14,
     this.lineOnly = true,
   });
 
@@ -42,19 +42,6 @@ class _ComindTextButtonState extends State<ComindTextButton> {
   bool _isHovered = false;
   int colorIndex = 0;
   // bool lineOnly = true;
-
-  // Method to make the color shift to the next one
-  void shiftColor() {
-    setState(() {
-      colorIndex = colorIndex == 0
-          ? 1
-          : colorIndex == 1
-              ? 2
-              : colorIndex == 2
-                  ? 3
-                  : 1;
-    });
-  }
 
   @override
   void didUpdateWidget(ComindTextButton oldWidget) {

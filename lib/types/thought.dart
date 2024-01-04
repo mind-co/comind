@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:comind/api.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -17,15 +19,15 @@ class Thought {
   final String dateUpdated;
   final int revision;
   final String id;
-  final bool isPublic;
+  bool isPublic;
   final bool isSynthetic;
   final String origin;
   final int accepts;
   final int rejects;
   final int rethinks;
   final int refs;
-  final int numLinks = 0;
-  final double cosineSimilarity = 0.0;
+  final int? numLinks;
+  final double? cosineSimilarity;
 
   Thought({
     required this.title,
@@ -42,6 +44,8 @@ class Thought {
     required this.rejects,
     required this.rethinks,
     required this.refs,
+    this.numLinks = 0,
+    this.cosineSimilarity = 0.0,
   });
 
   factory Thought.fromJson(Map<String, dynamic> json) {
@@ -60,6 +64,8 @@ class Thought {
       rejects: json['rejects'],
       rethinks: json['rethinks'],
       refs: json['refs'],
+      numLinks: json['numlinks'],
+      cosineSimilarity: json['cosinesimilarity'],
     );
   }
 
@@ -184,5 +190,13 @@ class Thought {
   // Setter function for body
   void setBody(String body) {
     this.body = body;
+  }
+
+  // Toggle public
+  void togglePublic(BuildContext context) {
+    isPublic = !isPublic;
+
+    // Send a request to the server to update the thought
+    setPublic(context, id, isPublic);
   }
 }

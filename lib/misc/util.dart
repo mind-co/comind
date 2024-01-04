@@ -43,7 +43,7 @@ AppBar comindAppBar(BuildContext context) {
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      MediaQuery.of(context).size.width > 600
+      MediaQuery.of(context).size.width > ComindColors.maxWidth
           ? ComindLogo(
               key: UniqueKey(),
               colors: colors,
@@ -69,40 +69,49 @@ AppBar comindAppBar(BuildContext context) {
     // If the width of the screen is less than 550 pixels, use the
     // ComindLogo class, otherwise use the original definition
     title: title,
-    centerTitle: false,
+    centerTitle: true,
     scrolledUnderElevation: 0,
     elevation: 0,
 
     // Add toolbar
     toolbarHeight: 90,
-    // actions: [
-    //   // Add a toggle for handedness
-    //   IconButton(
-    //     icon: colors.rightHanded
-    //         ? const Icon(Icons.format_align_left)
-    //         : const Icon(Icons.format_align_right),
-    //     onPressed: () {
-    //       colors.rightHanded
-    //           ? Provider.of<ComindColorsNotifier>(context, listen: false)
-    //               .toggleHandedness(true)
-    //           : Provider.of<ComindColorsNotifier>(context, listen: false)
-    //               .toggleHandedness(false);
-    //     },
-    //   ),
-    //   // Add dark mode toggle
-    //   IconButton(
-    //     icon: colors.darkMode
-    //         ? const Icon(Icons.dark_mode)
-    //         : const Icon(Icons.light_mode),
-    //     onPressed: () {
-    //       Provider.of<ComindColorsNotifier>(context, listen: false)
-    //           .toggleTheme(!colors.darkMode);
-    //     },
-    //   ),
-    // ],
+    actions: [
+      // Add dark mode toggle
+      IconButton(
+        icon: colors.darkMode
+            ? const Icon(Icons.dark_mode)
+            : const Icon(Icons.light_mode),
+        onPressed: () {
+          Provider.of<ComindColorsNotifier>(context, listen: false)
+              .toggleTheme(!colors.darkMode);
+        },
+      ),
+    ],
   );
 }
 
 String getToken(BuildContext context) {
   return Provider.of<AuthProvider>(context, listen: false).token;
+}
+
+Color getPrimaryColor(BuildContext context) {
+  return Provider.of<ComindColorsNotifier>(context, listen: false)
+      .currentColors
+      .primaryColor;
+}
+
+Color getSecondaryColor(BuildContext context) {
+  return Provider.of<ComindColorsNotifier>(context, listen: false)
+      .currentColors
+      .secondaryColor;
+}
+
+Color getTertiaryColor(BuildContext context) {
+  return Provider.of<ComindColorsNotifier>(context, listen: false)
+      .currentColors
+      .tertiaryColor;
+}
+
+TextTheme getTextTheme(BuildContext context) {
+  return Provider.of<ComindColorsNotifier>(context, listen: false).textTheme;
 }

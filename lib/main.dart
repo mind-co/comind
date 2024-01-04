@@ -41,6 +41,7 @@ class ComindApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ComindColorsNotifier()),
+        ChangeNotifierProvider(create: (_) => ThoughtsProvider()),
       ],
       builder: (context, child) {
         return MaterialApp(
@@ -134,20 +135,13 @@ class ThoughtListScreen extends StatefulWidget {
 }
 
 class _ThoughtListScreenState extends State<ThoughtListScreen> {
-  List<Thought> thoughts = [];
   bool loaded = true;
-
-  // List of menu bools
-  List<bool> editVisibilityList = [];
-  List<bool> expandedVisibilityList = [];
-  List<bool> verbBarHoverList = [];
 
   // Menu bools for the top bar
   bool editorVisible = false;
   bool moreMenuExpanded = false;
 
   // List of text controllers
-  final List<TextEditingController> _controllers = [];
   final TextEditingController _primaryController = TextEditingController();
 
   // Set up public/private writing mode
@@ -163,17 +157,12 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   void _fetchThoughts() async {
     // Replace with your API call
     List<Thought> fetchedThoughts = await fetchThoughts(context);
-    setState(() {
-      thoughts = fetchedThoughts;
-      editVisibilityList = List<bool>.filled(thoughts.length, false);
-      expandedVisibilityList = List<bool>.filled(thoughts.length, false);
-      verbBarHoverList = List<bool>.filled(thoughts.length, false);
 
-      // Make a new controller for each thought
-      for (var i = 0; i < thoughts.length; i++) {
-        _controllers.add(TextEditingController());
-      }
-    });
+    // Add all thoughts to the provider
+    // ignore: use_build_context_synchronously
+    Provider.of<ThoughtsProvider>(context, listen: false)
+        .addThoughts(fetchedThoughts);
+
     loaded = true;
   }
 
@@ -185,13 +174,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
         Provider.of<AuthProvider>(context, listen: false).username,
         Provider.of<ComindColorsNotifier>(context).publicMode);
 
-    setState(() {
-      thoughts.add(newThought);
-      editVisibilityList.add(false);
-      expandedVisibilityList.add(false);
-      verbBarHoverList.add(false);
-      _controllers.add(TextEditingController());
-    });
+    Provider.of(context, listen: false).addThoughts([newThought]);
 
     Navigator.push(
       context,
@@ -199,20 +182,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
         builder: (context) => ThoughtEditorScreen(thought: newThought),
       ),
     );
-  }
-
-  // Fetch concepts
-  void _fetchConcepts(BuildContext context) {
-    // This function will be called when the page loads.
-    setState(() {
-      // fetchConcepts();
-    });
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => const ThoughtEditorScreen(thought: newThought),
-    //   ),
-    // );
   }
 
   // Delete a note
@@ -250,7 +219,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     // Check if we have thoughts, make a widget for each one
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (thoughts.isNotEmpty) {
+        if (getThoughts(context).isNotEmpty) {
           const edgeInsets = EdgeInsets.fromLTRB(8, 2, 8, 2);
           return Scaffold(
             backgroundColor: Provider.of<ComindColorsNotifier>(context)
@@ -280,9 +249,9 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                           ComindTextButton(
                             text: "Concepts",
                             onPressed: () {
-                              _fetchConcepts(context);
+                              // TODO #9 add a concepts column
                             },
-                            colorIndex: 2,
+                            colorIndex: 0,
                             opacity: 0.8,
                             textStyle: const TextStyle(
                                 fontFamily: "Bungee",
@@ -305,12 +274,12 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                         children: [
                           // Add a note button
                           ComindTextButton(
-                            text: "Add note",
+                            text: "Suggested",
                             onPressed: () {
                               _addNote(
                                   context); // Call _addNote with the context
                             },
-                            colorIndex: 2,
+                            colorIndex: 0,
                             opacity: 0.8,
                             textStyle: const TextStyle(
                                 fontFamily: "Bungee",
@@ -332,6 +301,9 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     );
   }
 
+  List<Thought> getThoughts(BuildContext context) =>
+      Provider.of<ThoughtsProvider>(context).thoughts;
+
   Container bottomBar(
       BuildContext context, EdgeInsets edgeInsets, bool publicMode) {
     return Container(
@@ -349,7 +321,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
         ),
       ),
       height: 40,
-      width: 600,
+      width: ComindColors.maxWidth,
       // color: Provider.of<ComindColorsNotifier>(context)
       //     .colorScheme
       //     .background,
@@ -684,7 +656,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
 
   SizedBox centerColumn(BuildContext context, BoxConstraints constraints) {
     return SizedBox(
-      width: min(600, MediaQuery.of(context).size.width),
+      width: min(ComindColors.maxWidth, MediaQuery.of(context).size.width),
       child: Column(
         children: [
           // DEBUG FOR PIXEL WIDTH PIXEL HEIGHT
@@ -696,16 +668,19 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           // Main text field
           MainTextField(
               onThoughtSubmitted: (Thought thought) async {
-                // Send the thought
-                await saveThought(context, thought, newThought: true);
+                // Push the thought to the provider
+                // ignore: use_build_context_synchronously
+                Provider.of<ThoughtsProvider>(context, listen: false)
+                    .addThought(thought);
 
                 // Refresh the thought list
-                // TODO this should be adjusted to only refresh the thought that
-                // TODO was just added
-                _fetchThoughts();
+                // _fetchThoughts();
 
                 // Clear the text field
                 _primaryController.clear();
+
+                // Send the thought
+                await saveThought(context, thought, newThought: true);
               },
               primaryController: _primaryController,
               colorIndex: Provider.of<ComindColorsNotifier>(context).publicMode
@@ -717,9 +692,31 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           Expanded(
             child: Center(
               child: ListView.builder(
-                itemCount: thoughts.length,
+                itemCount: getThoughts(context).length,
                 itemBuilder: (context, index) {
-                  return thoughtBox(context, index, constraints: constraints);
+                  // return thoughtBox(context, index, constraints: constraints);
+
+                  // Add vertical spacer if index != thoughts.length
+                  return Column(
+                    children: [
+                      // Add a vertical spacer if index != 0
+                      // if (index != 0) const SizedBox(height: 16),
+
+                      // Add the thought box
+                      thoughtBox(context, index, constraints: constraints),
+
+                      // Add a vertical spacer if index != thoughts.length
+                      // if (index != getThoughts(context).length - 1)
+                      //   Container(
+                      //     height: 64,
+                      //     width: 2,
+                      //     color: Provider.of<ComindColorsNotifier>(context)
+                      //         .colorScheme
+                      //         .onPrimary
+                      //         .withAlpha(32),
+                      //   )
+                    ],
+                  );
                 },
               ),
             ),
@@ -730,7 +727,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   }
 
   double buttonSize(BoxConstraints constraints) {
-    return constraints.maxWidth > 600 ? 16 : 14;
+    return constraints.maxWidth > ComindColors.maxWidth ? 16 : 14;
   } // Edit a note
 
   // void _editNote(BuildContext context, int index) {
@@ -750,7 +747,8 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
 
   Widget thoughtBox(BuildContext context, int index,
       {required BoxConstraints constraints}) {
-    return MarkdownThought(thought: thoughts[index], context: context);
+    return MarkdownThought(
+        thought: getThoughts(context)[index], context: context);
   }
 
   Expanded thoughtBoxVerbBar(BuildContext context, int index) {
@@ -808,7 +806,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                     );
 
                     if (shouldDelete == true) {
-                      deleteThought(context, thoughts[index].id);
+                      deleteThought(context, getThoughts(context)[index].id);
                       _fetchThoughts();
                     }
                   },
@@ -845,19 +843,19 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
               ///////////////////////////
               /// THINK BUTTON BUTTON ///
               ///////////////////////////
-              ComindTextButton(
-                  colorIndex: 1,
-                  // lineOnly: !verbBarHoverList[index],
-                  onPressed: () {
-                    setState(() {
-                      expandedVisibilityList[index] =
-                          !expandedVisibilityList[index];
-                    });
-                  },
-                  opacity: 0.8,
-                  text: expandedVisibilityList[index] ? "Less" : "More",
-                  textStyle:
-                      const TextStyle(fontFamily: "Bungee", fontSize: 16)),
+              // ComindTextButton(
+              //     colorIndex: 1,
+              //     // lineOnly: !verbBarHoverList[index],
+              //     onPressed: () {
+              //       setState(() {
+              //         expandedVisibilityList[index] =
+              //             !expandedVisibilityList[index];
+              //       });
+              //     },
+              //     opacity: 0.8,
+              //     text: expandedVisibilityList[index] ? "Less" : "More",
+              //     textStyle:
+              //         const TextStyle(fontFamily: "Bungee", fontSize: 16)),
             ],
           ),
         ),

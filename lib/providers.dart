@@ -61,6 +61,12 @@ class ThoughtsProvider extends ChangeNotifier {
 
   List<Thought> get thoughts => _thoughts;
 
+  // Add a list of thoughts
+  void addThoughts(List<Thought> thoughts) {
+    _thoughts.addAll(thoughts);
+    notifyListeners();
+  }
+
   void addThought(Thought thought) {
     // Add thought if it doesn't already exist. Search by id.
     if (!_thoughts.any((element) => element.id == thought.id)) {

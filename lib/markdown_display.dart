@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:comind/api.dart';
+import 'package:comind/comind_div.dart';
 // import 'package:comind/concept_syntax.dart';
 import 'package:comind/input_field.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/text_button.dart';
+import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -10,10 +14,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:comind/types/thought.dart';
 import 'package:comind/colors.dart';
 import 'package:provider/provider.dart';
+import 'package:comind/cine_wave.dart';
 
 enum MarkdownDisplayType {
   fullScreen,
   inline,
+  searchResult,
 }
 
 //
@@ -29,6 +35,7 @@ class MarkdownThought extends StatefulWidget {
       this.opacityOnHover = 1.0,
       this.infoMode = false,
       this.relatedMode = false,
+      this.parentThought,
       this.viewOnly = false,
       this.selectable = true});
 
@@ -41,7 +48,9 @@ class MarkdownThought extends StatefulWidget {
   bool relatedMode;
   bool viewOnly;
   MarkdownDisplayType type;
+  String? parentThought;
   bool showTextBox = false;
+  bool showBody = true;
 
   // store whether hovered
   bool hovered = false;
@@ -67,10 +76,11 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
   @override
   final BuildContext context;
-  final Thought thought;
+  Thought thought;
   final double opacity;
   final double opacityOnHover;
   final _editController = TextEditingController();
+  final _addController = TextEditingController();
   List<Thought> relatedResults = [];
   final ComindColors colors = ComindColors();
   final int outlineAlpha = 120;
@@ -82,237 +92,69 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   // whether the "more" button has been clicked
   bool moreClicked = false;
 
+  // Whether the "new thought" editor is open
+  bool newThoughtOpen = false;
+
   // Initialization
   @override
   Widget build(BuildContext context) {
-    const edgeInsets = EdgeInsets.fromLTRB(8, 0, 8, 0); // between buttons
-    const edgeInsets2 = EdgeInsets.fromLTRB(1, 0, 1, 0); // inside buttons
-    double buttonFontSize = 10;
-    double buttonOpacity = hovered ||
-            widget.showTextBox ||
-            widget.infoMode ||
-            widget.type == MarkdownDisplayType.fullScreen
-        ? 1
-        : widget.showTextBox
-            ? 1
-            : 0.6;
+    var onBackground =
+        Provider.of<ComindColorsNotifier>(context).colorScheme.onBackground;
 
     return Padding(
       padding: widget.type == MarkdownDisplayType.fullScreen
           ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-          : const EdgeInsets.fromLTRB(16, 16, 16, 32),
+          // : const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          // : const EdgeInsets.fromLTRB(16, 0, 16, 0),
+          : widget.type == MarkdownDisplayType.searchResult
+              ? const EdgeInsets.fromLTRB(4, 0, 4, 0)
+              : const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Column(children: [
         // Main text box
-        Visibility(
-          // visible: true,
-          visible: !widget.showTextBox,
-          child: Card(
-            // color: Colors.red,
-            color: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-              child: SizedBox(
-                width: double.infinity,
-                // Maximum 600 width
-                // preferredSize: const Size(600, double.infinity),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Add thought body
-                    SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              // Main body
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                                child: Container(
-                                  // Add border
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Provider.of<ComindColorsNotifier>(
-                                            context)
-                                        .background,
-                                    // color: colors.primaryColor,
-                                    // Top/bottom border only
-                                    border: Border(
-                                        top: BorderSide(
-                                          color:
-                                              Provider.of<ComindColorsNotifier>(
-                                                      context)
-                                                  .colorScheme
-                                                  .onBackground
-                                                  .withAlpha(80),
-                                          width: 1,
-                                        ),
-                                        bottom: BorderSide(
-                                          color:
-                                              Provider.of<ComindColorsNotifier>(
-                                                      context)
-                                                  .colorScheme
-                                                  .onBackground
-                                                  .withAlpha(80),
-                                        )),
+        Card(
+          // color: Colors.red,
+          color: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Cinewave username
+                  Material(child: InkWell(child: cineUsername(context))),
 
-                                    // All border
-                                    // border: Border.all(
-                                    //   width: 1,
-                                    //   color:
-                                    //       Provider.of<ComindColorsNotifier>(
-                                    //               context)
-                                    //           .onBackground
-                                    //           .withAlpha(hovered
-                                    //               ? outlineAlphaHover
-                                    //               : outlineAlpha),
-                                    // ),
-                                    // borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Material(
-                                    borderRadius: BorderRadius.circular(0),
-                                    child: InkWell(
-                                      splashColor: Colors.transparent,
-                                      hoverColor: widget.selectable
-                                          ? Provider.of<ComindColorsNotifier>(
-                                                  context)
-                                              .colorScheme
-                                              .onBackground
-                                              .withAlpha(16)
-                                          : Colors.transparent,
-                                      onTap: () => {
-                                        // Expand the thought view, onyl if selectable
-                                        if (widget.selectable)
-                                          {
-                                            Navigator.pushNamed(context,
-                                                '/thoughts/${thought.id}')
-                                          }
-                                        else if (widget.viewOnly)
-                                          {
-                                            // Otherwise, open edit mode
-                                            // Snack bar edit
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'You can\'t edit this thought. View only: ${widget.viewOnly}'),
-                                              duration:
-                                                  const Duration(seconds: 1),
-                                            )),
-                                          }
-                                        else
-                                          {
-                                            setState(() {
-                                              widget.showTextBox = true;
-                                              _editController.text =
-                                                  thought.body;
-                                            })
-                                          }
-                                      },
-                                      borderRadius: BorderRadius.circular(0),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Column(
-                                          children: [
-                                            // Markdown body
-                                            TheMarkdownBox(thought: thought),
+                  // Show cosine similarity
+                  // Text(widget.thought.cosineSimilarity.toString(),
+                  //     style: Provider.of<ComindColorsNotifier>(context)
+                  //         .textTheme
+                  //         .bodySmall),
 
-                                            // Info mode display
-                                            InfoCard(
-                                                widget: widget,
-                                                thought: thought),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                  // Add thought body
+                  Visibility(
+                      visible: widget.showBody, child: thoughtBody(context)),
 
-                              // Username on border
-                              borderUsername(context),
-
-                              // Add the action row on bottom
-                              Visibility(
-                                visible: !widget.viewOnly,
-                                child: Positioned(
-                                  bottom: -6,
-                                  right: 0,
-                                  child: actionRow(
-                                      context,
-                                      edgeInsets2,
-                                      edgeInsets,
-                                      buttonFontSize,
-                                      buttonOpacity),
-                                ),
-                              ),
-
-                              // Add the date chunk on bottom
-                              Positioned(
-                                bottom: -6,
-                                left: 12,
-                                child: dateChunk(context, buttonFontSize),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  // Alternative action row
+                  Visibility(
+                      visible: widget.type != MarkdownDisplayType.searchResult,
+                      child: alternativeActionRow(context, onBackground)),
+                ],
               ),
             ),
           ),
         ),
 
-        // Show a vertical divider
-        // Visibility(
-        //   visible: widget.showTextBox,
-        //   child: Column(
-        //     children: [
-        //       Padding(
-        //           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        //           child: Container(
-        //             width: 2,
-        //             height: 32,
-        //             color: Provider.of<ComindColorsNotifier>(context)
-        //                 .colorScheme
-        //                 .onBackground
-        //                 .withAlpha(
-        //                     hovered ? outlineAlphaHover : outlineAlpha),
-        //           )),
-        //     ],
-        //   ),
-        // ),
-
         // Show the edit box
-        Visibility(
-          visible: !widget.viewOnly && widget.showTextBox,
-          child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-              child: MainTextField(
-                  thought: thought,
-                  onThoughtEdited: (Thought thought) async {
-                    // Update the thought
-                    await saveThought(context, thought);
-                  },
-                  primaryController: _editController,
-                  toggleEditor: () {
-                    // Close the text box
-                    setState(() {
-                      widget.showTextBox = false;
-                    });
-                  },
-                  type: TextFieldType.edit)),
-        ),
+        expandableEditBox(context),
 
         // Add the action row on bottom
         // actionRow(
         //     context, edgeInsets2, edgeInsets, buttonFontSize, buttonOpacity),
 
         // Display the related results
-        if (widget.relatedMode && relatedResults.isNotEmpty)
+        if (relatedResults.isNotEmpty)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -328,260 +170,341 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     );
   }
 
-  Positioned borderUsername(BuildContext context) {
-    return Positioned(
-      top: -16,
-      left: 8,
-      child: Container(
-        decoration: BoxDecoration(
-          color:
-              Provider.of<ComindColorsNotifier>(context).colorScheme.background,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-          child: Row(
-            children: [
-              ComindTextButton(
-                text: thought.username,
-                colorIndex: 1,
-                lineLocation: LineLocation.bottom,
-                opacity: opacity,
-                opacityOnHover: outlineAlphaHover / 255,
-                onPressed: () {
-                  // Navigate to the user's profile
-                  Navigator.pushNamed(context, '/thinkers/${thought.username}');
-                },
-                fontSize: 12,
-              ),
-              // Opacity(
-              //   opacity: hovered
-              //       ? 1
-              //       : widget.showTextBox
-              //           ? 1
-              //           : 0.4,
-              //   child: Padding(
-              //       padding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
-              //       // child: thought.isPublic
-              //       //     ? Icon(Icons.lock_open,
-              //       //         size: lockSize, color: Colors.grey)
-              //       //     : Icon(Icons.lock, size: lockSize, color: Colors.grey),
-              //       child: thought.isPublic ? Text("×") : Text("∘")),
-              // ),
-            ],
-          ),
+  // An edit box that expands when clicked
+  Visibility expandableEditBox(BuildContext context) {
+    return Visibility(
+      visible: !widget.viewOnly && widget.showTextBox,
+      child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+          child: MainTextField(
+              thought: thought,
+              onThoughtEdited: (Thought thought) async {
+                // Update the thought
+                await saveThought(context, thought);
+              },
+              primaryController: _editController,
+              toggleEditor: () {
+                // Close the text box
+                setState(() {
+                  widget.showTextBox = false;
+                });
+              },
+              type: TextFieldType.edit)),
+    );
+  }
+
+  // The action row
+  Row alternativeActionRow(BuildContext context, Color onBackground) {
+    // The cinewave divider
+    var expandedCineWave = Expanded(
+        child: SizedBox(
+            height: 20,
+            child: Divider(
+              color: onBackground.withAlpha(64),
+            )));
+
+    // The timestamp
+    var timestamp = Opacity(
+      opacity: 0.5,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(32, 0, 8, 0),
+        child: Text(
+          formatTimestamp(thought.dateCreated),
+          style: Provider.of<ComindColorsNotifier>(context).textTheme.bodySmall,
         ),
       ),
     );
-  }
 
-  Widget actionRow(BuildContext context, EdgeInsets edgeInsets2,
-      EdgeInsets edgeInsets, double buttonFontSize, double buttonOpacity) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Flex(
-          direction: Axis.horizontal,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // TODO #1 add code to make this left-hand right-hand toggleable
-            // added some stuff but it's not working. May be an issue with state refresh
-            // Right icon box
-            actionStuff(edgeInsets, context, edgeInsets2, buttonFontSize,
-                buttonOpacity),
-          ],
+    // The info button
+    var infoButton = newButton(
+        onBackground, context, widget.infoMode ? "Close" : "Info", () {
+      // Toggle info mode
+      setState(() {
+        widget.infoMode = !widget.infoMode;
+      });
+    });
+
+    // The expand button
+    var expandButton = newButton(
+        onBackground, context, widget.showBody ? "Close" : "View", () {
+      // Show the full thought
+      setState(() {
+        widget.showBody = !widget.showBody;
+      });
+    });
+
+    // The "show linked" button
+    var showLinkedButton =
+        newButton(onBackground, context, widget.relatedMode ? "Close" : "Think",
+            () async {
+      if (relatedResults.isEmpty) {
+        // Semantic search on the body of the text
+        var res = await searchThoughts(context, thought.body,
+            associatedId: thought.id);
+
+        // Toggle info mode
+        setState(() {
+          widget.relatedMode = !widget.relatedMode;
+          relatedResults = res.where((item) => thought.id != item.id).toList();
+        });
+      } else {
+        setState(() {
+          widget.relatedMode = !widget.relatedMode;
+        });
+      }
+    });
+
+    // The "add thought" button
+    var addThoughtButton = Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+      child: IconButton(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+        enableFeedback: true,
+        splashRadius: 16,
+        onPressed: () {
+          // Toggle the new thought box
+          setState(() {
+            newThoughtOpen = !newThoughtOpen;
+          });
+        },
+        icon: Icon(
+          newThoughtOpen ? Icons.remove : Icons.add,
+          size: 16,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(128),
         ),
-      ],
+      ),
     );
-  }
 
-  Row actionStuff(EdgeInsets edgeInsets, BuildContext context,
-      EdgeInsets edgeInsets2, double buttonFontSize, double buttonOpacity) {
-    return Row(
-      children: [
-        // Right icon box
-        Padding(
-          padding: edgeInsets,
-          child: Row(
-            children: [
-              // Info action button
-              // TODO #2 delete thought should remove the thought
-              //      from the train and mask it from the user.
-              //      If the user is the owner of the thought,
-              //      it should be deleted from the database.
-              //
-              // if (moreClicked)
-              Visibility(
-                visible: moreClicked,
-                child: deleteActionButton(edgeInsets, context, edgeInsets2,
-                    buttonOpacity, buttonFontSize),
-              ),
-
-              // Info action button
-              // if (moreClicked)
-              Visibility(
-                visible: moreClicked,
-                child: infoActionButton(edgeInsets, context, edgeInsets2,
-                    buttonOpacity, buttonFontSize),
-              ),
-
-              // Link action button
-              // TODO enter link mode, show relevant thoughts
-              //      that could be linked to this one
-              // linkActionButton(edgeInsets, context, edgeInsets2, buttonOpacity,
-              //     buttonFontSize),
-
-              // More action button
-              moreActionButton(edgeInsets, context, edgeInsets2, buttonFontSize,
-                  buttonOpacity),
-
-              // Edit action button
-              // TODO enter edit mode, allow the user to edit
-              //      the thought
-              editActionButton(edgeInsets, context, edgeInsets2, buttonOpacity,
-                  buttonFontSize),
-
-              // Link action button
-              // TODO enter link mode, show relevant thoughts
-              //      that could be linked to this one
-              relatedActionButton(edgeInsets, context, edgeInsets2,
-                  buttonFontSize, buttonOpacity),
-            ],
-          ),
+    var lockButton = Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+      child: IconButton(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+        enableFeedback: true,
+        splashRadius: 16,
+        onPressed: () {
+          // Toggle public/private
+          setState(() {
+            thought.togglePublic(context);
+            // thought.isPublic = !thought.isPublic;
+          });
+        },
+        icon: Icon(
+          thought.isPublic ? Icons.lock_open : Icons.lock,
+          size: 16,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(128),
         ),
-      ],
+      ),
     );
+    return Row(children: [
+      timestamp,
+
+      // Lock icon
+      lockButton,
+
+      // Cinewave
+      expandedCineWave,
+
+      // infoButton,
+      Visibility(
+          visible: widget.type == MarkdownDisplayType.searchResult,
+          child: expandButton),
+      showLinkedButton,
+
+      // Add thought button
+      addThoughtButton,
+    ]);
   }
 
-  Padding moreActionButton(EdgeInsets edgeInsets, BuildContext context,
-      EdgeInsets edgeInsets2, double buttonFontSize, double buttonOpacity) {
-    return Padding(
-      padding: edgeInsets,
-      child: Container(
-        decoration: BoxDecoration(
-          color:
-              Provider.of<ComindColorsNotifier>(context).colorScheme.background,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Padding(
-          padding: edgeInsets2,
-          child: ComindTextButton(
-            lineLocation: LineLocation.top,
-            fontSize: buttonFontSize,
-            opacity: buttonOpacity,
-            colorIndex: 3,
-            text: moreClicked ? "Less" : "More",
-            // lineOnly: hovered,
-            onPressed: () async {
-              // Toggle info mode
-              setState(() {
-                moreClicked = !moreClicked;
-              });
+  TextButton newButton(Color onBackground, BuildContext context, String text,
+      void Function()? onPressed) {
+    return TextButton(
+        style: ButtonStyle(
+          // Set background color transparent always
+          backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+              return Colors.transparent;
             },
           ),
-        ),
-      ),
-    );
-  }
 
-  Padding relatedActionButton(EdgeInsets edgeInsets, BuildContext context,
-      EdgeInsets edgeInsets2, double buttonFontSize, double buttonOpacity) {
-    return Padding(
-      padding: edgeInsets,
-      child: Container(
-        decoration: BoxDecoration(
-          color:
-              Provider.of<ComindColorsNotifier>(context).colorScheme.background,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Padding(
-          padding: edgeInsets2,
-          child: ComindTextButton(
-            lineLocation: LineLocation.top,
-            fontSize: buttonFontSize,
-            opacity: buttonOpacity,
-            colorIndex: 1,
-            text: "Think",
-            // lineOnly: hovered,
-            onPressed: () async {
-              if (relatedResults.isEmpty) {
-                // Semantic search on the body of the text
-                var res = await searchThoughts(context, thought.body,
-                    associatedId: thought.id);
+          // Overlay color on hover
+          overlayColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+              return onBackground.withAlpha(16);
+            },
+          ),
 
-                // Toggle info mode
-                setState(() {
-                  widget.relatedMode = !widget.relatedMode;
-                  relatedResults =
-                      res.where((item) => thought.id != item.id).toList();
-                });
+          // Make text onBackground color
+          // Opacity 0.5 when not hovered
+          // Opacity 1 when hovered
+          foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.hovered)) {
+                hovered = true;
+                return Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .onBackground
+                    .withAlpha(255);
               } else {
-                setState(() {
-                  widget.relatedMode = !widget.relatedMode;
-                });
+                hovered = false;
+                return Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .onBackground
+                    .withAlpha(128);
               }
             },
           ),
         ),
+        onPressed: onPressed,
+        child: Text(text, style: getTextTheme(context).titleSmall));
+  }
+
+  SingleChildScrollView thoughtBody(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // Main body
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                // const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                child: Container(
+                  // Add border
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color:
+                        Provider.of<ComindColorsNotifier>(context).background,
+                    borderRadius:
+                        BorderRadius.circular(ComindColors.bubbleRadius),
+                    border: Border.all(
+                      color: Provider.of<ComindColorsNotifier>(context)
+                          .colorScheme
+                          .onBackground
+                          .withAlpha(64),
+                      width: 1,
+                    ),
+                  ),
+                  child: Material(
+                    borderRadius:
+                        BorderRadius.circular(ComindColors.bubbleRadius),
+                    child: InkWell(
+                      // Round the corners
+                      radius: ComindColors.bubbleRadius,
+                      splashColor: Colors.transparent,
+                      hoverColor: widget.selectable
+                          ? Provider.of<ComindColorsNotifier>(context)
+                              .colorScheme
+                              .onBackground
+                              .withAlpha(32)
+                          : Colors.transparent,
+                      onTap: () => {
+                        // Expand the thought view, onyl if selectable
+                        if (widget.selectable)
+                          {
+                            Navigator.pushNamed(
+                                context, '/thoughts/${thought.id}')
+                          }
+                        else if (widget.viewOnly)
+                          {
+                            // Otherwise, open edit mode
+                            // Snack bar edit
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                  'You can\'t edit this thought. View only: ${widget.viewOnly}'),
+                              duration: const Duration(seconds: 1),
+                            )),
+                          }
+                        else
+                          {
+                            setState(() {
+                              widget.showTextBox = true;
+                              _editController.text = thought.body;
+                            })
+                          }
+                      },
+                      borderRadius:
+                          BorderRadius.circular(ComindColors.bubbleRadius),
+                      customBorder: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(ComindColors.bubbleRadius),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                        child: Column(
+                          children: [
+                            // Markdown body
+                            TheMarkdownBox(thought: thought),
+
+                            // Info mode display
+                            InfoCard(widget: widget, thought: thought),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Padding infoActionButton(EdgeInsets edgeInsets, BuildContext context,
-      EdgeInsets edgeInsets2, double buttonOpacity, double buttonFontSize) {
+  Padding cineUsername(BuildContext context) {
     return Padding(
-      padding: edgeInsets,
-      child: Container(
-        decoration: BoxDecoration(
-          color:
-              Provider.of<ComindColorsNotifier>(context).colorScheme.background,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Padding(
-          padding: edgeInsets2,
-          child: ComindTextButton(
-            lineLocation: LineLocation.top,
-            fontSize: buttonFontSize,
-            opacity: buttonOpacity,
-            text: widget.infoMode ? "Close" : "Info",
-            // lineOnly: hovered,
-            colorIndex: 3,
-            onPressed: () {
-              // Toggle info mode
-              setState(() {
-                widget.infoMode = !widget.infoMode;
-              });
-            },
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+      child: Row(
+        children: [
+          // Linked icon
+          Visibility(
+            visible: widget.type == MarkdownDisplayType.searchResult,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 2, 0),
+              child: Icon(
+                Icons.link,
+                size: 16,
+                color: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .onPrimary
+                    .withAlpha(128),
+              ),
+            ),
           ),
-        ),
-      ),
-    );
-  }
 
-  Padding linkActionButton(EdgeInsets edgeInsets, BuildContext context,
-      EdgeInsets edgeInsets2, double buttonOpacity, double buttonFontSize) {
-    return Padding(
-      padding: edgeInsets,
-      child: Container(
-        decoration: BoxDecoration(
-          color:
-              Provider.of<ComindColorsNotifier>(context).colorScheme.background,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Padding(
-          padding: edgeInsets2,
-          child: ComindTextButton(
-            fontSize: buttonFontSize,
-            opacity: buttonOpacity,
-            lineLocation: LineLocation.top,
-            colorIndex: 1,
-            text: "Link",
-            // lineOnly: hovered,
-            onPressed: () {},
-            // lineLocation: LineLocation.top,
+          // Title
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+            // Version where body is truncated
+            child: SelectableText(
+                thought.title.substring(0, min(30, thought.title.length)),
+                style: getTextTheme(context).labelMedium),
+
+            // child: Text(thought.title, style: getTextTheme(context).labelMedium),
+            // child: Text(thought.title, style: getTextTheme(context).titleSmall),
           ),
-        ),
+          Expanded(
+              child: SizedBox(
+                  height: 5, child: Opacity(opacity: 0.5, child: CineWave()))),
+
+          // Username
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
+            child: Text(thought.username,
+                style: Provider.of<ComindColorsNotifier>(context)
+                    .textTheme
+                    .titleSmall),
+          ),
+        ],
       ),
     );
   }
@@ -604,7 +527,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             fontSize: buttonFontSize,
             opacity: buttonOpacity,
             lineLocation: LineLocation.top,
-            colorIndex: 2,
+            colorIndex: 0,
             text: widget.showTextBox ? "Close" : "Edit",
             // lineOnly: hovered,
             onPressed: () {
@@ -641,7 +564,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             lineLocation: LineLocation.top,
             // lineOnly: hovered,
             text: "Delete",
-            colorIndex: 3,
+            colorIndex: 0,
             onPressed: () async {
               // TODO delete the thought
               bool? shouldDelete = await showDialog<bool>(
@@ -698,37 +621,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           ),
         ),
       ),
-    );
-  }
-
-  Row dateChunk(BuildContext context, double buttonSize) {
-    return Row(
-      children: [
-        // Public/private
-        Container(
-          decoration: BoxDecoration(
-            color: Provider.of<ComindColorsNotifier>(context)
-                .colorScheme
-                .background,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Visibility(
-            visible: !widget.viewOnly,
-            child: ComindTextButton(
-              text: thought.isPublic ? "Public" : "Private",
-              colorIndex: thought.isPublic ? 1 : 3,
-              lineLocation: LineLocation.top,
-              opacity: opacity,
-              opacityOnHover: outlineAlphaHover / 255,
-              onPressed: () {
-                // Navigate to the user's profile
-                Navigator.pushNamed(context, '/thinkers/${thought.username}');
-              },
-              fontSize: buttonSize,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

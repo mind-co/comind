@@ -136,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
             .withAlpha(150));
     return Center(
       child: SizedBox(
-        width: 600,
+        width: ComindColors.maxWidth,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
           child: Column(
@@ -283,7 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Center signUpPage(BuildContext context) {
     return Center(
       child: SizedBox(
-        width: 600,
+        width: ComindColors.maxWidth,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -758,6 +758,7 @@ class _LoginScreenState extends State<LoginScreen> {
             var newUserResult = await newUser(_usernameController.text,
                 _emailController.text, digest.toString());
 
+            // ignore: use_build_context_synchronously
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text("New user result: $newUserResult"),

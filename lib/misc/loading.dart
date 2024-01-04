@@ -56,7 +56,7 @@ class _LoadingState extends State<Loading> with TickerProviderStateMixin {
                   style: Provider.of<ComindColorsNotifier>(context)
                       .textTheme
                       .displaySmall),
-              Text("\nFor you.",
+              Text("\nfor you.",
                   style: Provider.of<ComindColorsNotifier>(context)
                       .textTheme
                       .bodyLarge),
