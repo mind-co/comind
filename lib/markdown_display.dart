@@ -515,7 +515,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
               child: SizedBox(
                   height: 5,
                   child: Opacity(
-                      opacity: 1,
+                      opacity: 0.5,
                       child: CineWave(
                         amplitude: 2 / 2,
                         frequency: pi / 90,
