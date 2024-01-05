@@ -659,8 +659,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                   Provider.of<ThoughtsProvider>(context, listen: false)
                       .addThought(thought);
 
-                  // Clear the text field
-                  _primaryController.clear();
+                  print("Thought submitted: ${thought.body}");
 
                   // Send the thought
                   await saveThought(context, thought, newThought: true);

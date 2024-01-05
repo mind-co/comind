@@ -253,27 +253,30 @@ class _MainTextFieldState extends State<MainTextField> {
                   right: 4,
                   child: // Send button, icon version
                       IconButton(
-                    // Rounded border, radius 10
-                    splashRadius: 20,
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(ComindColors.bubbleRadius),
-                        ),
-                      ),
-                    ),
-
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    // Transparent
-                    icon: Icon(
-                      widget.type == TextFieldType.main ||
-                              widget.type == TextFieldType.inline
-                          ? Icons.send
-                          : Icons.save,
-                    ),
-                    onPressed: () => _submit(context),
-                  ),
+                          // Rounded border, radius 10
+                          splashRadius: 20,
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    ComindColors.bubbleRadius),
+                              ),
+                            ),
+                          ),
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          // Transparent
+                          icon: Icon(
+                            widget.type == TextFieldType.main ||
+                                    widget.type == TextFieldType.inline
+                                ? Icons.send
+                                : Icons.save,
+                          ),
+                          onPressed: () => {
+                                _submit(context)(),
+                                // Clear the text field because sometimes random newline chars
+                                // get added
+                                _primaryController.clear(),
+                              }),
                 ),
 
                 // Send button
@@ -377,6 +380,7 @@ class _MainTextFieldState extends State<MainTextField> {
     return widget.type == TextFieldType.main ||
             widget.type == TextFieldType.inline
         ? () {
+            print("Trying to submit");
             widget.onThoughtSubmitted!(Thought.fromString(
                 _primaryController.text,
                 Provider.of<AuthProvider>(context, listen: false).username,
@@ -414,6 +418,7 @@ class _MainTextFieldState extends State<MainTextField> {
                 }
               }
             : () {
+                print("No idea what to do here");
                 // TODO
                 // This should probably handle the case
                 // where the editor is fullscreen.
@@ -437,197 +442,5 @@ class _MainTextFieldState extends State<MainTextField> {
                     .colorScheme
                     .tertiary
                     .withAlpha(128);
-  }
-
-  // Thought sending method
-  void _sendThought() {
-    // Save the parent thought if the text has length > 0
-    if (_primaryController.text.isNotEmpty) {
-      // Send the thought with the parent/child if they exist
-      saveQuickThought(context, _primaryController.text, false,
-          widget.parentThought?.id, widget.childThought?.id);
-
-      // Clear the text field
-      _primaryController.clear();
-    }
-  }
-}
-
-class ComindSearchResult extends StatelessWidget {
-  const ComindSearchResult({
-    super.key,
-    required this.searchResults,
-  });
-
-  final List<SearchResult> searchResults;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: ComindColors.maxWidth,
-      height: 100,
-      child: ListView.builder(
-        itemCount: searchResults.length,
-        itemBuilder: (context, index) {
-          final result = searchResults[index];
-          // return Text("{${result.username}} " + result.body);
-          return RichText(
-            text: TextSpan(
-              text: "${result.username} ",
-              style: TextStyle(
-                fontSize: 10,
-                fontFamily: "Bungee",
-                color: Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .onBackground,
-              ),
-              children: <TextSpan>[
-                // Show cosine similarity
-                TextSpan(
-                  text:
-                      "${(result.cosineSimilarity * 100).toStringAsFixed(0)}% ",
-                  style: Provider.of<ComindColorsNotifier>(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(
-                        fontSize: 12,
-                      ),
-                ),
-
-                // Thought body
-                TextSpan(
-                  text: result.body,
-                  style: Provider.of<ComindColorsNotifier>(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(
-                        fontSize: 12,
-                      ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-// ComindSearchResultTable
-class ComindSearchResultTable extends StatelessWidget {
-  const ComindSearchResultTable({
-    Key? key,
-    required this.searchResults,
-    this.parentThought,
-  }) : super(key: key);
-
-  final List<SearchResult> searchResults;
-  final Thought? parentThought;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: ComindColors.maxWidth,
-      height: 200,
-      child: ListView.builder(
-        itemCount: searchResults.length,
-        itemBuilder: (context, index) {
-          return MaterialButton(
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              // Save the thought
-              // saveQuickThought(searchResults[index].body, false,
-              //     searchResults[index].id, null);
-
-              // Clear the text field
-              // _primaryController.clear();
-
-              // Refresh the thoughts
-              // _fetchThoughts();
-            },
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    searchResults[index].username,
-                    style: Provider.of<ComindColorsNotifier>(context)
-                        .textTheme
-                        .titleSmall
-                        ?.copyWith(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onPrimary
-                              .withAlpha(180),
-                        ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    // If numLinks is null, show 0
-                    searchResults[index].numLinks == null ||
-                            searchResults[index].numLinks == 0
-                        // ? "🤙"
-                        ? "∅"
-                        : searchResults[index].numLinks == 1
-                            ? "1"
-                            : "${searchResults[index].numLinks} links",
-
-                    // searchResults[index].numLinks.toString(),
-                    // searchResults[index].numLinks.toString() + " links",
-                    style: Provider.of<ComindColorsNotifier>(context)
-                        .textTheme
-                        .bodyMedium,
-                  ),
-                ),
-
-                // Cosine similarity
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    "${(searchResults[index].cosineSimilarity * 100).toStringAsFixed(0)}%",
-                    style: Provider.of<ComindColorsNotifier>(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(
-                            // color: searchResults[index].cosineSimilarity > 0.5
-                            //     ? Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary
-                            //     : Provider.of<ComindColorsNotifier>(context).colorScheme.onSecondary,
-                            ),
-                  ), // This is your body column
-                ),
-                // Remove the extra closing parenthesis
-                // ),
-                Expanded(
-                  flex: 5, // Increase flex to make this column take more space
-                  child: Text(
-                    searchResults[index].title,
-                    style: Provider.of<ComindColorsNotifier>(context)
-                        .textTheme
-                        .bodyMedium,
-                  ),
-                ),
-
-                // If there's a linkedTo or linkedFrom, show it
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    searchResults[index].linkedTo == true
-                        ? "linked to"
-                        : searchResults[index].linkedFrom == true
-                            ? "linked from"
-                            : "b",
-                    style: Provider.of<ComindColorsNotifier>(context)
-                        .textTheme
-                        .bodyMedium,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
   }
 }

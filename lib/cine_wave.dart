@@ -205,7 +205,7 @@ class _CineWaveState extends State<CineWave>
     )..repeat(reverse: true);
 
     // _animation = Tween<double>(begin: 0, end: 0).animate(
-    _animation = Tween<double>(begin: 0, end: 360).animate(
+    _animation = Tween<double>(begin: 0, end: 0).animate(
       CurvedAnimation(
           parent: _controller,
           // curve: Curves.decelerate,
