@@ -57,7 +57,6 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
 
     // Fetch linked thoughts
     fetchParents(context, widget.id!).then((thoughts) {
-      print("Got parents: $thoughts");
       setState(() {
         linkedThoughts = thoughts;
       });
@@ -107,7 +106,6 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
                       // SizedBox(height: 20),
                       MarkdownThought(
                           type: MarkdownDisplayType.fullScreen,
-                          context: context,
                           thought: widget.thought!,
                           selectable: false),
 
@@ -159,7 +157,6 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
                             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                             child: MarkdownThought(
                                 type: MarkdownDisplayType.inline,
-                                context: context,
                                 thought: linkedThoughts[index],
                                 selectable: false),
                           );

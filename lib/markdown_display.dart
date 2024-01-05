@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:comind/api.dart';
-import 'package:comind/comind_div.dart';
 // import 'package:comind/concept_syntax.dart';
 import 'package:comind/input_field.dart';
 import 'package:comind/misc/util.dart';
+import 'package:comind/providers.dart';
 import 'package:comind/text_button.dart';
 import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +15,7 @@ import 'package:comind/types/thought.dart';
 import 'package:comind/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:comind/cine_wave.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum MarkdownDisplayType {
   fullScreen,
@@ -28,7 +29,6 @@ class MarkdownThought extends StatefulWidget {
   MarkdownThought(
       {super.key,
       required this.thought,
-      required this.context,
       //Opacity/hover opacity, default to 1/1
       this.type = MarkdownDisplayType.inline,
       this.opacity = 1.0,
@@ -40,7 +40,6 @@ class MarkdownThought extends StatefulWidget {
       this.selectable = true});
 
   final Thought thought;
-  final BuildContext context;
   final double opacity;
   final double opacityOnHover;
   bool selectable;
@@ -58,8 +57,6 @@ class MarkdownThought extends StatefulWidget {
   @override
   // ignore: no_logic_in_create_state
   State<StatefulWidget> createState() => _MarkdownThoughtState(
-        thought: thought,
-        context: context,
         opacity: opacity,
         opacityOnHover: opacityOnHover,
       );
@@ -67,16 +64,11 @@ class MarkdownThought extends StatefulWidget {
 
 class _MarkdownThoughtState extends State<MarkdownThought> {
   _MarkdownThoughtState({
-    required this.thought,
-    required this.context,
     //Opacity/hover opacity, default to 1/1
     this.opacity = 1.0,
     this.opacityOnHover = 1.0,
   });
 
-  @override
-  final BuildContext context;
-  Thought thought;
   final double opacity;
   final double opacityOnHover;
   final _editController = TextEditingController();
@@ -101,6 +93,12 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     var onBackground =
         Provider.of<ComindColorsNotifier>(context).colorScheme.onBackground;
 
+    // // Return just a textbox for debug
+    // return Text(
+    //   widget.thought.body,
+    //   style: Provider.of<ComindColorsNotifier>(context).textTheme.bodyMedium,
+    // );
+
     return Padding(
       padding: widget.type == MarkdownDisplayType.fullScreen
           ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
@@ -124,7 +122,15 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Cinewave username
-                  Material(child: InkWell(child: cineUsername(context))),
+                  Material(
+                      child: InkWell(
+                          onTap: () => {
+                                // Toggle the body
+                                setState(() {
+                                  widget.showBody = !widget.showBody;
+                                })
+                              },
+                          child: cineUsername(context))),
 
                   // Show cosine similarity
                   // Text(widget.thought.cosineSimilarity.toString(),
@@ -152,21 +158,45 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         // Add the action row on bottom
         // actionRow(
         //     context, edgeInsets2, edgeInsets, buttonFontSize, buttonOpacity),
-
-        // Display the related results
-        if (relatedResults.isNotEmpty)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Text("Some other notes for ya",
-              //     style: Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall),
-              ThoughtTable(
-                thoughts: relatedResults,
-                parentThought: thought,
-              ),
-            ],
-          )
       ]),
+    );
+  }
+
+  // Handles the new thought box
+  Visibility newThoughtBox(BuildContext context) {
+    return Visibility(
+      visible: newThoughtOpen,
+      child: Padding(
+        // Top padding to separate it from the body
+        padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+        child: MainTextField(
+            thought: Thought.fromString(
+                "",
+                Provider.of<AuthProvider>(context, listen: false).username,
+                true),
+            onThoughtSubmitted: (Thought thought) async {
+              print(thought.body);
+              // Save the thought
+              await saveThought(context, thought);
+
+              // Clear the text box
+              _addController.clear();
+
+              // Close the text box
+              setState(() {
+                newThoughtOpen = false;
+              });
+            },
+            primaryController: _addController,
+            toggleEditor: () {
+              // Close the text box
+              setState(() {
+                newThoughtOpen = false;
+              });
+            },
+            type:
+                TextFieldType.inline), // TODO #11 support inline TextFieldType
+      ),
     );
   }
 
@@ -177,7 +207,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           child: MainTextField(
-              thought: thought,
+              thought: widget.thought,
               onThoughtEdited: (Thought thought) async {
                 // Update the thought
                 await saveThought(context, thought);
@@ -209,7 +239,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(32, 0, 8, 0),
         child: Text(
-          formatTimestamp(thought.dateCreated),
+          formatTimestamp(widget.thought.dateCreated),
           style: Provider.of<ComindColorsNotifier>(context).textTheme.bodySmall,
         ),
       ),
@@ -234,18 +264,18 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     });
 
     // The "show linked" button
-    var showLinkedButton =
-        newButton(onBackground, context, widget.relatedMode ? "Close" : "Think",
-            () async {
+    var showLinkedButton = newButton(
+        onBackground, context, widget.relatedMode ? "Close" : "More", () async {
       if (relatedResults.isEmpty) {
         // Semantic search on the body of the text
-        var res = await searchThoughts(context, thought.body,
-            associatedId: thought.id);
+        var res = await searchThoughts(context, widget.thought.body,
+            associatedId: widget.thought.id);
 
         // Toggle info mode
         setState(() {
           widget.relatedMode = !widget.relatedMode;
-          relatedResults = res.where((item) => thought.id != item.id).toList();
+          relatedResults =
+              res.where((item) => widget.thought.id != item.id).toList();
         });
       } else {
         setState(() {
@@ -257,26 +287,13 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     // The "add thought" button
     var addThoughtButton = Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-      child: IconButton(
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
-        enableFeedback: true,
-        splashRadius: 16,
-        onPressed: () {
-          // Toggle the new thought box
-          setState(() {
-            newThoughtOpen = !newThoughtOpen;
-          });
-        },
-        icon: Icon(
-          newThoughtOpen ? Icons.remove : Icons.add,
-          size: 16,
-          color: Provider.of<ComindColorsNotifier>(context)
-              .colorScheme
-              .onPrimary
-              .withAlpha(128),
-        ),
-      ),
+      child: newButton(onBackground, context, newThoughtOpen ? "Close" : "Add",
+          () {
+        // Toggle the new thought box
+        setState(() {
+          newThoughtOpen = !newThoughtOpen;
+        });
+      }),
     );
 
     var lockButton = Padding(
@@ -289,12 +306,12 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         onPressed: () {
           // Toggle public/private
           setState(() {
-            thought.togglePublic(context);
+            widget.thought.togglePublic(context);
             // thought.isPublic = !thought.isPublic;
           });
         },
         icon: Icon(
-          thought.isPublic ? Icons.lock_open : Icons.lock,
+          widget.thought.isPublic ? Icons.lock_open : Icons.lock,
           size: 16,
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
@@ -393,62 +410,61 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                       width: 1,
                     ),
                   ),
-                  child: Material(
-                    borderRadius:
-                        BorderRadius.circular(ComindColors.bubbleRadius),
-                    child: InkWell(
-                      // Round the corners
-                      radius: ComindColors.bubbleRadius,
-                      splashColor: Colors.transparent,
-                      hoverColor: widget.selectable
-                          ? Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(32)
-                          : Colors.transparent,
-                      onTap: () => {
-                        // Expand the thought view, onyl if selectable
-                        if (widget.selectable)
-                          {
-                            Navigator.pushNamed(
-                                context, '/thoughts/${thought.id}')
-                          }
-                        else if (widget.viewOnly)
-                          {
-                            // Otherwise, open edit mode
-                            // Snack bar edit
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                  'You can\'t edit this thought. View only: ${widget.viewOnly}'),
-                              duration: const Duration(seconds: 1),
-                            )),
-                          }
-                        else
-                          {
-                            setState(() {
-                              widget.showTextBox = true;
-                              _editController.text = thought.body;
-                            })
-                          }
-                      },
-                      borderRadius:
-                          BorderRadius.circular(ComindColors.bubbleRadius),
-                      customBorder: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(ComindColors.bubbleRadius),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                        child: Column(
-                          children: [
-                            // Markdown body
-                            TheMarkdownBox(thought: thought),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                    child: Column(
+                      children: [
+                        // Markdown body
+                        TheMarkdownBox(thought: widget.thought),
 
-                            // Info mode display
-                            InfoCard(widget: widget, thought: thought),
-                          ],
+                        // Info mode display
+                        InfoCard(widget: widget, thought: widget.thought),
+
+                        // Divider
+                        Visibility(
+                          visible: newThoughtOpen || moreClicked,
+                          child: Divider(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onPrimary
+                                .withAlpha(32),
+                          ),
                         ),
-                      ),
+
+                        // Padding(
+                        //     padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
+                        //     child: CineWave(
+                        //       amplitude: 0.2,
+                        //       frequency: 1,
+
+                        //       // frequencies
+                        //       primaryFrequency: 1,
+                        //       secondaryFrequency: 1,
+                        //       tertiaryFrequency: 1,
+
+                        //       // amplitudes
+                        //       primaryAmplitude: 1,
+                        //       secondaryAmplitude: 1,
+                        //       tertiaryAmplitude: 1,
+                        //     )),
+
+                        // Show new thought box
+                        newThoughtBox(context),
+
+                        // Display the related results
+                        if (widget.relatedMode && relatedResults.isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Text("Some other notes for ya",
+                              //     style: Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall),
+                              ThoughtTable(
+                                thoughts: relatedResults,
+                                parentThought: widget.thought,
+                              ),
+                            ],
+                          ),
+                      ],
                     ),
                   ),
                 ),
@@ -462,7 +478,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
   Padding cineUsername(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+      padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
       child: Row(
         children: [
           // Linked icon
@@ -486,20 +502,44 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
             // Version where body is truncated
             child: SelectableText(
-                thought.title.substring(0, min(30, thought.title.length)),
+                widget.thought.title
+                    .substring(0, min(30, widget.thought.title.length)),
                 style: getTextTheme(context).labelMedium),
 
             // child: Text(thought.title, style: getTextTheme(context).labelMedium),
             // child: Text(thought.title, style: getTextTheme(context).titleSmall),
           ),
+
+          // Remove cinewave for debug
           Expanded(
               child: SizedBox(
-                  height: 5, child: Opacity(opacity: 0.5, child: CineWave()))),
+                  height: 5,
+                  child: Opacity(
+                      opacity: 1,
+                      child: CineWave(
+                        amplitude: 2 / 2,
+                        frequency: pi / 90,
+                        // primaryAmplitude: pi,
+                        // secondaryFrequency: pi,
+                      )))),
+
+          // Add divider
+          // Expanded(
+          //     child: SizedBox(
+          //         height: 5,
+          //         child: Opacity(
+          //             opacity: 0.5,
+          //             child: Divider(
+          //               color: Provider.of<ComindColorsNotifier>(context)
+          //                   .colorScheme
+          //                   .onPrimary
+          //                   .withAlpha(64),
+          //             )))),
 
           // Username
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
-            child: Text(thought.username,
+            child: Text(widget.thought.username,
                 style: Provider.of<ComindColorsNotifier>(context)
                     .textTheme
                     .titleSmall),
@@ -532,7 +572,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             // lineOnly: hovered,
             onPressed: () {
               // Update the edit box with the thought
-              _editController.text = thought.body;
+              _editController.text = widget.thought.body;
 
               // Open a text field
               setState(() {
@@ -614,7 +654,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
               if (shouldDelete == true) {
                 // ignore: use_build_context_synchronously
-                deleteThought(context, thought.id);
+                deleteThought(context, widget.thought.id);
               }
             },
             // lineLocation: LineLocation.top,
@@ -656,51 +696,71 @@ class TheMarkdownBox extends StatelessWidget {
 
     return SizedBox(
       width: double.infinity,
-      child: MarkdownBody(
-        // Use the thought content
-        data: thought.body,
-        selectable: false,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: MarkdownBody(
+          // Use the thought content
+          data: thought.body,
+          selectable: true,
 
-        // Set the markdown styling
-        styleSheet: MarkdownStyleSheet(
-          // Smush the text together
-          blockquoteDecoration: BoxDecoration(
-            color: Provider.of<ComindColorsNotifier>(context)
-                .colorScheme
-                .surfaceVariant,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          codeblockDecoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            color: Provider.of<ComindColorsNotifier>(context)
-                .colorScheme
-                .surfaceVariant,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          code: GoogleFonts.ibmPlexMono(
-            backgroundColor: Provider.of<ComindColorsNotifier>(context)
-                .colorScheme
-                .surfaceVariant,
-            fontWeight: FontWeight.w400,
-            fontSize: 14,
-          ),
-          blockquote: TextStyle(
-            color: Provider.of<ComindColorsNotifier>(context)
-                .colorScheme
-                .onPrimary,
-            fontFamily: "Bungee",
-            fontSize: 14,
-          ),
-        ),
+          // Allow hyperlinks
+          onTapLink: (text, url, title) {
+            launchUrl(Uri.parse(url!)); /*For url_launcher 6.1.0 and higher*/
+            // launch(url);  /*For url_launcher 6.0.20 and lower*/
+          },
 
-        // Add extensions
-        extensionSet: md.ExtensionSet(
-          md.ExtensionSet.gitHubFlavored.blockSyntaxes,
-          <md.InlineSyntax>[
-            // customSyntax,
-            md.EmojiSyntax(),
-            ...md.ExtensionSet.gitHubFlavored.inlineSyntaxes,
-          ],
+          // Set the markdown styling
+          styleSheet: MarkdownStyleSheet(
+            // Set link underline
+            a: TextStyle(
+              color: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .onPrimary,
+              decoration: TextDecoration.underline,
+              decorationColor: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .secondary,
+            ),
+
+            // Smush the text together
+            blockquoteDecoration: BoxDecoration(
+              color: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .surfaceVariant,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            codeblockDecoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .surfaceVariant,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            code: GoogleFonts.ibmPlexMono(
+              backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .surfaceVariant,
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+            ),
+            blockquote: TextStyle(
+              color: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .onPrimary,
+              fontFamily: "Bungee",
+              fontSize: 14,
+            ),
+          ),
+
+          // Add extensions
+          extensionSet: md.ExtensionSet(
+            md.ExtensionSet.gitHubFlavored.blockSyntaxes,
+            <md.InlineSyntax>[
+              // customSyntax,
+              md.EmojiSyntax(),
+              ...md.ExtensionSet.gitHubFlavored.inlineSyntaxes,
+            ],
+          ),
         ),
       ),
     );
@@ -787,7 +847,6 @@ class InfoCard extends StatelessWidget {
 MarkdownThought coThought(BuildContext context, String text) {
   return MarkdownThought(
     thought: Thought.fromString(text, "Co", true),
-    context: context,
     opacity: 1,
     opacityOnHover: 1,
     selectable: false,

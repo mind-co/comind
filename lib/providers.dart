@@ -73,6 +73,12 @@ class ThoughtsProvider extends ChangeNotifier {
       _thoughts.add(thought);
     }
 
+    // Sort the thoughts by date
+    _thoughts.sort((a, b) => b.dateUpdated.compareTo(a.dateUpdated));
+
+    // Print the first note body
+    print(_thoughts.first.body);
+
     notifyListeners();
   }
 

@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 final dio = Dio();
 
 Future<List<Thought>> fetchThoughts(BuildContext context) async {
-  // TODO convert to dio
   final url =
       Uri.parse('http://nimbus.pfiffer.org:8000/api/user-thoughts/cameron/');
   final headers = {
@@ -33,7 +32,6 @@ Future<List<Thought>> fetchThoughts(BuildContext context) async {
 // body, isPublic, and an optional parentThoughtId
 Future<Thought> saveQuickThought(BuildContext context, String body,
     bool isPublic, String? parentThoughtId, String? childThoughtId) async {
-  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
 
   final headers = {
@@ -78,7 +76,6 @@ Future<Thought> saveQuickThought(BuildContext context, String body,
 
 Future<void> saveThought(BuildContext context, Thought thought,
     {bool? newThought}) async {
-  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
 
   // If the thought has an ID, we're updating an existing thought.
@@ -142,7 +139,6 @@ Future<void> saveThought(BuildContext context, Thought thought,
 }
 
 Future<void> deleteThought(BuildContext context, String thoughtId) async {
-  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
   final headers = {
     'ComindUsername': 'cameron',
@@ -157,7 +153,9 @@ Future<void> deleteThought(BuildContext context, String thoughtId) async {
   // Try to parse the response as json
   try {
     // final jsonResponse = json.decode(response.body);
-  } catch (e) {}
+  } catch (e) {
+    throw Exception('Failed to delete thought');
+  }
 }
 
 // The basic version of authentication
@@ -168,7 +166,6 @@ Future<void> deleteThought(BuildContext context, String thoughtId) async {
 // 5. Alice parties.
 
 Future<bool> newUser(String username, String email, String password) async {
-  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/new-user/');
   final headers = {
     'ComindUsername': username,
@@ -187,7 +184,6 @@ Future<bool> newUser(String username, String email, String password) async {
 }
 
 Future<bool> userExists(String username) async {
-  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/user-exists/');
   final headers = {
     'ComindUsername': username,
@@ -204,7 +200,6 @@ Future<bool> userExists(String username) async {
 }
 
 Future<bool> emailExists(String email) async {
-  // TODO convert to dio
   final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/email-taken/');
 
   final headers = {
@@ -275,7 +270,7 @@ Future<List<Thought>> searchThoughts(BuildContext context, String query,
 
   final encodedBody = utf8.encode(body);
 
-  String token = await getToken(context);
+  String token = getToken(context);
   final headers = {
     'ComindUsername': 'cameron',
     "Content-Type": "application/json",
@@ -404,8 +399,6 @@ Future<bool> linkThoughts(context, String fromId, String toId) async {
   }
 }
 
-// TODO #7 Add children and parent API calls
-
 // Fetch children
 Future<List<Thought>> fetchChildren(
     BuildContext context, String thoughtId) async {
@@ -450,8 +443,6 @@ Future<List<Thought>> fetchParents(
     ),
   );
 
-  print(response.data);
-
   if (response.statusCode == 200) {
     final jsonResponse = json.decode(response.data);
     if (jsonResponse is List) {
@@ -492,7 +483,5 @@ Future<void> setPublic(
 
   if (response.statusCode != 200) {
     throw Exception('Failed to toggle public');
-  } else {
-    print('Successfully toggled public');
   }
 }

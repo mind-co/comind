@@ -19,24 +19,22 @@ class ThoughtTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 4, 8),
+      padding: const EdgeInsets.fromLTRB(4, 8, 4, 30),
       child: Stack(clipBehavior: Clip.none, children: [
         Container(
           width: ComindColors.maxWidth,
           height: 300,
           decoration: BoxDecoration(
-            // borderRadius: BorderRadius.circular(10),
-            // Border color
+            borderRadius: BorderRadius.circular(10),
 
             // Left border only
-            border: Border(
-              left: BorderSide(
-                color: Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .onBackground
-                    .withAlpha(64),
-                width: 2.0,
-              ),
+            border: Border.all(
+              style: BorderStyle.solid,
+              color: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .onBackground
+                  .withAlpha(64),
+              width: 1.0,
 
               // color: Provider.of<ComindColorsNotifier>(context)
               //     .colorScheme
@@ -97,7 +95,6 @@ class ThoughtTable extends StatelessWidget {
                           return MarkdownThought(
                               type: MarkdownDisplayType.searchResult,
                               thought: thoughts[index],
-                              context: context,
                               parentThought: parentThought?.id);
                         } else {
                           return Center(
@@ -158,7 +155,7 @@ class ThoughtTable extends StatelessWidget {
                       "Related",
                       style: Provider.of<ComindColorsNotifier>(context)
                           .textTheme
-                          .titleSmall
+                          .titleMedium
                           ?.copyWith(
                             color: Provider.of<ComindColorsNotifier>(context)
                                 .colorScheme

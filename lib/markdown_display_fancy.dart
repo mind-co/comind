@@ -1,9 +1,8 @@
 import 'package:comind/api.dart';
-import 'package:comind/comind_div.dart';
-// import 'package:comind/concept_syntax.dart';
 import 'package:comind/input_field.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/text_button.dart';
+import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -462,7 +461,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   .textTheme
                   .titleSmall),
         ),
-        Expanded(
+        const Expanded(
             child: SizedBox(
                 height: 5, child: Opacity(opacity: 1, child: CineWave()))),
       ],

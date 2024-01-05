@@ -2,7 +2,6 @@ import 'package:comind/colors.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
-import 'package:comind/markdown_display.dart';
 import 'package:comind/text_button.dart';
 import 'package:comind/types/thought.dart';
 import 'package:comind/api.dart';
@@ -11,7 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 // Enums for type of text field
-enum TextFieldType { main, edit, fullscreen }
+enum TextFieldType { main, edit, fullscreen, inline }
 
 //
 // The primary text field for Comind, stateful version
@@ -85,6 +84,97 @@ class _MainTextFieldState extends State<MainTextField> {
 
   @override
   Widget build(BuildContext context) {
+    //
+    // DECORATION FOR THE MAIN TEXT FIELD
+    //
+    var mainInputDecoration = InputDecoration(
+      // The label that appears at the top of the text box.
+      label: Text(
+        widget.type == TextFieldType.main ? uiMode : "Edit",
+        style: Provider.of<ComindColorsNotifier>(context).textTheme.titleLarge,
+      ),
+
+      // Handle label for the text box label
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      floatingLabelStyle: TextStyle(
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(180),
+      ),
+      labelStyle: TextStyle(
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(180),
+      ),
+      contentPadding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(64),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(128),
+        ),
+      ),
+    );
+
+    //
+    // DECORATION FOR THE INLINE TEXT FIELD
+    //
+    var inlineInputDecoration = InputDecoration(
+      label: Text(
+        "Insert",
+        style: Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall,
+      ),
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      floatingLabelStyle: TextStyle(
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(180),
+      ),
+      labelStyle: TextStyle(
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(180),
+      ),
+      contentPadding: const EdgeInsets.fromLTRB(10, 16, 36, 16),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(64),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(128),
+        ),
+      ),
+    );
+
     return SizedBox(
       width: ComindColors.maxWidth,
       // width: min(ComindColors.maxWidth, MediaQuery.of(context).size.width),
@@ -98,7 +188,9 @@ class _MainTextFieldState extends State<MainTextField> {
               children: [
                 // Text box
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                  padding: widget.type == TextFieldType.main
+                      ? const EdgeInsets.fromLTRB(0, 16, 0, 16)
+                      : const EdgeInsets.fromLTRB(0, 8, 0, 0),
                   child: Container(
                     decoration: const BoxDecoration(
                         // color: Provider.of<ComindColorsNotifier>(context).colorScheme.surfaceVariant.withAlpha(100),
@@ -113,6 +205,10 @@ class _MainTextFieldState extends State<MainTextField> {
                             event.isControlPressed &&
                             widget.type == TextFieldType.main) {
                           _submit(context)();
+
+                          // Clear the text field because sometimes random newline chars
+                          // get added
+                          _primaryController.clear();
                         }
                       },
                       child: TextField(
@@ -127,104 +223,63 @@ class _MainTextFieldState extends State<MainTextField> {
                         autofocus: true,
                         controller: _primaryController,
 
-                        // If it starts with /, it's a command
-                        onChanged: (value) async {
-                          // Check for mode changes first, but only
-                          // if the type is main
-                          if (widget.type == TextFieldType.main) {
-                            if (value == "/search" || value == "/s") {
-                              setState(() {
-                                uiMode = "search";
-                              });
-
-                              // Clear the text field
-                              // _primaryController.clear();
-                            } else if (value == "/users" || value == "/u") {
-                              setState(() {
-                                uiMode = "users";
-                              });
-
-                              // Clear the text field
-                              // _primaryController.clear();
-                            } else if (value == "/t" || value == ";") {
-                              setState(() {
-                                uiMode = "think";
-                              });
-                              // _primaryController.clear();
-                            }
-
-                            // Next, handle the commands
-                            if (uiMode == "search") {
-                              // Search
-                              var res = await searchThoughts(context, value);
-                              setState(() {
-                                searchResults = res;
-                              });
-                            }
-                          }
-                        },
+                        // TODO #12 add the command processing stuff back in.
+                        // Can't turn it on because enabling the onChange function
+                        // breaks backspacing on android/linux.
+                        // see https://stackoverflow.com/questions/71783012/backspace-text-field-flutter-on-android-devices-not-working
+                        // onChanged: ... // do all the command processing stuff
 
                         // Cursor stuff
-                        cursorWidth: 8,
+                        cursorWidth: 10,
                         cursorColor: widget.type == TextFieldType.main
                             ? uiMode == "think"
                                 ? colorMap(context).withAlpha(255)
                                 : colorMap(context).withAlpha(255)
                             : Provider.of<ComindColorsNotifier>(context)
                                 .colorScheme
-                                .onBackground,
-                        decoration: InputDecoration(
-                          label: Text(
-                            widget.type == TextFieldType.main ? uiMode : "Edit",
-                            style: Provider.of<ComindColorsNotifier>(context)
-                                .textTheme
-                                .titleSmall,
-                          ),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          floatingLabelStyle: TextStyle(
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onPrimary
-                                .withAlpha(180),
-                          ),
-                          labelStyle: TextStyle(
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onPrimary
-                                .withAlpha(180),
-                          ),
-                          contentPadding:
-                              const EdgeInsets.fromLTRB(16, 20, 16, 20),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              width: 1,
-                              color: Provider.of<ComindColorsNotifier>(context)
-                                  .colorScheme
-                                  .onPrimary
-                                  .withAlpha(64),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              width: 1,
-                              color: Provider.of<ComindColorsNotifier>(context)
-                                  .colorScheme
-                                  .onPrimary
-                                  .withAlpha(128),
-                            ),
-                          ),
+                                .tertiary,
+                        decoration: widget.type == TextFieldType.main
+                            ? mainInputDecoration
+                            : inlineInputDecoration,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Send button, icon version. Centered
+                Positioned(
+                  // bottom: 4,
+                  bottom: widget.type == TextFieldType.main ? 24 : 4,
+                  right: 4,
+                  child: // Send button, icon version
+                      IconButton(
+                    // Rounded border, radius 10
+                    splashRadius: 20,
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(ComindColors.bubbleRadius),
                         ),
                       ),
                     ),
+
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    // Transparent
+                    icon: Icon(
+                      widget.type == TextFieldType.main ||
+                              widget.type == TextFieldType.inline
+                          ? Icons.send
+                          : Icons.save,
+                    ),
+                    onPressed: () => _submit(context),
                   ),
                 ),
 
                 // Send button
                 Positioned(
                   bottom: 4,
-                  right: 16,
+                  right: 4,
                   child: Container(
                     color: Provider.of<ComindColorsNotifier>(context)
                         .colorScheme
@@ -255,16 +310,17 @@ class _MainTextFieldState extends State<MainTextField> {
                         ),
 
                         // Send button
-                        ComindTextButton(
-                          text: widget.type == TextFieldType.main
-                              ? "Think"
-                              : "Save",
-                          lineLocation: LineLocation.top,
-                          onPressed: _submit(context),
-                          colorIndex: widget.type == TextFieldType.main ? 1 : 2,
-                          opacity: 1.0,
-                          fontSize: 10,
-                        ),
+                        // ComindTextButton(
+                        //   text: widget.type == TextFieldType.main ||
+                        //           widget.type == TextFieldType.inline
+                        //       ? "Think"
+                        //       : "Save",
+                        //   lineLocation: LineLocation.top,
+                        //   onPressed: _submit(context),
+                        //   colorIndex: widget.type == TextFieldType.main ? 1 : 2,
+                        //   opacity: 1.0,
+                        //   fontSize: 10,
+                        // ),
                       ],
                     ),
                   ),
@@ -272,30 +328,7 @@ class _MainTextFieldState extends State<MainTextField> {
 
                 // Add the current time on the bottom left,
                 // formatted as 1:23pm
-                Positioned(
-                  bottom: 8,
-                  left: 12,
-                  child: Container(
-                    color: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .background,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-                      child: Text(
-                        DateFormat('h:mm a').format(DateTime.now()),
-                        style: Provider.of<ComindColorsNotifier>(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(
-                              color: Provider.of<ComindColorsNotifier>(context)
-                                  .colorScheme
-                                  .onPrimary
-                                  .withAlpha(180),
-                            ),
-                      ),
-                    ),
-                  ),
-                ),
+                clock(context),
               ],
             ),
 
@@ -311,8 +344,38 @@ class _MainTextFieldState extends State<MainTextField> {
     );
   }
 
+  Visibility clock(BuildContext context) {
+    return Visibility(
+      visible: widget.type == TextFieldType.main,
+      child: Positioned(
+        bottom: 8,
+        left: 12,
+        child: Container(
+          color:
+              Provider.of<ComindColorsNotifier>(context).colorScheme.background,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+            child: Text(
+              DateFormat('h:mm a').format(DateTime.now()),
+              style: Provider.of<ComindColorsNotifier>(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .onPrimary
+                        .withAlpha(180),
+                  ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Function _submit(BuildContext context) {
-    return widget.type == TextFieldType.main
+    return widget.type == TextFieldType.main ||
+            widget.type == TextFieldType.inline
         ? () {
             widget.onThoughtSubmitted!(Thought.fromString(
                 _primaryController.text,
@@ -331,9 +394,6 @@ class _MainTextFieldState extends State<MainTextField> {
                 if (widget.thought != null) {
                   widget.thought?.body = _primaryController.text;
 
-                  // Clear the text field
-                  _primaryController.clear();
-
                   // Close the editor
                   if (widget.toggleEditor != null) {
                     widget.toggleEditor!();
@@ -343,6 +403,9 @@ class _MainTextFieldState extends State<MainTextField> {
                   if (widget.onThoughtEdited != null &&
                       widget.thought != null) {
                     widget.onThoughtEdited!(widget.thought!);
+
+                    // Clear the text field
+                    _primaryController.clear();
                   }
                 } else {
                   // TODO no thought was passed but we are in edit mode

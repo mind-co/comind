@@ -14,13 +14,9 @@
 
 import 'package:comind/api.dart';
 import 'package:comind/colors.dart';
-import 'package:comind/main.dart';
-import 'package:comind/markdown_display.dart';
 import 'package:comind/misc/comind_logo.dart';
-import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/text_button.dart';
-import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:crypto/crypto.dart';
