@@ -45,7 +45,7 @@ class MainTextField extends StatefulWidget {
 
   // Optional functions
   final Function()? toggleEditor;
-  final Function(Thought)? onThoughtSubmitted;
+  final Function(String)? onThoughtSubmitted;
   final Function(Thought)? onThoughtEdited;
 
   @override
@@ -89,10 +89,10 @@ class _MainTextFieldState extends State<MainTextField> {
     //
     var mainInputDecoration = InputDecoration(
       // The label that appears at the top of the text box.
-      label: Text(
-        widget.type == TextFieldType.main ? uiMode : "Edit",
-        style: Provider.of<ComindColorsNotifier>(context).textTheme.titleLarge,
-      ),
+      // label: Text(
+      //   widget.type == TextFieldType.main ? uiMode : "Edit",
+      //   style: Provider.of<ComindColorsNotifier>(context).textTheme.titleLarge,
+      // ),
 
       // Handle label for the text box label
       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -109,6 +109,50 @@ class _MainTextFieldState extends State<MainTextField> {
             .withAlpha(180),
       ),
       contentPadding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(64),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(128),
+        ),
+      ),
+    );
+
+    //
+    // DECORATION FOR THE EDIT TEXT FIELD
+    //
+    var editInputDecoration = InputDecoration(
+      label: Text(
+        "Edit",
+        style: Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall,
+      ),
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      floatingLabelStyle: TextStyle(
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(180),
+      ),
+      labelStyle: TextStyle(
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(180),
+      ),
+      contentPadding: const EdgeInsets.fromLTRB(18, 22, 36, 22),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(
@@ -177,7 +221,6 @@ class _MainTextFieldState extends State<MainTextField> {
 
     return SizedBox(
       width: ComindColors.maxWidth,
-      // width: min(ComindColors.maxWidth, MediaQuery.of(context).size.width),
       child: Padding(
         padding: widget.type == TextFieldType.main
             ? const EdgeInsets.fromLTRB(8, 8, 8, 8)
@@ -190,57 +233,79 @@ class _MainTextFieldState extends State<MainTextField> {
                 Padding(
                   padding: widget.type == TextFieldType.main
                       ? const EdgeInsets.fromLTRB(0, 16, 0, 16)
-                      : const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        // color: Provider.of<ComindColorsNotifier>(context).colorScheme.surfaceVariant.withAlpha(100),
+                      : const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: Material(
+                    elevation: 2,
+                    borderRadius:
+                        BorderRadius.circular(ComindColors.bubbleRadius),
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .background,
+                    child: Container(
+                      // decoration: BoxDecoration(
+                      //   borderRadius:
+                      //       BorderRadius.circular(ComindColors.bubbleRadius),
+                      //   color: Provider.of<ComindColorsNotifier>(context)
+                      //       .colorScheme
+                      //       .primary
+                      //       .withAlpha(12),
+                      // ),
+                      child: RawKeyboardListener(
+                        focusNode: focusNode,
+
+                        // Check for Ctrl + Enter to
+                        // onKey: (RawKeyEvent event) async {
+                        //   if (event is RawKeyDownEvent &&
+                        //       event.logicalKey == LogicalKeyboardKey.enter &&
+                        //       event.isControlPressed &&
+                        //       widget.type == TextFieldType.main) {
+                        //     _submit(context)();
+
+                        //     // Clear the text field because sometimes random newline chars
+                        //     // get added
+                        //     _primaryController.clear();
+                        //   }
+                        // },
+                        child: TextField(
+                          scrollController: _scrollController,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: 10,
+                          minLines: 1,
+                          textInputAction: TextInputAction.send,
+                          style: Provider.of<ComindColorsNotifier>(context)
+                              .textTheme
+                              .bodyMedium,
+                          autofocus: true,
+                          controller: _primaryController,
+
+                          onSubmitted: (value) => {
+                            _submit(context)(),
+                            // Clear the text field because sometimes random newline chars
+                            // get added
+                            _primaryController.clear(),
+                          },
+
+                          // TODO #12 add the command processing stuff back in.
+                          // Can't turn it on because enabling the onChange function
+                          // breaks backspacing on android/linux.
+                          // see https://stackoverflow.com/questions/71783012/backspace-text-field-flutter-on-android-devices-not-working
+                          // onChanged: ... // do all the command processing stuff
+
+                          // Cursor stuff
+                          cursorWidth: 10,
+                          cursorColor: widget.type == TextFieldType.main
+                              ? uiMode == "think"
+                                  ? colorMap(context).withAlpha(255)
+                                  : colorMap(context).withAlpha(255)
+                              : Provider.of<ComindColorsNotifier>(context)
+                                  .colorScheme
+                                  .primary,
+                          decoration: widget.type == TextFieldType.main
+                              ? mainInputDecoration
+                              : widget.type == TextFieldType.edit
+                                  ? editInputDecoration
+                                  : inlineInputDecoration,
                         ),
-                    child: RawKeyboardListener(
-                      focusNode: focusNode,
-
-                      // Check for Ctrl + Enter to
-                      onKey: (RawKeyEvent event) async {
-                        if (event is RawKeyDownEvent &&
-                            event.logicalKey == LogicalKeyboardKey.enter &&
-                            event.isControlPressed &&
-                            widget.type == TextFieldType.main) {
-                          _submit(context)();
-
-                          // Clear the text field because sometimes random newline chars
-                          // get added
-                          _primaryController.clear();
-                        }
-                      },
-                      child: TextField(
-                        scrollController: _scrollController,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 10,
-                        minLines: 1,
-                        textInputAction: TextInputAction.newline,
-                        style: Provider.of<ComindColorsNotifier>(context)
-                            .textTheme
-                            .bodyMedium,
-                        autofocus: true,
-                        controller: _primaryController,
-
-                        // TODO #12 add the command processing stuff back in.
-                        // Can't turn it on because enabling the onChange function
-                        // breaks backspacing on android/linux.
-                        // see https://stackoverflow.com/questions/71783012/backspace-text-field-flutter-on-android-devices-not-working
-                        // onChanged: ... // do all the command processing stuff
-
-                        // Cursor stuff
-                        cursorWidth: 10,
-                        cursorColor: widget.type == TextFieldType.main
-                            ? uiMode == "think"
-                                ? colorMap(context).withAlpha(255)
-                                : colorMap(context).withAlpha(255)
-                            : Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .tertiary,
-                        decoration: widget.type == TextFieldType.main
-                            ? mainInputDecoration
-                            : inlineInputDecoration,
                       ),
                     ),
                   ),
@@ -290,27 +355,27 @@ class _MainTextFieldState extends State<MainTextField> {
                     child: Row(
                       children: [
                         // Cancel button
-                        Visibility(
-                          visible: widget.type == TextFieldType.edit,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                            child: Visibility(
-                              visible: widget.type == TextFieldType.edit,
-                              child: ComindTextButton(
-                                text: "Cancel",
-                                lineLocation: LineLocation.top,
-                                onPressed: () {
-                                  if (widget.toggleEditor != null) {
-                                    widget.toggleEditor!();
-                                  }
-                                },
-                                colorIndex: 3,
-                                opacity: 1.0,
-                                fontSize: 10,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Visibility(
+                        //   visible: widget.type == TextFieldType.edit,
+                        //   child: Padding(
+                        //     padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                        //     child: Visibility(
+                        //       visible: widget.type == TextFieldType.edit,
+                        //       child: ComindTextButton(
+                        //         text: "Cancel",
+                        //         lineLocation: LineLocation.top,
+                        //         onPressed: () {
+                        //           if (widget.toggleEditor != null) {
+                        //             widget.toggleEditor!();
+                        //           }
+                        //         },
+                        //         colorIndex: 3,
+                        //         opacity: 1.0,
+                        //         fontSize: 10,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
 
                         // Send button
                         // ComindTextButton(
@@ -328,10 +393,6 @@ class _MainTextFieldState extends State<MainTextField> {
                     ),
                   ),
                 ),
-
-                // Add the current time on the bottom left,
-                // formatted as 1:23pm
-                clock(context),
               ],
             ),
 
@@ -347,44 +408,11 @@ class _MainTextFieldState extends State<MainTextField> {
     );
   }
 
-  Visibility clock(BuildContext context) {
-    return Visibility(
-      visible: widget.type == TextFieldType.main,
-      child: Positioned(
-        bottom: 8,
-        left: 12,
-        child: Container(
-          color:
-              Provider.of<ComindColorsNotifier>(context).colorScheme.background,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-            child: Text(
-              DateFormat('h:mm a').format(DateTime.now()),
-              style: Provider.of<ComindColorsNotifier>(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(
-                    color: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .onPrimary
-                        .withAlpha(180),
-                  ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Function _submit(BuildContext context) {
     return widget.type == TextFieldType.main ||
             widget.type == TextFieldType.inline
         ? () {
-            print("Trying to submit");
-            widget.onThoughtSubmitted!(Thought.fromString(
-                _primaryController.text,
-                Provider.of<AuthProvider>(context, listen: false).username,
-                Provider.of<AuthProvider>(context, listen: false).publicMode));
+            widget.onThoughtSubmitted!(widget._primaryController.text);
           }
         : widget.type == TextFieldType.edit
             ? () {

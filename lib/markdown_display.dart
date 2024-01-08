@@ -21,6 +21,7 @@ enum MarkdownDisplayType {
   fullScreen,
   inline,
   searchResult,
+  newThought,
 }
 
 //
@@ -87,6 +88,22 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   // Whether the "new thought" editor is open
   bool newThoughtOpen = false;
 
+  // Set initial state
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.type == MarkdownDisplayType.searchResult) {
+      widget.showBody = false;
+    } else if (widget.type == MarkdownDisplayType.inline) {
+      widget.showBody = true;
+      widget.showTextBox = false;
+    } else if (widget.type == MarkdownDisplayType.fullScreen) {
+      widget.showBody = true;
+      widget.showTextBox = true;
+    }
+  }
+
   // Initialization
   @override
   Widget build(BuildContext context) {
@@ -105,7 +122,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           // : const EdgeInsets.fromLTRB(16, 16, 16, 24),
           // : const EdgeInsets.fromLTRB(16, 0, 16, 0),
           : widget.type == MarkdownDisplayType.searchResult
-              ? const EdgeInsets.fromLTRB(4, 0, 4, 0)
+              ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
               : const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Column(children: [
         // Main text box
@@ -115,22 +132,158 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           surfaceTintColor: Colors.transparent,
           shadowColor: Colors.transparent,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
             child: SizedBox(
               width: double.infinity,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Cinewave username
-                  Material(
-                      child: InkWell(
-                          onTap: () => {
-                                // Toggle the body
-                                setState(() {
-                                  widget.showBody = !widget.showBody;
-                                })
-                              },
-                          child: cineUsername(context))),
+                  Row(
+                    children: [
+                      // Cinewave username line
+                      Expanded(
+                        child: Material(
+                            child: InkWell(
+                                onTap: () => {
+                                      // Toggle the body
+                                      setState(() {
+                                        widget.showBody = !widget.showBody;
+                                      })
+                                    },
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(4, 8, 4, 8),
+                                  child: Row(
+                                    children: [
+                                      // Title
+                                      MarkdownDisplayType.newThought !=
+                                              widget.type
+                                          ? Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      0, 0, 8, 0),
+                                              // Version where body is truncated
+                                              child: SelectableText(
+                                                  widget.thought.title
+                                                      .substring(
+                                                          0,
+                                                          min(
+                                                              30,
+                                                              widget
+                                                                  .thought
+                                                                  .title
+                                                                  .length)),
+                                                  style: getTextTheme(context)
+                                                      .labelMedium),
+
+                                              // child: Text(thought.title, style: getTextTheme(context).labelMedium),
+                                              // child: Text(thought.title, style: getTextTheme(context).titleSmall),
+                                            )
+                                          : Container(),
+                                      // Padding(
+                                      //   padding: const EdgeInsets.fromLTRB(
+                                      //       0, 0, 8, 0),
+                                      //   // Version where body is truncated
+                                      //   child: SelectableText(
+                                      //       widget.thought.title.substring(
+                                      //           0,
+                                      //           min(
+                                      //               30,
+                                      //               widget
+                                      //                   .thought.title.length)),
+                                      //       style: getTextTheme(context)
+                                      //           .labelMedium),
+
+                                      //   // child: Text(thought.title, style: getTextTheme(context).labelMedium),
+                                      //   // child: Text(thought.title, style: getTextTheme(context).titleSmall),
+                                      // ),
+
+                                      // Remove cinewave for debug
+                                      Expanded(
+                                          child: SizedBox(
+                                              height: 5,
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: CineWave(
+                                                    amplitude: 2 / 2,
+                                                    frequency: pi / 90,
+                                                    // primaryAmplitude: pi,
+                                                    // secondaryFrequency: pi,
+                                                  )))),
+
+                                      // Add divider
+                                      // Expanded(
+                                      //     child: SizedBox(
+                                      //         height: 5,
+                                      //         child: Opacity(
+                                      //             opacity: 0.5,
+                                      //             child: Divider(
+                                      //               color: Provider.of<ComindColorsNotifier>(context)
+                                      //                   .colorScheme
+                                      //                   .onPrimary
+                                      //                   .withAlpha(64),
+                                      //             )))),
+
+                                      // Username
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            8, 0, 4, 0),
+                                        child: Text(widget.thought.username,
+                                            style: Provider.of<
+                                                        ComindColorsNotifier>(
+                                                    context)
+                                                .textTheme
+                                                .titleSmall),
+                                      ),
+                                    ],
+                                  ),
+                                ))),
+                      ),
+
+                      // Local variable storing the delete button underneath each thought
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                        child: IconButton(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          visualDensity:
+                              const VisualDensity(horizontal: -4, vertical: -4),
+                          enableFeedback: true,
+                          splashRadius: 16,
+
+                          // On pressed here links the notes to the parent, if
+                          // there is one
+                          onPressed: () async {
+                            // If there is a parent thought
+                            if (widget.parentThought != null) {
+                              // Link the thoughts
+                              if (widget.thought.id != widget.parentThought &&
+                                  widget.parentThought != null) {
+                                await linkThoughts(context, widget.thought.id,
+                                    widget.parentThought!);
+                              }
+                            }
+                          },
+                          // icon: Text(
+                          //   "{O}",
+                          //   style: TextStyle(
+                          //       fontFamily: "Bungee Pop",
+                          //       fontSize: 12,
+                          //       fontWeight: FontWeight.w400),
+                          // )
+
+                          icon: Icon(
+                            Icons.add_link,
+                            size: 16,
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(200),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
 
                   // Show cosine similarity
                   // Text(widget.thought.cosineSimilarity.toString(),
@@ -140,7 +293,11 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
                   // Add thought body
                   Visibility(
-                      visible: widget.showBody, child: thoughtBody(context)),
+                      visible: widget.showBody && !widget.showTextBox,
+                      child: thoughtBody(context)),
+
+                  // Show the edit box
+                  expandableEditBox(context),
 
                   // Alternative action row
                   Visibility(
@@ -151,9 +308,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             ),
           ),
         ),
-
-        // Show the edit box
-        expandableEditBox(context),
 
         // Add the action row on bottom
         // actionRow(
@@ -174,8 +328,14 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                 "",
                 Provider.of<AuthProvider>(context, listen: false).username,
                 true),
-            onThoughtSubmitted: (Thought thought) async {
-              print(thought.body);
+            onThoughtSubmitted: (String body) async {
+              // Make a new thought
+              var thought = Thought.fromString(
+                  body,
+                  Provider.of<AuthProvider>(context, listen: false).username,
+                  Provider.of<ComindColorsNotifier>(context, listen: false)
+                      .publicMode);
+
               // Save the thought
               await saveThought(context, thought);
 
@@ -320,6 +480,98 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         ),
       ),
     );
+
+    // Local variable storing the delete button underneath each thought
+    var deleteButton = Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+      child: IconButton(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+        enableFeedback: true,
+        splashRadius: 16,
+        onPressed: () async {
+          // TODO delete the thought
+          bool? shouldDelete = await showDialog<bool>(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .background,
+                surfaceTintColor: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .secondary
+                    .withAlpha(64),
+                title: const Text(
+                  'Delete thought?',
+                  style: TextStyle(
+                      fontFamily: "Bungee",
+                      fontSize: 36,
+                      fontWeight: FontWeight.w400),
+                ),
+                content: const Text(
+                    'You sure you wanna delete this note? Cameron is really, really bad at making undo buttons. \n\nIf you delete this it will prolly be gone forever.'),
+                actions: <Widget>[
+                  ComindTextButton(
+                    text: "Cancel",
+                    opacity: 1,
+                    fontSize: 18,
+                    colorIndex: 1,
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                  ),
+                  ComindTextButton(
+                    text: "Delete",
+                    opacity: 1,
+                    fontSize: 18,
+                    colorIndex: 3,
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                  ),
+                ],
+                actionsAlignment: MainAxisAlignment.spaceBetween,
+              );
+            },
+          );
+
+          if (shouldDelete == true) {
+            // ignore: use_build_context_synchronously
+            deleteThought(context, widget.thought.id);
+
+            // Remove the thought from the list
+            Provider.of<ThoughtsProvider>(context, listen: false)
+                .removeThought(widget.thought);
+          }
+        },
+        icon: Icon(
+          Icons.delete,
+          size: 16,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(128),
+        ),
+      ),
+    );
+
+    // Local variable for edit button
+    var editThoughtButton = Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+      child: newButton(
+          onBackground, context, widget.showTextBox ? "Close" : "Edit", () {
+        // Update the edit box with the thought
+        _editController.text = widget.thought.body;
+
+        // Toggle the new thought box
+        setState(() {
+          widget.showTextBox = !widget.showTextBox;
+        });
+      }),
+    );
+
+    //
     return Row(children: [
       timestamp,
 
@@ -329,11 +581,32 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       // Cinewave
       expandedCineWave,
 
-      // infoButton,
+      // Buttons
       Visibility(
-          visible: widget.type == MarkdownDisplayType.searchResult,
+          visible:
+              !widget.showTextBox && !widget.relatedMode && !newThoughtOpen,
+          child: deleteButton),
+
+      // Edit button
+      Visibility(
+          visible: !widget.viewOnly &&
+              !widget.relatedMode &&
+              !newThoughtOpen &&
+              widget.thought.username ==
+                  Provider.of<AuthProvider>(context).username,
+          child: editThoughtButton),
+
+      // Info button
+      Visibility(
+          visible: !widget.relatedMode && !newThoughtOpen, child: infoButton),
+
+      Visibility(
+          visible: widget.type == MarkdownDisplayType.searchResult &&
+              !newThoughtOpen,
           child: expandButton),
-      showLinkedButton,
+
+      // Show linked/more button
+      Visibility(visible: !newThoughtOpen, child: showLinkedButton),
 
       // Add thought button
       addThoughtButton,
@@ -431,23 +704,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                           ),
                         ),
 
-                        // Padding(
-                        //     padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                        //     child: CineWave(
-                        //       amplitude: 0.2,
-                        //       frequency: 1,
-
-                        //       // frequencies
-                        //       primaryFrequency: 1,
-                        //       secondaryFrequency: 1,
-                        //       tertiaryFrequency: 1,
-
-                        //       // amplitudes
-                        //       primaryAmplitude: 1,
-                        //       secondaryAmplitude: 1,
-                        //       tertiaryAmplitude: 1,
-                        //     )),
-
                         // Show new thought box
                         newThoughtBox(context),
 
@@ -470,79 +726,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Padding cineUsername(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
-      child: Row(
-        children: [
-          // Linked icon
-          Visibility(
-            visible: widget.type == MarkdownDisplayType.searchResult,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 2, 0),
-              child: Icon(
-                Icons.link,
-                size: 16,
-                color: Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .onPrimary
-                    .withAlpha(128),
-              ),
-            ),
-          ),
-
-          // Title
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-            // Version where body is truncated
-            child: SelectableText(
-                widget.thought.title
-                    .substring(0, min(30, widget.thought.title.length)),
-                style: getTextTheme(context).labelMedium),
-
-            // child: Text(thought.title, style: getTextTheme(context).labelMedium),
-            // child: Text(thought.title, style: getTextTheme(context).titleSmall),
-          ),
-
-          // Remove cinewave for debug
-          Expanded(
-              child: SizedBox(
-                  height: 5,
-                  child: Opacity(
-                      opacity: 0.5,
-                      child: CineWave(
-                        amplitude: 2 / 2,
-                        frequency: pi / 90,
-                        // primaryAmplitude: pi,
-                        // secondaryFrequency: pi,
-                      )))),
-
-          // Add divider
-          // Expanded(
-          //     child: SizedBox(
-          //         height: 5,
-          //         child: Opacity(
-          //             opacity: 0.5,
-          //             child: Divider(
-          //               color: Provider.of<ComindColorsNotifier>(context)
-          //                   .colorScheme
-          //                   .onPrimary
-          //                   .withAlpha(64),
-          //             )))),
-
-          // Username
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
-            child: Text(widget.thought.username,
-                style: Provider.of<ComindColorsNotifier>(context)
-                    .textTheme
-                    .titleSmall),
           ),
         ],
       ),
@@ -578,84 +761,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
               setState(() {
                 widget.showTextBox = !widget.showTextBox;
               });
-            },
-            // lineLocation: LineLocation.top,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Padding deleteActionButton(EdgeInsets edgeInsets, BuildContext context,
-      EdgeInsets edgeInsets2, double buttonOpacity, double buttonFontSize) {
-    return Padding(
-      padding: edgeInsets,
-      child: Container(
-        decoration: BoxDecoration(
-          color:
-              Provider.of<ComindColorsNotifier>(context).colorScheme.background,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Padding(
-          padding: edgeInsets2,
-          child: ComindTextButton(
-            opacity: buttonOpacity,
-            fontSize: buttonFontSize,
-            lineLocation: LineLocation.top,
-            // lineOnly: hovered,
-            text: "Delete",
-            colorIndex: 0,
-            onPressed: () async {
-              // TODO delete the thought
-              bool? shouldDelete = await showDialog<bool>(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    backgroundColor: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .background,
-                    surfaceTintColor: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .secondary
-                        .withAlpha(64),
-                    title: const Text(
-                      'Delete thought?',
-                      style: TextStyle(
-                          fontFamily: "Bungee",
-                          fontSize: 36,
-                          fontWeight: FontWeight.w400),
-                    ),
-                    content: const Text(
-                        'You sure you wanna delete this note? Cameron is really, really bad at making undo buttons. \n\nIf you delete this it will prolly be gone forever.'),
-                    actions: <Widget>[
-                      ComindTextButton(
-                        text: "Cancel",
-                        opacity: 1,
-                        fontSize: 18,
-                        colorIndex: 1,
-                        onPressed: () {
-                          Navigator.of(context).pop(false);
-                        },
-                      ),
-                      ComindTextButton(
-                        text: "Delete",
-                        opacity: 1,
-                        fontSize: 18,
-                        colorIndex: 3,
-                        onPressed: () {
-                          Navigator.of(context).pop(true);
-                        },
-                      ),
-                    ],
-                    actionsAlignment: MainAxisAlignment.spaceBetween,
-                  );
-                },
-              );
-
-              if (shouldDelete == true) {
-                // ignore: use_build_context_synchronously
-                deleteThought(context, widget.thought.id);
-              }
             },
             // lineLocation: LineLocation.top,
           ),
@@ -720,6 +825,7 @@ class TheMarkdownBox extends StatelessWidget {
               decorationColor: Provider.of<ComindColorsNotifier>(context)
                   .colorScheme
                   .secondary,
+              decorationThickness: 4,
             ),
 
             // Smush the text together
@@ -844,9 +950,9 @@ class InfoCard extends StatelessWidget {
   }
 }
 
-MarkdownThought coThought(BuildContext context, String text) {
+MarkdownThought coThought(BuildContext context, String text, String title) {
   return MarkdownThought(
-    thought: Thought.fromString(text, "Co", true),
+    thought: Thought.fromString(text, "Co", true, title: title),
     opacity: 1,
     opacityOnHover: 1,
     selectable: false,

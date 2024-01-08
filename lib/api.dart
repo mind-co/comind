@@ -131,6 +131,7 @@ Future<void> saveThought(BuildContext context, Thought thought,
 
     // Try to parse the response as json
     try {
+      print("Sent thought with body ${thought.body} to server");
       // final jsonResponse = json.decode(response.body);
     } catch (e) {
       throw Exception('Failed to parse new thought as JSON');
@@ -295,6 +296,7 @@ Future<List<Thought>> searchThoughts(BuildContext context, String query,
     var result = jsonResponse.map((thought) {
       if (thought is Map<String, dynamic>) {
         // Sort in descending order by cosine similarity
+        print(thought);
         return Thought.fromJson(thought);
       } else {
         throw Exception('Invalid data format');

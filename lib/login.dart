@@ -13,6 +13,7 @@
 ///
 
 import 'package:comind/api.dart';
+import 'package:comind/bottom_sheet.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/misc/comind_logo.dart';
 import 'package:comind/providers.dart';
@@ -68,20 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
 
       body: signUpMode ? signUpPage(context) : loginPage(context),
-      bottomSheet: Container(
-        color: Colors.transparent,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-              "made with ❤️ by mindco. powered by mania, weed, and coffee.",
-              style: TextStyle(
-                  fontSize: 12,
-                  color: Provider.of<ComindColorsNotifier>(context)
-                      .colorScheme
-                      .onBackground
-                      .withAlpha(150))),
-        ),
-      ),
+      bottomSheet: ComindBottomSheet(),
     );
   }
 

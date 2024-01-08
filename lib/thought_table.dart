@@ -1,4 +1,6 @@
 // ThoughtTable shows a list of searched thoughts
+import 'dart:math';
+
 import 'package:comind/colors.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:comind/text_button.dart';
@@ -23,7 +25,7 @@ class ThoughtTable extends StatelessWidget {
       child: Stack(clipBehavior: Clip.none, children: [
         Container(
           width: ComindColors.maxWidth,
-          height: 300,
+          height: 126,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
 
@@ -86,48 +88,17 @@ class ThoughtTable extends StatelessWidget {
                     ),
                   ),
                 )
+              // Otherwise, show everything
               : Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: ListView.builder(
-                      itemCount: thoughts.length + 1,
+                      itemCount: max(3, thoughts.length + 1),
                       itemBuilder: (context, index) {
-                        if (index < thoughts.length) {
+                        if (index < 3) {
                           return MarkdownThought(
                               type: MarkdownDisplayType.searchResult,
                               thought: thoughts[index],
                               parentThought: parentThought?.id);
-                        } else {
-                          return Center(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 32, 0, 32),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Do you want to see ",
-                                    style: Provider.of<ComindColorsNotifier>(
-                                            context)
-                                        .textTheme
-                                        .bodyMedium,
-                                  ),
-                                  // TODO #5 add more thoughts button
-                                  ComindTextButton(
-                                    text: "More",
-                                    onPressed: () {},
-                                    opacity: 1.0,
-                                    fontSize: 16,
-                                  ),
-                                  Text(
-                                    " thoughts?",
-                                    style: Provider.of<ComindColorsNotifier>(
-                                            context)
-                                        .textTheme
-                                        .bodyMedium,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
                         }
                       }),
                 ),

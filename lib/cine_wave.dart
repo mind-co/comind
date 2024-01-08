@@ -62,8 +62,13 @@ class CineWavePainter extends CustomPainter {
     //     tertiaryColor: Provider.of<ComindColorsNotifier>(context)
     //         .currentColors
     //         .tertiaryColor,
+
     for (int x = 0; x < size.width; x++) {
-      final rotation = x * frequency / 1200;
+      // final rotation = x * frequency /10 * pi;
+      // Rotation should be a score of 1 to 100 for percentage of rotation. It is
+      // descaled by the frequency.
+      final rotation = (x / size.width);
+
       final rotationInThree = rotation % 3;
 
       // tracks which color we are on.
@@ -199,13 +204,13 @@ class _CineWaveState extends State<CineWave>
     super.initState();
 
     _controller = AnimationController(
-      duration: const Duration(seconds: 10),
+      duration: const Duration(seconds: 20),
       // duration: const Duration(milliseconds: 800),
       vsync: this,
     )..repeat(reverse: true);
 
     // _animation = Tween<double>(begin: 0, end: 0).animate(
-    _animation = Tween<double>(begin: 0, end: 0).animate(
+    _animation = Tween<double>(begin: 0, end: 360).animate(
       CurvedAnimation(
           parent: _controller,
           // curve: Curves.decelerate,
@@ -231,11 +236,12 @@ class _CineWaveState extends State<CineWave>
               painter: CineWavePainter(
                 // amplitude: log(_animation.value / 50 + 1),
                 frequency: widget.frequency * _animation.value,
+                // frequency: 2,
                 // frequency: log(widget.frequency * _animation.value / 60 + 1),
                 // amplitude: (math.a(360 - _animation.value)widget.amplitude * _animation.value / 20,
                 amplitude:
-                    (360 - _animation.value).abs() / 60 * widget.amplitude,
-                startPoint: (_animation.value + 1),
+                    (360 - _animation.value).abs() / 80 * widget.amplitude,
+                // startPoint: (_animation.value + 1),
                 // startPoint: 0,
                 primaryColor: colorNotifier.currentColors.primaryColor,
                 secondaryColor: colorNotifier.currentColors.secondaryColor,

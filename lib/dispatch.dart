@@ -4,6 +4,7 @@
 import 'package:comind/login.dart';
 import 'package:comind/main.dart';
 import 'package:comind/providers.dart';
+import 'package:comind/stream.dart';
 import 'package:comind/thought_editor_basic.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -60,15 +61,23 @@ class Dispatch extends StatelessWidget {
             // );
           }
 
+          // // debug for stream
+          // return MaterialPageRoute(
+          //   builder: (context) => Stream(),
+          // );
+
           // Handle '/'
-          return MaterialPageRoute(
-            builder: (context) => const ThoughtListScreen(),
-          );
+          // return MaterialPageRoute(
+          //   builder: (context) => const ThoughtListScreen(),
+          // );
         },
-        pages: const [
+        pages: [
           MaterialPage(
-            child: ThoughtListScreen(),
+            child: Stream(),
           ),
+          // const MaterialPage(
+          //   child: ThoughtListScreen(),
+          // ),
         ],
         onPopPage: (route, result) => route.didPop(result),
       );

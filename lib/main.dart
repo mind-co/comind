@@ -158,12 +158,12 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     // Replace with your API call
     List<Thought> fetchedThoughts = await fetchThoughts(context);
 
-    // Add all thoughts to the provider
-    // ignore: use_build_context_synchronously
-    Provider.of<ThoughtsProvider>(context, listen: false)
-        .addThoughts(fetchedThoughts);
-
     setState(() {
+      // Add all thoughts to the provider
+      // ignore: use_build_context_synchronously
+      Provider.of<ThoughtsProvider>(context, listen: false)
+          .addThoughts(fetchedThoughts);
+
       loaded = true;
     });
   }
@@ -306,8 +306,9 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
   }
 
   List<Thought> getThoughts(BuildContext context) =>
-      Provider.of<ThoughtsProvider>(context).thoughts;
+      Provider.of<ThoughtsProvider>(context, listen: false).thoughts;
 
+  // The navigation bar at the bottom.
   Container bottomBar(
       BuildContext context, EdgeInsets edgeInsets, bool publicMode) {
     return Container(
@@ -653,16 +654,26 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
             child: MainTextField(
-                onThoughtSubmitted: (Thought thought) async {
-                  // Push the thought to the provider
-                  // ignore: use_build_context_synchronously
-                  Provider.of<ThoughtsProvider>(context, listen: false)
-                      .addThought(thought);
-
-                  print("Thought submitted: ${thought.body}");
+                // This function is called when the user submits a new thought
+                // It should create a new thought and send it to the API.
+                onThoughtSubmitted: (String body) {
+                  // Create a new thought
+                  final thought = Thought.fromString(
+                      body,
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .username,
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .publicMode);
 
                   // Send the thought
-                  await saveThought(context, thought, newThought: true);
+                  saveThought(context, thought, newThought: true).then((value) {
+                    // Add the thought to the providerthis
+                    Provider.of<ThoughtsProvider>(context, listen: false)
+                        .addThought(thought);
+
+                    // Lastly, update the UI
+                    setState(() {});
+                  });
                 },
                 primaryController: _primaryController,
                 colorIndex:
@@ -695,10 +706,10 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           Expanded(
             child: Center(
               child: Consumer<ThoughtsProvider>(
-                builder: (BuildContext context, ThoughtsProvider value,
-                    Widget? child) {
+                builder: (BuildContext context,
+                    ThoughtsProvider thoughtsProvider, Widget? child) {
                   return ListView.builder(
-                    itemCount: value.thoughts.length,
+                    itemCount: thoughtsProvider.thoughts.length,
                     itemBuilder: (context, index) {
                       // return thoughtBox(context, index, constraints: constraints);
 
@@ -709,7 +720,8 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                           // if (index != 0) const SizedBox(height: 16),
 
                           // Add the thought box
-                          thoughtBox(context, index, constraints: constraints),
+                          thoughtBox(context, thoughtsProvider.thoughts[index],
+                              constraints: constraints),
 
                           // Add a vertical spacer if index != thoughts.length
                           // if (index != getThoughts(context).length - 1)
@@ -734,12 +746,11 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
     );
   }
 
-  Widget thoughtBox(BuildContext context, int index,
+  Widget thoughtBox(BuildContext context, Thought thought,
       {required BoxConstraints constraints}) {
     //
 
-    return MarkdownThought(
-        thought: Provider.of<ThoughtsProvider>(context).thoughts[index]);
+    return MarkdownThought(thought: thought);
   }
 }
 

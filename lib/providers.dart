@@ -61,10 +61,9 @@ class ThoughtsProvider extends ChangeNotifier {
 
   List<Thought> get thoughts => _thoughts;
 
-  // Add a list of thoughts
+  // Add a list of thoughts but only if they don't already exist
   void addThoughts(List<Thought> thoughts) {
-    _thoughts.addAll(thoughts);
-    notifyListeners();
+    thoughts.forEach(addThought);
   }
 
   void addThought(Thought thought) {
@@ -76,14 +75,13 @@ class ThoughtsProvider extends ChangeNotifier {
     // Sort the thoughts by date
     _thoughts.sort((a, b) => b.dateUpdated.compareTo(a.dateUpdated));
 
-    // Print the first note body
-    print(_thoughts.first.body);
-
     notifyListeners();
   }
 
   void removeThought(Thought thought) {
     _thoughts.removeWhere((element) => element.id == thought.id);
+
+    print("Removing ${thought.id}");
     notifyListeners();
   }
 }

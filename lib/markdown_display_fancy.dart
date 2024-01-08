@@ -461,7 +461,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   .textTheme
                   .titleSmall),
         ),
-        const Expanded(
+        Expanded(
             child: SizedBox(
                 height: 5, child: Opacity(opacity: 1, child: CineWave()))),
       ],

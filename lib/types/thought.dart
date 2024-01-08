@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 // Generate a new UUID5
-String generateUUID5() {
-  var uuid = Uuid();
-  return uuid.v5(Uuid.NAMESPACE_URL, 'comind.me');
+String generateUUID4(String username) {
+  const uuid = Uuid();
+  return uuid.v4();
 }
 
 class Thought {
@@ -28,6 +28,9 @@ class Thought {
   final int refs;
   final int? numLinks;
   final double? cosineSimilarity;
+  final String? associatedId;
+  final String? linkedFrom;
+  final String? linkedTo;
 
   Thought({
     required this.title,
@@ -46,6 +49,9 @@ class Thought {
     required this.refs,
     this.numLinks = 0,
     this.cosineSimilarity = 0.0,
+    this.associatedId = '',
+    this.linkedFrom = '',
+    this.linkedTo = '',
   });
 
   factory Thought.fromJson(Map<String, dynamic> json) {
@@ -66,25 +72,30 @@ class Thought {
       refs: json['refs'],
       numLinks: json['numlinks'],
       cosineSimilarity: json['cosinesimilarity'],
+      associatedId: json['associated_id'],
+      linkedFrom: json['linked_to'],
+      linkedTo: json['linked_from'],
     );
   }
 
-  // Constructor to accept a string and return a thought
-  factory Thought.fromString(String text, String username, bool isPublic) {
+  // Constructor to accept a string and return a thought. Optional parameters
+  // for titles
+  factory Thought.fromString(String text, String username, bool isPublic,
+      {String title = ''}) {
     var now = DateTime.now();
     var formatter = DateFormat('yyyy-MM-ddTHH:mm:ss');
     var formattedDate = formatter.format(now);
 
     // https://pub.dev/packages/uuid
     return Thought(
-      title: "",
+      title: title,
       body: text,
       username: username,
       dateCreated: formattedDate,
       dateUpdated: formattedDate,
       revision: 0,
       // Generate a UUID5
-      id: generateUUID5(),
+      id: generateUUID4(username),
       isPublic: isPublic,
       isSynthetic: false,
       origin: '',
@@ -98,7 +109,7 @@ class Thought {
   // Make an empty thought constructor for testing
   factory Thought.empty() {
     // Generate a new UUID5
-    String generateUUID5() {
+    String generateUUID4() {
       var uuid = Uuid();
       return uuid.v5(Uuid.NAMESPACE_URL, 'example.com');
     }
@@ -117,42 +128,10 @@ class Thought {
       dateUpdated: formattedDate,
       revision: 0,
       // Generate a UUID5
-      id: generateUUID5(),
+      id: generateUUID4(),
       isPublic: false,
       isSynthetic: false,
       origin: '',
-      accepts: 0,
-      rejects: 0,
-      rethinks: 0,
-      refs: 0,
-    );
-  }
-
-  // Lorem ipsum thought constructor for testing
-  factory Thought.lorem() {
-    return Thought(
-      title: 'Lorem Ipsum',
-      body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
-          'Sed non risus. Suspendisse lectus tortor, dignissim sit amet, '
-          'adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. '
-          'Maecenas ligula massa, varius a, semper congue, euismod non, mi. '
-          'Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, '
-          'non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, '
-          'scelerisque vitae, consequat in, pretium a, enim. Pellentesque '
-          'congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum '
-          'bibendum augue. Praesent egestas leo in pede. Praesent blandit odio '
-          'eu enim. Pellentesque sed dui ut augue blandit sodales. Vestibulum '
-          'ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia '
-          'Curae; Aliquam nibh. Mauris ac mauris sed pede pellentesque fermentum. '
-          'Maecenas adipiscing ante non diam sodales hendrerit.',
-      username: 'cameron',
-      dateCreated: '2021-10-10T00:00:00.000000Z',
-      dateUpdated: '2021-10-10T00:00:00.000000Z',
-      revision: 0,
-      id: generateUUID5(),
-      isPublic: true,
-      isSynthetic: false,
-      origin: '0',
       accepts: 0,
       rejects: 0,
       rethinks: 0,
@@ -176,7 +155,7 @@ class Thought {
       dateCreated: '2021-10-10T00:00:00.000000Z',
       dateUpdated: '2021-10-10T00:00:00.000000Z',
       revision: 0,
-      id: generateUUID5(),
+      id: generateUUID4('streamtest'),
       isPublic: true,
       isSynthetic: false,
       origin: '0',
