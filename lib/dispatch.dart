@@ -61,23 +61,18 @@ class Dispatch extends StatelessWidget {
             // );
           }
 
-          // // debug for stream
-          // return MaterialPageRoute(
-          //   builder: (context) => Stream(),
-          // );
-
           // Handle '/'
-          // return MaterialPageRoute(
-          //   builder: (context) => const ThoughtListScreen(),
-          // );
+          return MaterialPageRoute(
+            builder: (context) => const ThoughtListScreen(),
+          );
         },
         pages: [
+          const MaterialPage(
+            child: ThoughtListScreen(),
+          ),
           MaterialPage(
             child: Stream(),
           ),
-          // const MaterialPage(
-          //   child: ThoughtListScreen(),
-          // ),
         ],
         onPopPage: (route, result) => route.didPop(result),
       );

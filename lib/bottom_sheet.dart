@@ -9,8 +9,7 @@ class ComindBottomSheet extends StatelessWidget {
       color: Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Text(
-            "made with ❤️ by mindco. powered by mania, weed, and coffee",
+        child: Text("made with ❤️ by mindco",
             style: TextStyle(
                 fontSize: 12,
                 color: Provider.of<ComindColorsNotifier>(context)

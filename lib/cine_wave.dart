@@ -50,24 +50,13 @@ class CineWavePainter extends CustomPainter {
     }
   }
 
-  static const double _interpLocation = 0.5;
   @override
   void paint(Canvas canvas, Size size) {
-    // primaryColor: Provider.of<ComindColorsNotifier>(context)
-    //         .currentColors
-    //         .primaryColor,
-    //     secondaryColor: Provider.of<ComindColorsNotifier>(context)
-    //         .currentColors
-    //         .secondaryColor,
-    //     tertiaryColor: Provider.of<ComindColorsNotifier>(context)
-    //         .currentColors
-    //         .tertiaryColor,
-
     for (int x = 0; x < size.width; x++) {
-      // final rotation = x * frequency /10 * pi;
       // Rotation should be a score of 1 to 100 for percentage of rotation. It is
       // descaled by the frequency.
-      final rotation = (x / size.width);
+      // final rotation = x / size.width * frequency * pi / 90;
+      final rotation = (x / size.width) * 3;
 
       final rotationInThree = rotation % 3;
 
@@ -101,40 +90,24 @@ class CineWavePainter extends CustomPainter {
 
       // This is the interpolation for the first color.
       if (rotationInThree < 1) {
-        // Only interpolate when rotation is > 0.9.
-        // Between 0.9 and 1, interpolate quickly.
-        // Between 0 and 0.9, do not interpolate.
-        final double rotationInThreeInterpolated = rotationInThree >
-                _interpLocation
-            ? min(1, (rotationInThree - _interpLocation)) * 1 / _interpLocation
-            : 0;
-
         // Set the color
-        color = Color.lerp(
-            primaryColor, secondaryColor, rotationInThreeInterpolated)!;
-      } else if (rotationInThree < 2) {
-        final double rotationInThreeInterpolated =
-            rotationInThree > (1 + _interpLocation)
-                ? min(1, (rotationInThree - (1 + _interpLocation))) *
-                    1 /
-                    _interpLocation
-                : 0;
-        color = Color.lerp(
-            secondaryColor, tertiaryColor, rotationInThreeInterpolated)!;
-      } else {
-        final double rotationInThreeInterpolated =
-            rotationInThree > (2 + _interpLocation)
-                ? min(1, (rotationInThree - (2 + _interpLocation))) *
-                    1 /
-                    _interpLocation
-                : 0;
+        color = Color.lerp(primaryColor, secondaryColor, rotationInThree)!;
+      }
+      // This is the interpolation for the second color.
+      else if (rotationInThree < 2) {
+        // Set the color
+        color = Color.lerp(secondaryColor, tertiaryColor, rotationInThree - 1)!;
+      }
 
-        color = Color.lerp(
-            tertiaryColor, primaryColor, rotationInThreeInterpolated)!;
+      // This is the interpolation for the third color.
+      else {
+        // Set the color
+        color = Color.lerp(tertiaryColor, primaryColor, rotationInThree - 2)!;
       }
 
       final paint = Paint()
         ..color = color
+        // ..color = color.withOpacity((rotationInThree % 1))
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3;
 
@@ -207,15 +180,15 @@ class _CineWaveState extends State<CineWave>
       duration: const Duration(seconds: 20),
       // duration: const Duration(milliseconds: 800),
       vsync: this,
-    )..repeat(reverse: true);
+    )..repeat(reverse: false);
 
     // _animation = Tween<double>(begin: 0, end: 0).animate(
-    _animation = Tween<double>(begin: 0, end: 360).animate(
+    _animation = Tween<double>(begin: 0, end: 3 / 2 * pi).animate(
       CurvedAnimation(
           parent: _controller,
           // curve: Curves.decelerate,
           // curve: Curves.slowMiddle,
-          curve: Curves.easeIn),
+          curve: Curves.linear),
     );
   }
 
@@ -235,13 +208,12 @@ class _CineWaveState extends State<CineWave>
             return CustomPaint(
               painter: CineWavePainter(
                 // amplitude: log(_animation.value / 50 + 1),
-                frequency: widget.frequency * _animation.value,
-                // frequency: 2,
-                // frequency: log(widget.frequency * _animation.value / 60 + 1),
-                // amplitude: (math.a(360 - _animation.value)widget.amplitude * _animation.value / 20,
-                amplitude:
-                    (360 - _animation.value).abs() / 80 * widget.amplitude,
-                // startPoint: (_animation.value + 1),
+                // frequency: widget.frequency * _animation.value,
+                frequency: widget.frequency,
+                // frequency: log(widget.frequency * _animation.value + 1),
+                amplitude: (360 - _animation.value).abs() * widget.amplitude,
+                // amplitude: widget.amplitude,
+                startPoint: _animation.value * 100,
                 // startPoint: 0,
                 primaryColor: colorNotifier.currentColors.primaryColor,
                 secondaryColor: colorNotifier.currentColors.secondaryColor,

@@ -165,17 +165,11 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                                       0, 0, 8, 0),
                                               // Version where body is truncated
                                               child: SelectableText(
-                                                  widget.thought.title
-                                                      .substring(
-                                                          0,
-                                                          min(
-                                                              30,
-                                                              widget
-                                                                  .thought
-                                                                  .title
-                                                                  .length)),
+                                                  widget.thought.title == ""
+                                                      ? "..."
+                                                      : widget.thought.title,
                                                   style: getTextTheme(context)
-                                                      .labelMedium),
+                                                      .titleSmall),
 
                                               // child: Text(thought.title, style: getTextTheme(context).labelMedium),
                                               // child: Text(thought.title, style: getTextTheme(context).titleSmall),
@@ -199,31 +193,18 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                       //   // child: Text(thought.title, style: getTextTheme(context).titleSmall),
                                       // ),
 
-                                      // Remove cinewave for debug
+                                      // Cinewave
                                       Expanded(
                                           child: SizedBox(
                                               height: 5,
                                               child: Opacity(
-                                                  opacity: 0.5,
+                                                  opacity: 1.0,
                                                   child: CineWave(
-                                                    amplitude: 2 / 2,
-                                                    frequency: pi / 90,
+                                                    amplitude: 0.01,
+                                                    frequency: 3,
                                                     // primaryAmplitude: pi,
                                                     // secondaryFrequency: pi,
                                                   )))),
-
-                                      // Add divider
-                                      // Expanded(
-                                      //     child: SizedBox(
-                                      //         height: 5,
-                                      //         child: Opacity(
-                                      //             opacity: 0.5,
-                                      //             child: Divider(
-                                      //               color: Provider.of<ComindColorsNotifier>(context)
-                                      //                   .colorScheme
-                                      //                   .onPrimary
-                                      //                   .withAlpha(64),
-                                      //             )))),
 
                                       // Username
                                       Padding(
@@ -241,44 +222,48 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                 ))),
                       ),
 
-                      // Local variable storing the delete button underneath each thought
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-                        child: IconButton(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          visualDensity:
-                              const VisualDensity(horizontal: -4, vertical: -4),
-                          enableFeedback: true,
-                          splashRadius: 16,
+                      // Link button for child thoughts
+                      Visibility(
+                        visible:
+                            widget.type == MarkdownDisplayType.searchResult,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                          child: IconButton(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            visualDensity: const VisualDensity(
+                                horizontal: -4, vertical: -4),
+                            enableFeedback: true,
+                            splashRadius: 16,
 
-                          // On pressed here links the notes to the parent, if
-                          // there is one
-                          onPressed: () async {
-                            // If there is a parent thought
-                            if (widget.parentThought != null) {
-                              // Link the thoughts
-                              if (widget.thought.id != widget.parentThought &&
-                                  widget.parentThought != null) {
-                                await linkThoughts(context, widget.thought.id,
-                                    widget.parentThought!);
+                            // On pressed here links the notes to the parent, if
+                            // there is one
+                            onPressed: () async {
+                              // If there is a parent thought
+                              if (widget.parentThought != null) {
+                                // Link the thoughts
+                                if (widget.thought.id != widget.parentThought &&
+                                    widget.parentThought != null) {
+                                  await linkThoughts(context, widget.thought.id,
+                                      widget.parentThought!);
+                                }
                               }
-                            }
-                          },
-                          // icon: Text(
-                          //   "{O}",
-                          //   style: TextStyle(
-                          //       fontFamily: "Bungee Pop",
-                          //       fontSize: 12,
-                          //       fontWeight: FontWeight.w400),
-                          // )
+                            },
+                            // icon: Text(
+                            //   "{O}",
+                            //   style: TextStyle(
+                            //       fontFamily: "Bungee Pop",
+                            //       fontSize: 12,
+                            //       fontWeight: FontWeight.w400),
+                            // )
 
-                          icon: Icon(
-                            Icons.add_link,
-                            size: 16,
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onBackground
-                                .withAlpha(200),
+                            icon: Icon(
+                              Icons.add_link,
+                              size: 16,
+                              color: Provider.of<ComindColorsNotifier>(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withAlpha(200),
+                            ),
                           ),
                         ),
                       ),

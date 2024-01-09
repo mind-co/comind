@@ -106,66 +106,6 @@ class Thought {
     );
   }
 
-  // Make an empty thought constructor for testing
-  factory Thought.empty() {
-    // Generate a new UUID5
-    String generateUUID4() {
-      var uuid = Uuid();
-      return uuid.v5(Uuid.NAMESPACE_URL, 'example.com');
-    }
-
-    var now = DateTime.now();
-    var formatter = DateFormat('yyyy-MM-ddTHH:mm:ss');
-    var formattedDate = formatter.format(now);
-
-    // https://pub.dev/packages/uuid
-
-    return Thought(
-      title: '',
-      body: '',
-      username: '',
-      dateCreated: formattedDate,
-      dateUpdated: formattedDate,
-      revision: 0,
-      // Generate a UUID5
-      id: generateUUID4(),
-      isPublic: false,
-      isSynthetic: false,
-      origin: '',
-      accepts: 0,
-      rejects: 0,
-      rethinks: 0,
-      refs: 0,
-    );
-  }
-
-  // Constructor for a brief screenplay in markdown
-  factory Thought.screenplay() {
-    return Thought(
-      title: 'Screenplay',
-      body: '**Mary**\n'
-          'Tom, I simple __cannot__ believe you would do this to me.\n\n'
-          '**Tom**\n'
-          'I\'m sorry, Mary. I just can\'t help myself.\nI see a bat and I just have to hit it.\n\n'
-          '**Mary**\n'
-          'You\'re a monster, Tom. A monster.\n\n'
-          '**Tom**\n'
-          'I know, Mary. I know.\n\n',
-      username: 'streamtest',
-      dateCreated: '2021-10-10T00:00:00.000000Z',
-      dateUpdated: '2021-10-10T00:00:00.000000Z',
-      revision: 0,
-      id: generateUUID4('streamtest'),
-      isPublic: true,
-      isSynthetic: false,
-      origin: '0',
-      accepts: 0,
-      rejects: 0,
-      rethinks: 0,
-      refs: 0,
-    );
-  }
-
   // Setter function for body
   void setBody(String body) {
     this.body = body;
