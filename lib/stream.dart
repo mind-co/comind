@@ -1,7 +1,9 @@
+import 'package:comind/api.dart';
 import 'package:comind/bottom_sheet.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/input_field.dart';
 import 'package:comind/markdown_display.dart';
+import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';
@@ -16,19 +18,16 @@ class Stream extends StatefulWidget {
 }
 
 class _StreamState extends State<Stream> {
+  // the text controller
+  final _primaryController = TextEditingController(text: "ABC");
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Provider.of<ComindColorsNotifier>(context).background,
-        title: Opacity(opacity: 0.5, child: const Text('Stream')),
-        centerTitle: true,
-      ),
+      appBar: comindAppBar(context),
       bottomSheet: ComindBottomSheet(),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          var primaryController = TextEditingController();
-
           return SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(
@@ -45,17 +44,42 @@ class _StreamState extends State<Stream> {
                         children: [
                           Column(
                             children: [
-                              // MainTextField(
-                              //     primaryController: primaryController),
+                              MainTextField(
+                                  primaryController: _primaryController,
+                                  onThoughtSubmitted: (String body) {
+                                    // Create a new thought
+                                    final thought = Thought.fromString(
+                                        body,
+                                        Provider.of<AuthProvider>(context,
+                                                listen: false)
+                                            .username,
+                                        Provider.of<ComindColorsNotifier>(
+                                                context,
+                                                listen: false)
+                                            .publicMode);
 
-                              MarkdownThought(
-                                type: MarkdownDisplayType.newThought,
-                                thought: Thought.fromString(
-                                    "",
-                                    Provider.of<AuthProvider>(context).username,
-                                    true,
-                                    title: "Good morning"),
-                              ),
+                                    // Send the thought
+                                    saveThought(context, thought,
+                                            newThought: true)
+                                        .then((value) {
+                                      // Add the thought to the providerthis
+                                      Provider.of<ThoughtsProvider>(context,
+                                              listen: false)
+                                          .addThought(thought);
+
+                                      // Lastly, update the UI
+                                      setState(() {});
+                                    });
+                                  }),
+
+                              // MarkdownThought(
+                              //   type: MarkdownDisplayType.newThought,
+                              //   thought: Thought.fromString(
+                              //       "",
+                              //       Provider.of<AuthProvider>(context).username,
+                              //       true,
+                              //       title: "Good morning"),
+                              // ),
                             ],
                           ),
                           // MarkdownThought(

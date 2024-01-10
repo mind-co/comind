@@ -1,5 +1,6 @@
 import 'package:comind/colors.dart';
 import 'package:comind/providers.dart';
+import 'package:comind/think_button.dart';
 import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/text_button.dart';
@@ -49,17 +50,12 @@ class MainTextField extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api, no_logic_in_create_state
-  _MainTextFieldState createState() => _MainTextFieldState(
-        primaryController: _primaryController,
-      );
+  _MainTextFieldState createState() => _MainTextFieldState();
 }
 
 class _MainTextFieldState extends State<MainTextField> {
-  _MainTextFieldState({
-    required TextEditingController primaryController,
-  }) : _primaryController = primaryController;
+  _MainTextFieldState();
 
-  final TextEditingController _primaryController;
   final ScrollController _scrollController = ScrollController();
   String uiMode = "think";
   // String uiMode = "think";
@@ -125,7 +121,7 @@ class _MainTextFieldState extends State<MainTextField> {
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
               .onPrimary
-              .withAlpha(128),
+              .withAlpha(0),
         ),
       ),
     );
@@ -227,28 +223,41 @@ class _MainTextFieldState extends State<MainTextField> {
         child: Column(
           children: [
             Stack(
+              clipBehavior: Clip.none,
               children: [
                 // Text box
                 Padding(
                   padding: widget.type == TextFieldType.main
-                      ? const EdgeInsets.fromLTRB(0, 16, 0, 16)
+                      ? const EdgeInsets.fromLTRB(0, 16, 32, 16)
                       : const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: Material(
-                    elevation: 2,
+                    // elevation: 2,
                     borderRadius:
                         BorderRadius.circular(ComindColors.bubbleRadius),
                     color: Provider.of<ComindColorsNotifier>(context)
                         .colorScheme
                         .background,
                     child: Container(
+                      // Bordered
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(ComindColors.bubbleRadius),
+                        border: Border.all(
+                          width: 1,
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .colorScheme
+                              .onPrimary
+                              .withAlpha(64),
+                        ),
+                      ),
+
                       // decoration: BoxDecoration(
-                      //   borderRadius:
-                      //       BorderRadius.circular(ComindColors.bubbleRadius),
-                      //   color: Provider.of<ComindColorsNotifier>(context)
-                      //       .colorScheme
-                      //       .primary
-                      //       .withAlpha(12),
-                      // ),
+                      // borderRadius:
+                      //     BorderRadius.circular(ComindColors.bubbleRadius),
+                      // color: Provider.of<ComindColorsNotifier>(context)
+                      //     .colorScheme
+                      //     .surface
+                      //     .withAlpha(30)),
                       child: RawKeyboardListener(
                         focusNode: focusNode,
 
@@ -274,14 +283,14 @@ class _MainTextFieldState extends State<MainTextField> {
                           style: Provider.of<ComindColorsNotifier>(context)
                               .textTheme
                               .bodyMedium,
-                          autofocus: true,
-                          controller: _primaryController,
+                          autofocus: widget.type == TextFieldType.main,
+                          controller: widget._primaryController,
 
                           onSubmitted: (value) => {
                             _submit(context)(),
                             // Clear the text field because sometimes random newline chars
                             // get added
-                            _primaryController.clear(),
+                            widget._primaryController.clear(),
                           },
 
                           // TODO #12 add the command processing stuff back in.
@@ -291,7 +300,7 @@ class _MainTextFieldState extends State<MainTextField> {
                           // onChanged: ... // do all the command processing stuff
 
                           // Cursor stuff
-                          cursorWidth: 10,
+                          cursorWidth: 8,
                           cursorColor: widget.type == TextFieldType.main
                               ? uiMode == "think"
                                   ? colorMap(context).withAlpha(255)
@@ -310,88 +319,112 @@ class _MainTextFieldState extends State<MainTextField> {
                   ),
                 ),
 
-                // Send button, icon version. Centered
+                // ThinkButton only
                 Positioned(
-                  // bottom: 4,
-                  bottom: widget.type == TextFieldType.main ? 24 : 4,
-                  right: 4,
-                  child: // Send button, icon version
-                      IconButton(
-                          // Rounded border, radius 10
-                          splashRadius: 20,
-                          style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    ComindColors.bubbleRadius),
-                              ),
-                            ),
-                          ),
-                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          // Transparent
-                          icon: Icon(
-                            widget.type == TextFieldType.main ||
-                                    widget.type == TextFieldType.inline
-                                ? Icons.send
-                                : Icons.save,
-                          ),
-                          onPressed: () => {
-                                _submit(context)(),
-                                // Clear the text field because sometimes random newline chars
-                                // get added
-                                _primaryController.clear(),
-                              }),
-                ),
+                  bottom: 21,
+                  right: 36,
+                  child: Visibility(
+                    visible: widget.type == TextFieldType.main,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                      child: ThinkButton(
+                        onPressed: () {
+                          _submit(context)();
 
-                // Send button
-                Positioned(
-                  bottom: 4,
-                  right: 4,
-                  child: Container(
-                    color: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .background,
-                    child: Row(
-                      children: [
-                        // Cancel button
-                        // Visibility(
-                        //   visible: widget.type == TextFieldType.edit,
-                        //   child: Padding(
-                        //     padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                        //     child: Visibility(
-                        //       visible: widget.type == TextFieldType.edit,
-                        //       child: ComindTextButton(
-                        //         text: "Cancel",
-                        //         lineLocation: LineLocation.top,
-                        //         onPressed: () {
-                        //           if (widget.toggleEditor != null) {
-                        //             widget.toggleEditor!();
-                        //           }
-                        //         },
-                        //         colorIndex: 3,
-                        //         opacity: 1.0,
-                        //         fontSize: 10,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-
-                        // Send button
-                        // ComindTextButton(
-                        //   text: widget.type == TextFieldType.main ||
-                        //           widget.type == TextFieldType.inline
-                        //       ? "Think"
-                        //       : "Save",
-                        //   lineLocation: LineLocation.top,
-                        //   onPressed: _submit(context),
-                        //   colorIndex: widget.type == TextFieldType.main ? 1 : 2,
-                        //   opacity: 1.0,
-                        //   fontSize: 10,
-                        // ),
-                      ],
+                          // Clear the text field because sometimes random newline chars
+                          // get added
+                          widget._primaryController.clear();
+                        },
+                      ),
                     ),
                   ),
                 ),
+                // Send button, icon version. Centered
+                // Positioned(
+                //   // bottom: 4,
+                //   bottom: widget.type == TextFieldType.main ? 24 : 4,
+                //   right: 4,
+                //   child: // Send button, icon version
+                //       TextButton(
+                //           // Rounded border, radius 10
+                //           // splashRadius: 20,
+                //           style: ButtonStyle(
+                //             shape: MaterialStateProperty.all(
+                //               RoundedRectangleBorder(
+                //                 borderRadius: BorderRadius.circular(
+                //                     ComindColors.bubbleRadius),
+                //               ),
+                //             ),
+                //           ),
+                //           // padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                //           // Transparent
+
+                //           child: Text(
+                //               widget.type == TextFieldType.main ||
+                //                       widget.type == TextFieldType.inline
+                //                   ? "Think"
+                //                   : "Save",
+                //               style: Provider.of<ComindColorsNotifier>(context)
+                //                   .textTheme
+                //                   .titleLarge),
+                //           onPressed: () => {
+                //                 _submit(context)(),
+                //                 // Clear the text field because sometimes random newline chars
+                //                 // get added
+                //                 _primaryController.clear(),
+                //               }),
+                //   //         }),
+                // ),
+
+                // // Send button
+                // Positioned(
+                //   bottom: 4,
+                //   right: 4,
+                //   child: Container(
+                //     color: Provider.of<ComindColorsNotifier>(context)
+                //         .colorScheme
+                //         .background,
+                //     child: Row(
+                //       children: [
+                //         // Cancel button
+                //         // Visibility(
+                //         //   visible: widget.type == TextFieldType.edit,
+                //         //   child: Padding(
+                //         //     padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                //         //     child: Visibility(
+                //         //       visible: widget.type == TextFieldType.edit,
+                //         //       child: ComindTextButton(
+                //         //         text: "Cancel",
+                //         //         lineLocation: LineLocation.top,
+                //         //         onPressed: () {
+                //         //           if (widget.toggleEditor != null) {
+                //         //             widget.toggleEditor!();
+                //         //           }
+                //         //         },
+                //         //         colorIndex: 3,
+                //         //         opacity: 1.0,
+                //         //         fontSize: 10,
+                //         //       ),
+                //         //     ),
+                //         //   ),
+                //         // ),
+
+                //         // Send button
+                //         // ComindTextButton(
+                //         //   text: widget.type == TextFieldType.main ||
+                //         //           widget.type == TextFieldType.inline
+                //         //       ? "Think"
+                //         //       : "Save",
+                //         //   lineLocation: LineLocation.top,
+                //         //   onPressed: _submit(context),
+                //         //   colorIndex: widget.type == TextFieldType.main ? 1 : 2,
+                //         //   opacity: 1.0,
+                //         //   fontSize: 10,
+                //         // ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ],
             ),
 
@@ -423,7 +456,7 @@ class _MainTextFieldState extends State<MainTextField> {
                 // First, let's update the thought if it
                 // exists
                 if (widget.thought != null) {
-                  widget.thought?.body = _primaryController.text;
+                  widget.thought?.body = widget._primaryController.text;
 
                   // Close the editor
                   if (widget.toggleEditor != null) {
@@ -436,7 +469,7 @@ class _MainTextFieldState extends State<MainTextField> {
                     widget.onThoughtEdited!(widget.thought!);
 
                     // Clear the text field
-                    _primaryController.clear();
+                    widget._primaryController.clear();
                   }
                 } else {
                   // TODO no thought was passed but we are in edit mode
