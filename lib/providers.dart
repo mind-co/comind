@@ -57,9 +57,32 @@ class AuthProvider extends ChangeNotifier {
 
 // Thought provider
 class ThoughtsProvider extends ChangeNotifier {
+  final Thought? topOfMind = Thought.fromString(
+      "I'm happy to have you here :smiley:", "Co", true,
+      title: "Welcome to comind");
+
   final List<Thought> _thoughts = [];
 
   List<Thought> get thoughts => _thoughts;
+
+  // Set top of mind
+  void setTopOfMind(Thought thought) {
+    // If the thought is already top of mind, do nothing
+    if (topOfMind == thought) {
+      return;
+    }
+
+    // If the thought is already in the list, remove it
+    if (_thoughts.contains(thought)) {
+      _thoughts.remove(thought);
+    }
+
+    // Add the thought to the top of the list
+    _thoughts.insert(0, thought);
+
+    // Update the UI
+    notifyListeners();
+  }
 
   // Add a list of thoughts but only if they don't already exist
   void addThoughts(List<Thought> thoughts) {

@@ -37,6 +37,7 @@ class MarkdownThought extends StatefulWidget {
       this.infoMode = false,
       this.relatedMode = false,
       this.parentThought,
+      this.linkable = false,
       this.viewOnly = false,
       this.selectable = true});
 
@@ -51,6 +52,7 @@ class MarkdownThought extends StatefulWidget {
   String? parentThought;
   bool showTextBox = false;
   bool showBody = true;
+  final bool linkable;
 
   // store whether hovered
   bool hovered = false;
@@ -123,7 +125,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           // : const EdgeInsets.fromLTRB(16, 0, 16, 0),
           : widget.type == MarkdownDisplayType.searchResult
               ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-              : const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              : const EdgeInsets.fromLTRB(16, 0, 16, 0),
       child: Column(children: [
         // Main text box
         Card(
@@ -145,6 +147,8 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                       Expanded(
                         child: Material(
                             child: InkWell(
+                                borderRadius: BorderRadius.circular(
+                                    ComindColors.bubbleRadius),
                                 onTap: () => {
                                       // Toggle the body
                                       setState(() {
@@ -162,50 +166,30 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                           ? Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
-                                                      0, 0, 8, 0),
+                                                      12, 0, 8, 0),
                                               // Version where body is truncated
                                               child: widget.thought.title == ""
                                                   ? Container()
-                                                  : SelectableText(
-                                                      widget.thought.title,
-                                                      style:
-                                                          getTextTheme(context)
-                                                              .titleMedium),
+                                                  : RichText(
+                                                      text: TextSpan(
+                                                        children: [
+                                                          TextSpan(
+                                                            text: widget
+                                                                .thought.title,
+                                                            style: Provider.of<
+                                                                        ComindColorsNotifier>(
+                                                                    context)
+                                                                .textTheme
+                                                                .titleMedium,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
 
                                               // child: Text(thought.title, style: getTextTheme(context).labelMedium),
                                               // child: Text(thought.title, style: getTextTheme(context).titleSmall),
-                                            )
+                                              )
                                           : Container(),
-                                      // Padding(
-                                      //   padding: const EdgeInsets.fromLTRB(
-                                      //       0, 0, 8, 0),
-                                      //   // Version where body is truncated
-                                      //   child: SelectableText(
-                                      //       widget.thought.title.substring(
-                                      //           0,
-                                      //           min(
-                                      //               30,
-                                      //               widget
-                                      //                   .thought.title.length)),
-                                      //       style: getTextTheme(context)
-                                      //           .labelMedium),
-
-                                      //   // child: Text(thought.title, style: getTextTheme(context).labelMedium),
-                                      //   // child: Text(thought.title, style: getTextTheme(context).titleSmall),
-                                      // ),
-
-                                      // Cinewave
-                                      // Expanded(
-                                      //     child: SizedBox(
-                                      //         height: 5,
-                                      //         child: Opacity(
-                                      //             opacity: 1.0,
-                                      //             child: CineWave(
-                                      //               amplitude: 0.01,
-                                      //               frequency: 3,
-                                      //               // primaryAmplitude: pi,
-                                      //               // secondaryFrequency: pi,
-                                      //             )))),
 
                                       // Expanded thing to fill the space between the title and the username
                                       Expanded(
@@ -219,37 +203,76 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                                   )))),
 
                                       // Username
-                                      ComindTextButton(
-                                        text: widget.thought.username,
-                                        opacity: 1,
-                                        fontSize:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context)
-                                                .textTheme
-                                                .titleMedium!
-                                                .fontSize!,
-                                        lineLocation: LineLocation.bottom,
-                                        colorIndex: 1,
-                                        onPressed: () {
-                                          // Toggle the body
-                                          setState(() {
-                                            widget.showBody = !widget.showBody;
-                                          });
-                                        },
-                                        // Padding(
-                                        //   padding: const EdgeInsets.fromLTRB(
-                                        //       8, 0, 4, 0),
-                                        //   child: Text(widget.thought.username,
-                                        //       style: Provider.of<
-                                        //                   ComindColorsNotifier>(
-                                        //               context)
-                                        //           .textTheme
-                                        //           .titleSmall),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            8, 0, 12, 0),
+                                        child: RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: widget.thought.isPublic
+                                                    ? "🌎"
+                                                    : "🔒",
+                                                style: Provider.of<
+                                                            ComindColorsNotifier>(
+                                                        context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
+                                              TextSpan(
+                                                text: "  ",
+                                                style: Provider.of<
+                                                            ComindColorsNotifier>(
+                                                        context)
+                                                    .textTheme
+                                                    .bodyMedium,
+                                              ),
+                                              TextSpan(
+                                                text: widget.thought.username,
+                                                style: Provider.of<
+                                                            ComindColorsNotifier>(
+                                                        context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ))),
                       ),
+
+                      // // More button
+                      // Visibility(
+                      //   // visible:
+                      //   //     widget.type == MarkdownDisplayType.,
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                      //     child: IconButton(
+                      //       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      //       visualDensity: const VisualDensity(
+                      //           horizontal: -4, vertical: -4),
+                      //       enableFeedback: true,
+                      //       splashRadius: 16,
+                      //       onPressed: () {
+                      //         // Toggle the body
+                      //         setState(() {
+                      //           moreClicked = !moreClicked;
+                      //         });
+                      //       },
+                      //       icon: Icon(
+                      //         Icons.more_horiz,
+                      //         size: 16,
+                      //         color: Provider.of<ComindColorsNotifier>(context)
+                      //             .colorScheme
+                      //             .onBackground
+                      //             .withAlpha(200),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
 
                       // Link button for child thoughts
                       Visibility(
@@ -310,7 +333,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                       visible: widget.showBody && !widget.showTextBox,
                       child: thoughtBody(context)),
 
-                  // Show the edit box
                   expandableEditBox(context),
 
                   // Alternative action row
@@ -320,6 +342,40 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                               !widget.viewOnly &&
                               widget.showBody,
                       child: alternativeActionRow(context, onBackground)),
+
+                  // Show new thought box
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                    child: Row(
+                      children: [
+                        Visibility(
+                          visible: newThoughtOpen,
+                          child: IconButton(
+                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                            enableFeedback: true,
+                            splashRadius: 16,
+                            onPressed: () {
+                              // Toggle the body
+                              setState(() {
+                                newThoughtOpen = !newThoughtOpen;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.subdirectory_arrow_right,
+                              size: 16,
+                              color: Provider.of<ComindColorsNotifier>(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withAlpha(200),
+                            ),
+                          ),
+                        ),
+
+                        // New thought box
+                        newThoughtBox(context),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -339,7 +395,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       visible: newThoughtOpen,
       child: Padding(
         // Top padding to separate it from the body
-        padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: MainTextField(
             thought: Thought.fromString(
                 "",
@@ -371,8 +427,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                 newThoughtOpen = false;
               });
             },
-            type:
-                TextFieldType.inline), // TODO #11 support inline TextFieldType
+            type: TextFieldType.newThought),
       ),
     );
   }
@@ -689,8 +744,8 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Provider.of<ComindColorsNotifier>(context)
-                        .surface
-                        .withAlpha(64),
+                        .primary
+                        .withAlpha(16),
                     borderRadius:
                         BorderRadius.circular(ComindColors.bubbleRadius),
                     border: Border.all(
@@ -711,19 +766,16 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                         // Info mode display
                         InfoCard(widget: widget, thought: widget.thought),
 
-                        // Divider
-                        Visibility(
-                          visible: newThoughtOpen || moreClicked,
-                          child: Divider(
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onPrimary
-                                .withAlpha(32),
-                          ),
-                        ),
-
-                        // Show new thought box
-                        newThoughtBox(context),
+                        // // Divider
+                        // Visibility(
+                        //   visible: newThoughtOpen || moreClicked,
+                        //   child: Divider(
+                        //     color: Provider.of<ComindColorsNotifier>(context)
+                        //         .colorScheme
+                        //         .onPrimary
+                        //         .withAlpha(32),
+                        //   ),
+                        // ),
 
                         // Display the related results
                         if (widget.relatedMode && relatedResults.isNotEmpty)
@@ -739,6 +791,41 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                             ],
                           ),
                       ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Add thought button
+              Visibility(
+                // visible: !widget.viewOnly &&
+                //     !widget.relatedMode &&
+                //     !newThoughtOpen &&
+                //     widget.type != MarkdownDisplayType.searchResult,
+                child: Positioned(
+                  bottom: 4,
+                  right: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                    child: IconButton(
+                      color: Colors.blue,
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      enableFeedback: true,
+                      splashRadius: 16,
+                      // hoverColor: Provider.of<ComindColorsNotifier>(context)
+                      //     .colorScheme
+                      //     .primary,
+                      onPressed: () {
+                        // Toggle the new thought box
+                        setState(() {
+                          newThoughtOpen = !newThoughtOpen;
+                        });
+                      },
+                      icon: Icon(Icons.add,
+                          size: 32,
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .colorScheme
+                              .onPrimary),
                     ),
                   ),
                 ),

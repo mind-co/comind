@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 // Enums for type of text field
-enum TextFieldType { main, edit, fullscreen, inline }
+enum TextFieldType { main, edit, fullscreen, inline, newThought }
 
 //
 // The primary text field for Comind, stateful version
@@ -105,23 +105,23 @@ class _MainTextFieldState extends State<MainTextField> {
       ),
       contentPadding: const EdgeInsets.fromLTRB(18, 12, 38, 12),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(
-          width: 1,
-          color: Provider.of<ComindColorsNotifier>(context)
-              .colorScheme
-              .onPrimary
-              .withAlpha(32),
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         borderSide: BorderSide(
           width: 1,
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
               .onPrimary
               .withAlpha(0),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onBackground
+              .withAlpha(255),
         ),
       ),
     );
@@ -149,7 +149,7 @@ class _MainTextFieldState extends State<MainTextField> {
       ),
       contentPadding: const EdgeInsets.fromLTRB(18, 22, 18, 22),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         borderSide: BorderSide(
           width: 1,
           color: Provider.of<ComindColorsNotifier>(context)
@@ -159,7 +159,7 @@ class _MainTextFieldState extends State<MainTextField> {
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         borderSide: BorderSide(
           width: 1,
           color: Provider.of<ComindColorsNotifier>(context)
@@ -193,7 +193,7 @@ class _MainTextFieldState extends State<MainTextField> {
       ),
       contentPadding: const EdgeInsets.fromLTRB(10, 16, 36, 16),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         borderSide: BorderSide(
           width: 1,
           color: Provider.of<ComindColorsNotifier>(context)
@@ -203,7 +203,7 @@ class _MainTextFieldState extends State<MainTextField> {
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         borderSide: BorderSide(
           width: 1,
           color: Provider.of<ComindColorsNotifier>(context)
@@ -214,8 +214,57 @@ class _MainTextFieldState extends State<MainTextField> {
       ),
     );
 
+    //
+    // DECORATION FOR THE NEW TEXT FIELD
+    //
+    var newInputDecoration = InputDecoration(
+      // The label that appears at the top of the text box.
+      // label: Text(
+      //   widget.type == TextFieldType.main ? uiMode : "Edit",
+      //   style: Provider.of<ComindColorsNotifier>(context).textTheme.titleLarge,
+      // ),
+
+      // Handle label for the text box label
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      floatingLabelStyle: TextStyle(
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(180),
+      ),
+      labelStyle: TextStyle(
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(180),
+      ),
+      contentPadding: const EdgeInsets.fromLTRB(18, 12, 38, 12),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(0),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onBackground
+              .withAlpha(255),
+        ),
+      ),
+    );
+
     return SizedBox(
-      width: ComindColors.maxWidth,
+      width: widget.type != TextFieldType.newThought
+          ? ComindColors.maxWidth
+          : ComindColors.maxWidth - 80,
       child: Padding(
         padding: widget.type == TextFieldType.main
             ? const EdgeInsets.fromLTRB(8, 8, 8, 8)
@@ -260,20 +309,6 @@ class _MainTextFieldState extends State<MainTextField> {
                       //     .withAlpha(30)),
                       child: RawKeyboardListener(
                         focusNode: focusNode,
-
-                        // Check for Ctrl + Enter to
-                        // onKey: (RawKeyEvent event) async {
-                        //   if (event is RawKeyDownEvent &&
-                        //       event.logicalKey == LogicalKeyboardKey.enter &&
-                        //       event.isControlPressed &&
-                        //       widget.type == TextFieldType.main) {
-                        //     _submit(context)();
-
-                        //     // Clear the text field because sometimes random newline chars
-                        //     // get added
-                        //     _primaryController.clear();
-                        //   }
-                        // },
                         child: TextField(
                           scrollController: _scrollController,
                           keyboardType: TextInputType.multiline,
@@ -283,7 +318,8 @@ class _MainTextFieldState extends State<MainTextField> {
                           style: Provider.of<ComindColorsNotifier>(context)
                               .textTheme
                               .bodyMedium,
-                          autofocus: widget.type == TextFieldType.main,
+                          autofocus: widget.type == TextFieldType.main ||
+                              widget.type == TextFieldType.newThought,
                           controller: widget._primaryController,
 
                           onSubmitted: (value) => {
@@ -301,18 +337,17 @@ class _MainTextFieldState extends State<MainTextField> {
 
                           // Cursor stuff
                           cursorWidth: 8,
-                          cursorColor: widget.type == TextFieldType.main
-                              ? uiMode == "think"
-                                  ? colorMap(context).withAlpha(255)
-                                  : colorMap(context).withAlpha(255)
-                              : Provider.of<ComindColorsNotifier>(context)
+                          cursorColor:
+                              Provider.of<ComindColorsNotifier>(context)
                                   .colorScheme
-                                  .primary,
+                                  .onBackground,
                           decoration: widget.type == TextFieldType.main
                               ? mainInputDecoration
                               : widget.type == TextFieldType.edit
                                   ? editInputDecoration
-                                  : inlineInputDecoration,
+                                  : widget.type == TextFieldType.inline
+                                      ? inlineInputDecoration
+                                      : newInputDecoration,
                         ),
                       ),
                     ),
@@ -321,10 +356,11 @@ class _MainTextFieldState extends State<MainTextField> {
 
                 // ThinkButton only, send button
                 Positioned(
-                  bottom: 21,
-                  right: 20,
+                  bottom: widget.type == TextFieldType.newThought ? 5 : 21,
+                  right: widget.type == TextFieldType.newThought ? 5 : 16,
                   child: Visibility(
-                    visible: widget.type == TextFieldType.main,
+                    visible: widget.type == TextFieldType.main ||
+                        widget.type == TextFieldType.newThought,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                       child: ThinkButton(
@@ -391,12 +427,14 @@ class _MainTextFieldState extends State<MainTextField> {
                       "No thought was passed but we are in edit mode");
                 }
               }
-            : () {
-                print("No idea what to do here");
-                // TODO
-                // This should probably handle the case
-                // where the editor is fullscreen.
-              };
+            : widget.type == TextFieldType.newThought &&
+                    widget.onThoughtSubmitted != null
+                ? () {
+                    widget.onThoughtSubmitted!(widget._primaryController.text);
+                  }
+                : () {
+                    // The else clause, who knows what the fuck is supposed to be here.
+                  };
   }
 
   Color colorMap(BuildContext context) {

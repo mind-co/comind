@@ -118,7 +118,7 @@ class ComindColors {
 
   static const fontScalar = 1.0;
   static const double maxWidth = 600;
-  static const double bubbleRadius = 500;
+  static const double bubbleRadius = 30;
 
   TextTheme textTheme = TextTheme(
     // Nunito is good

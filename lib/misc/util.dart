@@ -1,6 +1,7 @@
 // import 'package:intl/intl.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/providers.dart';
+import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/misc/comind_logo.dart';
 import 'package:intl/intl.dart';
@@ -116,4 +117,8 @@ Color getTertiaryColor(BuildContext context) {
 
 TextTheme getTextTheme(BuildContext context) {
   return Provider.of<ComindColorsNotifier>(context, listen: false).textTheme;
+}
+
+Thought? getTopOfMind(BuildContext context) {
+  return Provider.of<ThoughtsProvider>(context, listen: false).topOfMind;
 }
