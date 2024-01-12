@@ -110,7 +110,10 @@ class _ComindTextButtonState extends State<ComindTextButton> {
                         //                 .secondaryColor,
                         width: _isHovered ? 1.0 : 5.0,
                       )
-                    : const BorderSide(),
+                    : const BorderSide(
+                        width: 8.0,
+                        color: Colors.transparent,
+                      ),
 
                 left: widget.lineLocation == LineLocation.left
                     ? BorderSide(
@@ -125,7 +128,7 @@ class _ComindTextButtonState extends State<ComindTextButton> {
                 bottom: widget.lineLocation == LineLocation.bottom
                     ? BorderSide(
                         color: Colors.transparent,
-                        width: _isHovered ? 10.0 : 5.0,
+                        width: _isHovered ? 2.0 : 5.0,
                       )
                     : const BorderSide(
                         color: Colors.transparent,
@@ -202,7 +205,7 @@ class _ComindTextButtonState extends State<ComindTextButton> {
                                                 context)
                                             .currentColors
                                             .secondaryColor,
-                            width: _isHovered ? 30.0 : 3.0,
+                            width: _isHovered ? 6.0 : 3.0,
                           )
                         : const BorderSide(
                             color: Colors.transparent,

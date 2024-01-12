@@ -13,51 +13,11 @@ class ThinkButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // decoration: BoxDecoration(
-      //   borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-      //   border: Border.all(
-      //     color: Provider.of<ComindColorsNotifier>(context)
-      //         .colorScheme
-      //         .onPrimary
-      //         .withAlpha(64),
-      //     width: 1,
-      //   ),
-      // ),
-      child: Material(
-        color: Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
-        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-        elevation: 0,
-        child: InkWell(
-          enableFeedback: true,
-          customBorder: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-              ComindColors.bubbleRadius,
-            ),
-          ),
-          hoverColor:
-              Provider.of<ComindColorsNotifier>(context).colorScheme.secondary,
-          borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-          onTap: onPressed,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-            // child: Icon(
-            //   Icons.send,
-            //   color: Provider.of<ComindColorsNotifier>(context)
-            //       .colorScheme
-            //       .onPrimary,
-            // )
-
-            //
-            child: Text("think",
-                style: Provider.of<ComindColorsNotifier>(context)
-                    .textTheme
-                    .titleSmall),
-
-            //
-          ),
-        ),
-      ),
-    );
+    return IconButton(
+        hoverColor:
+            Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
+        enableFeedback: true,
+        onPressed: onPressed,
+        icon: Icon(Icons.send));
   }
 }

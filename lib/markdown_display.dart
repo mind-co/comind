@@ -164,12 +164,13 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                                   const EdgeInsets.fromLTRB(
                                                       0, 0, 8, 0),
                                               // Version where body is truncated
-                                              child: SelectableText(
-                                                  widget.thought.title == ""
-                                                      ? "..."
-                                                      : widget.thought.title,
-                                                  style: getTextTheme(context)
-                                                      .titleSmall),
+                                              child: widget.thought.title == ""
+                                                  ? Container()
+                                                  : SelectableText(
+                                                      widget.thought.title,
+                                                      style:
+                                                          getTextTheme(context)
+                                                              .titleMedium),
 
                                               // child: Text(thought.title, style: getTextTheme(context).labelMedium),
                                               // child: Text(thought.title, style: getTextTheme(context).titleSmall),
@@ -194,28 +195,56 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                       // ),
 
                                       // Cinewave
+                                      // Expanded(
+                                      //     child: SizedBox(
+                                      //         height: 5,
+                                      //         child: Opacity(
+                                      //             opacity: 1.0,
+                                      //             child: CineWave(
+                                      //               amplitude: 0.01,
+                                      //               frequency: 3,
+                                      //               // primaryAmplitude: pi,
+                                      //               // secondaryFrequency: pi,
+                                      //             )))),
+
+                                      // Expanded thing to fill the space between the title and the username
                                       Expanded(
                                           child: SizedBox(
                                               height: 5,
                                               child: Opacity(
-                                                  opacity: 1.0,
-                                                  child: CineWave(
-                                                    amplitude: 0.01,
-                                                    frequency: 3,
-                                                    // primaryAmplitude: pi,
-                                                    // secondaryFrequency: pi,
+                                                  opacity: 0.0,
+                                                  child: Divider(
+                                                    color: onBackground
+                                                        .withAlpha(64),
                                                   )))),
 
                                       // Username
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            8, 0, 4, 0),
-                                        child: Text(widget.thought.username,
-                                            style: Provider.of<
-                                                        ComindColorsNotifier>(
+                                      ComindTextButton(
+                                        text: widget.thought.username,
+                                        opacity: 1,
+                                        fontSize:
+                                            Provider.of<ComindColorsNotifier>(
                                                     context)
                                                 .textTheme
-                                                .titleSmall),
+                                                .titleMedium!
+                                                .fontSize!,
+                                        lineLocation: LineLocation.bottom,
+                                        colorIndex: 1,
+                                        onPressed: () {
+                                          // Toggle the body
+                                          setState(() {
+                                            widget.showBody = !widget.showBody;
+                                          });
+                                        },
+                                        // Padding(
+                                        //   padding: const EdgeInsets.fromLTRB(
+                                        //       8, 0, 4, 0),
+                                        //   child: Text(widget.thought.username,
+                                        //       style: Provider.of<
+                                        //                   ComindColorsNotifier>(
+                                        //               context)
+                                        //           .textTheme
+                                        //           .titleSmall),
                                       ),
                                     ],
                                   ),
@@ -286,7 +315,10 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
                   // Alternative action row
                   Visibility(
-                      visible: widget.type != MarkdownDisplayType.searchResult,
+                      visible:
+                          widget.type != MarkdownDisplayType.searchResult &&
+                              !widget.viewOnly &&
+                              widget.showBody,
                       child: alternativeActionRow(context, onBackground)),
                 ],
               ),
@@ -656,8 +688,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   // Add border
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color:
-                        Provider.of<ComindColorsNotifier>(context).background,
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .surface
+                        .withAlpha(64),
                     borderRadius:
                         BorderRadius.circular(ComindColors.bubbleRadius),
                     border: Border.all(
@@ -669,7 +702,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                    padding: const EdgeInsets.fromLTRB(10, 4, 30, 4),
                     child: Column(
                       children: [
                         // Markdown body

@@ -19,13 +19,29 @@ class Stream extends StatefulWidget {
 
 class _StreamState extends State<Stream> {
   // the text controller
-  final _primaryController = TextEditingController(text: "ABC");
+  final _primaryController = TextEditingController();
+
+  // The Top of Mind thought
+  Thought? topOfMind;
+
+  // List of related thoughts
+  List<Thought> relatedThoughts = [];
 
   @override
   Widget build(BuildContext context) {
+    // Debug initialize the top of mind thought to coThought
+    topOfMind = Thought.fromString(
+        "I'm happy to have you here :smiley:", "Co", true,
+        title: "Welcome to comind");
+
     return Scaffold(
+      // App bar
       appBar: comindAppBar(context),
+
+      // Bottom sheet
       bottomSheet: ComindBottomSheet(),
+
+      // Body
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
@@ -39,14 +55,26 @@ class _StreamState extends State<Stream> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // coThought(context, "Hey there", "A greeting"),
                       Column(
                         children: [
                           Column(
                             children: [
+                              // The top of mind thought
+                              if (topOfMind != null)
+                                MarkdownThought(
+                                  // type: MarkdownDisplayType,
+                                  thought: topOfMind!,
+                                  viewOnly: true,
+                                ),
+
                               MainTextField(
                                   primaryController: _primaryController,
                                   onThoughtSubmitted: (String body) {
+                                    // If the body is empty, do nothing
+                                    if (body.isEmpty) {
+                                      return;
+                                    }
+
                                     // Create a new thought
                                     final thought = Thought.fromString(
                                         body,
@@ -67,8 +95,24 @@ class _StreamState extends State<Stream> {
                                               listen: false)
                                           .addThought(thought);
 
+                                      // Search for related thoughts
+                                      searchThoughts(context, thought.body)
+                                          .then((value) {
+                                        // Add the related thoughts to the provider
+                                        Provider.of<ThoughtsProvider>(context,
+                                                listen: false)
+                                            .addThoughts(value);
+
+                                        // Update the UI
+                                        setState(() {
+                                          relatedThoughts = value;
+                                        });
+                                      });
+
                                       // Lastly, update the UI
-                                      setState(() {});
+                                      setState(() {
+                                        topOfMind = thought;
+                                      });
                                     });
                                   }),
 

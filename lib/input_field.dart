@@ -103,7 +103,7 @@ class _MainTextFieldState extends State<MainTextField> {
             .onPrimary
             .withAlpha(180),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+      contentPadding: const EdgeInsets.fromLTRB(18, 12, 38, 12),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(
@@ -111,7 +111,7 @@ class _MainTextFieldState extends State<MainTextField> {
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
               .onPrimary
-              .withAlpha(64),
+              .withAlpha(32),
         ),
       ),
       focusedBorder: OutlineInputBorder(
@@ -147,7 +147,7 @@ class _MainTextFieldState extends State<MainTextField> {
             .onPrimary
             .withAlpha(180),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(18, 22, 36, 22),
+      contentPadding: const EdgeInsets.fromLTRB(18, 22, 18, 22),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(
@@ -228,7 +228,7 @@ class _MainTextFieldState extends State<MainTextField> {
                 // Text box
                 Padding(
                   padding: widget.type == TextFieldType.main
-                      ? const EdgeInsets.fromLTRB(0, 16, 32, 16)
+                      ? const EdgeInsets.fromLTRB(12, 16, 12, 16)
                       : const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: Material(
                     // elevation: 2,
@@ -279,7 +279,7 @@ class _MainTextFieldState extends State<MainTextField> {
                           keyboardType: TextInputType.multiline,
                           maxLines: 10,
                           minLines: 1,
-                          textInputAction: TextInputAction.send,
+                          // textInputAction: TextInputAction.send,
                           style: Provider.of<ComindColorsNotifier>(context)
                               .textTheme
                               .bodyMedium,
@@ -319,10 +319,10 @@ class _MainTextFieldState extends State<MainTextField> {
                   ),
                 ),
 
-                // ThinkButton only
+                // ThinkButton only, send button
                 Positioned(
                   bottom: 21,
-                  right: 36,
+                  right: 20,
                   child: Visibility(
                     visible: widget.type == TextFieldType.main,
                     child: Padding(
@@ -339,92 +339,6 @@ class _MainTextFieldState extends State<MainTextField> {
                     ),
                   ),
                 ),
-                // Send button, icon version. Centered
-                // Positioned(
-                //   // bottom: 4,
-                //   bottom: widget.type == TextFieldType.main ? 24 : 4,
-                //   right: 4,
-                //   child: // Send button, icon version
-                //       TextButton(
-                //           // Rounded border, radius 10
-                //           // splashRadius: 20,
-                //           style: ButtonStyle(
-                //             shape: MaterialStateProperty.all(
-                //               RoundedRectangleBorder(
-                //                 borderRadius: BorderRadius.circular(
-                //                     ComindColors.bubbleRadius),
-                //               ),
-                //             ),
-                //           ),
-                //           // padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                //           // Transparent
-
-                //           child: Text(
-                //               widget.type == TextFieldType.main ||
-                //                       widget.type == TextFieldType.inline
-                //                   ? "Think"
-                //                   : "Save",
-                //               style: Provider.of<ComindColorsNotifier>(context)
-                //                   .textTheme
-                //                   .titleLarge),
-                //           onPressed: () => {
-                //                 _submit(context)(),
-                //                 // Clear the text field because sometimes random newline chars
-                //                 // get added
-                //                 _primaryController.clear(),
-                //               }),
-                //   //         }),
-                // ),
-
-                // // Send button
-                // Positioned(
-                //   bottom: 4,
-                //   right: 4,
-                //   child: Container(
-                //     color: Provider.of<ComindColorsNotifier>(context)
-                //         .colorScheme
-                //         .background,
-                //     child: Row(
-                //       children: [
-                //         // Cancel button
-                //         // Visibility(
-                //         //   visible: widget.type == TextFieldType.edit,
-                //         //   child: Padding(
-                //         //     padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                //         //     child: Visibility(
-                //         //       visible: widget.type == TextFieldType.edit,
-                //         //       child: ComindTextButton(
-                //         //         text: "Cancel",
-                //         //         lineLocation: LineLocation.top,
-                //         //         onPressed: () {
-                //         //           if (widget.toggleEditor != null) {
-                //         //             widget.toggleEditor!();
-                //         //           }
-                //         //         },
-                //         //         colorIndex: 3,
-                //         //         opacity: 1.0,
-                //         //         fontSize: 10,
-                //         //       ),
-                //         //     ),
-                //         //   ),
-                //         // ),
-
-                //         // Send button
-                //         // ComindTextButton(
-                //         //   text: widget.type == TextFieldType.main ||
-                //         //           widget.type == TextFieldType.inline
-                //         //       ? "Think"
-                //         //       : "Save",
-                //         //   lineLocation: LineLocation.top,
-                //         //   onPressed: _submit(context),
-                //         //   colorIndex: widget.type == TextFieldType.main ? 1 : 2,
-                //         //   opacity: 1.0,
-                //         //   fontSize: 10,
-                //         // ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
               ],
             ),
 
