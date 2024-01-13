@@ -171,6 +171,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                               child: widget.thought.title == ""
                                                   ? Container()
                                                   : RichText(
+                                                      overflow:
+                                                          TextOverflow.fade,
+                                                      softWrap: false,
                                                       text: TextSpan(
                                                         children: [
                                                           TextSpan(

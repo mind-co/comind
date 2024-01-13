@@ -67,19 +67,29 @@ class Dispatch extends StatelessWidget {
           );
         },
         pages: [
-          const MaterialPage(
-            child: ThoughtListScreen(),
-          ),
-          MaterialPage(
-            child: Stream(),
-          ),
+          // Load the login screen if the user is not logged in
+          // if (!authProvider.isLoggedIn)
+          //   const MaterialPage(
+          //     child: LoginScreen(),
+          //   ),
+
+          // // Load the thought list screen
+          // if (authProvider.isLoggedIn)
+          //   const MaterialPage(
+          //     child: ThoughtListScreen(),
+          //   ),
+
+          // // Load the stream only if the user is logged in
+          if (authProvider.isLoggedIn)
+            const MaterialPage(
+              child: Stream(),
+            ),
         ],
         onPopPage: (route, result) => route.didPop(result),
       );
     } else {
       return Navigator(
         pages: const [
-          MaterialPage(child: ThoughtListScreen()),
           MaterialPage(
             child: LoginScreen(),
           ),

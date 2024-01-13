@@ -3,7 +3,7 @@
     "family": "Bungee Pop",
     "fonts": [
       {
-        "asset": "fonts/BungeePop.tff"
+        "asset": "assets/fonts/BungeePop.tff"
       }
     ]
   }

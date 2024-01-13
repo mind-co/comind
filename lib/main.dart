@@ -155,6 +155,10 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
 
   // Fetch thoughts
   void _fetchThoughts() async {
+    while (!Provider.of<AuthProvider>(context, listen: false).isLoggedIn) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+
     // Replace with your API call
     List<Thought> fetchedThoughts = await fetchThoughts(context);
 

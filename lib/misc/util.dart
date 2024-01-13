@@ -94,6 +94,9 @@ AppBar comindAppBar(BuildContext context) {
 }
 
 String getToken(BuildContext context) {
+  print(Provider.of<AuthProvider>(context, listen: false).isLoggedIn);
+  print("Token: " +
+      Provider.of<AuthProvider>(context, listen: false).token.toString());
   return Provider.of<AuthProvider>(context, listen: false).token;
 }
 

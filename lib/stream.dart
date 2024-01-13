@@ -22,8 +22,24 @@ class _StreamState extends State<Stream> {
   // the text controller
   final _primaryController = TextEditingController();
 
-  // The Top of Mind thought
-  // Thought? topOfMind;
+  // Method to fetch thoughts related to the top of mind thought.
+  // These are stored in the ThoughtsProvider.
+  void fetchRelatedThoughts() async {
+    // Get the top of mind thought
+    final topOfMind = getTopOfMind(context);
+
+    // If the top of mind thought is null, do nothing
+    if (topOfMind == null) {
+      return;
+    }
+
+    // Search for related thoughts
+    final relatedThoughts = await searchThoughts(context, topOfMind.body);
+
+    // Add the related thoughts to the provider
+    Provider.of<ThoughtsProvider>(context, listen: false)
+        .addThoughts(relatedThoughts);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +47,7 @@ class _StreamState extends State<Stream> {
     // topOfMind = Thought.fromString(
     //     "I'm happy to have you here :smiley:", "Co", true,
     //     title: "Welcome to comind");
+    fetchRelatedThoughts();
 
     return Scaffold(
       // App bar
@@ -182,11 +199,18 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const cineEdgeInsetsLeft = const EdgeInsets.fromLTRB(30, 0, 8, 0);
+    const cineEdgeInsetsRight = const EdgeInsets.fromLTRB(8, 0, 30, 0);
+    const waveAmplitude = 0.02;
+    const waveFrequency = 10.0;
     return Row(children: [
       Expanded(
-          child: CineWave(
-        amplitude: 0.01,
-        frequency: 3,
+          child: Padding(
+        padding: cineEdgeInsetsLeft,
+        child: CineWave(
+          amplitude: waveAmplitude,
+          frequency: waveFrequency,
+        ),
       )),
       Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -200,9 +224,12 @@ class SectionHeader extends StatelessWidget {
         ),
       ),
       Expanded(
-          child: CineWave(
-        amplitude: 0.01,
-        frequency: 3,
+          child: Padding(
+        padding: cineEdgeInsetsRight,
+        child: CineWave(
+          amplitude: waveAmplitude,
+          frequency: waveFrequency,
+        ),
       )),
     ]);
   }

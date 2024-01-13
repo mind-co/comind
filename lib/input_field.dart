@@ -121,7 +121,7 @@ class _MainTextFieldState extends State<MainTextField> {
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
               .onBackground
-              .withAlpha(255),
+              .withAlpha(126),
         ),
       ),
     );

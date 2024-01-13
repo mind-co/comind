@@ -16,6 +16,7 @@ Future<List<Thought>> fetchThoughts(BuildContext context) async {
   final headers = {
     'ComindUsername': 'cameron',
     'ComindPageNo': '0',
+    'Authorization': 'Bearer ${getToken(context)}',
   };
 
   final response = await http.get(url, headers: headers);

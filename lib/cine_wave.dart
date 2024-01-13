@@ -180,15 +180,16 @@ class _CineWaveState extends State<CineWave>
       duration: const Duration(seconds: 20),
       // duration: const Duration(milliseconds: 800),
       vsync: this,
-    )..repeat(reverse: false);
+    )..repeat(reverse: true);
 
     // _animation = Tween<double>(begin: 0, end: 0).animate(
     _animation = Tween<double>(begin: 0, end: 3 / 2 * pi).animate(
       CurvedAnimation(
-          parent: _controller,
-          // curve: Curves.decelerate,
-          // curve: Curves.slowMiddle,
-          curve: Curves.linear),
+        parent: _controller,
+        curve: Curves.easeInOutCubicEmphasized,
+        // curve: Curves.slowMiddle,
+        // curve: Curves.linear
+      ),
     );
   }
 
@@ -208,10 +209,15 @@ class _CineWaveState extends State<CineWave>
             return CustomPaint(
               painter: CineWavePainter(
                 // amplitude: log(_animation.value / 50 + 1),
-                // frequency: widget.frequency * _animation.value,
+                // frequency: widget.frequency /
+                //         10 *
+                //         (3 / 2 * pi - _animation.value).abs() +
+                //     1,
                 frequency: widget.frequency,
                 // frequency: log(widget.frequency * _animation.value + 1),
-                amplitude: (360 - _animation.value).abs() * widget.amplitude,
+                amplitude: (_animation.value - 3 / 4 * pi).abs() *
+                    widget.amplitude *
+                    50,
                 // amplitude: widget.amplitude,
                 startPoint: _animation.value * 100,
                 // startPoint: 0,

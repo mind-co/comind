@@ -33,6 +33,7 @@ dependencies:
   shelf: ^1.4.1
   uuid: ^4.3.1
   wakelock_web: ^0.4.0
+  cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +50,7 @@ flutter:
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+    - assets/fonts/
     - fonts/
 
   fonts:
