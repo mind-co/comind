@@ -42,13 +42,19 @@ class _StreamState extends State<Stream> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    // Fetch related thoughts
+    fetchRelatedThoughts();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Debug initialize the top of mind thought to coThought
     // topOfMind = Thought.fromString(
     //     "I'm happy to have you here :smiley:", "Co", true,
     //     title: "Welcome to comind");
-    fetchRelatedThoughts();
-
     return Scaffold(
       // App bar
       appBar: comindAppBar(context),
@@ -64,117 +70,166 @@ class _StreamState extends State<Stream> {
               constraints: BoxConstraints(
                 minHeight: constraints.maxHeight,
               ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Stack(
                 children: [
-                  SizedBox(
-                    width: ComindColors.maxWidth,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
+                  // Left column
+                  Visibility(
+                    visible: showSideColumns(context),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: getPrimaryColor(context),
+                        ),
+                        width: leftColumnWidth(context),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text("Concepts",
+                                style: getTextTheme(context).titleLarge),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Center column
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: centerColumnWidth(context),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Column(
                               children: [
-                                const SectionHeader(text: "Think something"),
+                                Column(
+                                  children: [
+                                    const SectionHeader(
+                                        text: "Think something"),
 
-                                // The main text box
-                                MainTextField(
-                                    primaryController: _primaryController,
-                                    onThoughtSubmitted: (String body) {
-                                      // If the body is empty, do nothing
-                                      if (body.isEmpty) {
-                                        return;
-                                      }
+                                    // The main text box
+                                    MainTextField(
+                                        primaryController: _primaryController,
+                                        onThoughtSubmitted: (String body) {
+                                          // If the body is empty, do nothing
+                                          if (body.isEmpty) {
+                                            return;
+                                          }
 
-                                      // Create a new thought
-                                      final thought = Thought.fromString(
-                                          body,
-                                          Provider.of<AuthProvider>(context,
-                                                  listen: false)
-                                              .username,
-                                          Provider.of<ComindColorsNotifier>(
-                                                  context,
-                                                  listen: false)
-                                              .publicMode);
+                                          // Create a new thought
+                                          final thought = Thought.fromString(
+                                              body,
+                                              Provider.of<AuthProvider>(context,
+                                                      listen: false)
+                                                  .username,
+                                              Provider.of<ComindColorsNotifier>(
+                                                      context,
+                                                      listen: false)
+                                                  .publicMode);
 
-                                      // Send the thought
-                                      saveThought(context, thought,
-                                              newThought: true)
-                                          .then((value) {
-                                        // Add the thought to the providerthis
-                                        Provider.of<ThoughtsProvider>(context,
-                                                listen: false)
-                                            .addThought(thought);
+                                          // Send the thought
+                                          saveThought(context, thought,
+                                                  newThought: true)
+                                              .then((value) {
+                                            // Add the thought to the providerthis
+                                            Provider.of<ThoughtsProvider>(
+                                                    context,
+                                                    listen: false)
+                                                .addThought(thought);
 
-                                        // Search for related thoughts
-                                        searchThoughts(context, thought.body)
-                                            .then((value) {
-                                          // Add the related thoughts to the provider
-                                          Provider.of<ThoughtsProvider>(context,
-                                                  listen: false)
-                                              .addThoughts(value);
+                                            // Search for related thoughts
+                                            searchThoughts(
+                                                    context, thought.body)
+                                                .then((value) {
+                                              // Add the related thoughts to the provider
+                                              Provider.of<ThoughtsProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .addThoughts(value);
 
-                                          // Update the UI
-                                          // setState(() {
-                                          //   relatedThoughts = value;
-                                          // });
-                                        });
+                                              // Update the UI
+                                              // setState(() {
+                                              //   relatedThoughts = value;
+                                              // });
+                                            });
 
-                                        // Lastly, update the UI
-                                        setState(() {
-                                          // topOfMind = thought;
-                                        });
-                                      });
-                                    }),
+                                            // Lastly, update the UI
+                                            setState(() {
+                                              // topOfMind = thought;
+                                            });
+                                          });
+                                        }),
 
-                                // Top of mind divider
-                                const SectionHeader(text: "Top of Mind"),
+                                    // Top of mind divider
+                                    const SectionHeader(text: "Top of Mind"),
 
-                                // The top of mind thought
-                                Visibility(
-                                  visible: getTopOfMind(context) != null,
-                                  child: MarkdownThought(
-                                    // type: MarkdownDisplayType,
-                                    thought: getTopOfMind(context)!,
-                                    viewOnly: true,
-                                  ),
-                                ),
+                                    // The top of mind thought
+                                    Visibility(
+                                      visible: getTopOfMind(context) != null,
+                                      child: MarkdownThought(
+                                        // type: MarkdownDisplayType,
+                                        thought: getTopOfMind(context)!,
+                                        viewOnly: true,
+                                      ),
+                                    ),
 
-                                // Top of mind divider
-                                const SectionHeader(text: "The Stream"),
+                                    // Top of mind divider
+                                    const SectionHeader(text: "The Stream"),
 
-                                // The rest of the thoughts
-                                ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount:
-                                      Provider.of<ThoughtsProvider>(context)
-                                          .thoughts
-                                          .length,
-                                  itemBuilder: (context, index) {
-                                    return MarkdownThought(
-                                      // type: MarkdownDisplayType,
-                                      thought:
+                                    // The rest of the thoughts
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount:
                                           Provider.of<ThoughtsProvider>(context)
-                                              .thoughts[index],
-                                      viewOnly: true,
-                                    );
-                                  },
+                                              .thoughts
+                                              .length,
+                                      itemBuilder: (context, index) {
+                                        return MarkdownThought(
+                                          // type: MarkdownDisplayType,
+                                          thought:
+                                              Provider.of<ThoughtsProvider>(
+                                                      context)
+                                                  .thoughts[index],
+                                          viewOnly: true,
+                                        );
+                                      },
+                                    ),
+                                  ],
                                 ),
+                                // MarkdownThought(
+                                //     type: MarkdownDisplayType.newThought,
+                                //     thought: Thought.fromString(
+                                //         "",
+                                //         Provider.of<AuthProvider>(context).username,
+                                //         true,
+                                //         title: "Good morning")),
                               ],
-                            ),
-                            // MarkdownThought(
-                            //     type: MarkdownDisplayType.newThought,
-                            //     thought: Thought.fromString(
-                            //         "",
-                            //         Provider.of<AuthProvider>(context).username,
-                            //         true,
-                            //         title: "Good morning")),
+                            )
                           ],
-                        )
-                      ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Right column
+                  Visibility(
+                    visible: showSideColumns(context),
+                    child: SizedBox(
+                      width: rightColumnWidth(context),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text("Notifications",
+                              style: getTextTheme(context).titleLarge),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -184,6 +239,32 @@ class _StreamState extends State<Stream> {
         },
       ),
     );
+  }
+
+  bool showSideColumns(BuildContext context) =>
+      MediaQuery.of(context).size.width > 700;
+
+  //
+  // Column width methods
+  //
+  double leftColumnWidth(BuildContext context) {
+    return (MediaQuery.of(context).size.width -
+            centerColumnWidth(context) -
+            25) /
+        2;
+  }
+
+  double centerColumnWidth(BuildContext context) {
+    return MediaQuery.of(context).size.width > 550
+        ? 550
+        : MediaQuery.of(context).size.width;
+  }
+
+  double rightColumnWidth(BuildContext context) {
+    return (MediaQuery.of(context).size.width -
+            centerColumnWidth(context) -
+            25) /
+        2;
   }
 }
 

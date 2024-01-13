@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:comind/colors.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/think_button.dart';
@@ -263,8 +265,11 @@ class _MainTextFieldState extends State<MainTextField> {
 
     return SizedBox(
       width: widget.type != TextFieldType.newThought
-          ? ComindColors.maxWidth
-          : ComindColors.maxWidth - 80,
+          ? min(ComindColors.maxWidth, MediaQuery.of(context).size.width)
+          : min(
+              ComindColors.maxWidth - 130,
+              MediaQuery.of(context).size.width -
+                  80), // TODO this shit is hacky as fuck
       child: Padding(
         padding: widget.type == TextFieldType.main
             ? const EdgeInsets.fromLTRB(8, 8, 8, 8)
