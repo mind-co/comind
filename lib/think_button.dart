@@ -20,7 +20,7 @@ class ThinkButton extends StatelessWidget {
                 Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
             enableFeedback: true,
             onPressed: onPressed,
-            icon: Icon(Icons.send))
+            icon: Icon(Icons.send)),
       ],
     );
   }

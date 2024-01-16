@@ -35,8 +35,9 @@ class _ColorPickerState extends State<ColorPicker> {
 
             // #3B5EDA, RGB: 59, 94, 218
             _buildColorButton(const Color.fromARGB(255, 59, 94, 218)),
-            // _buildColorButton(Colors.yellow),
-            // _buildColorButton(Colors.purple),
+
+            _buildColorButton(const Color.fromARGB(255, 253, 233, 56)),
+            _buildColorButton(Color.fromARGB(255, 255, 255, 255)),
             // _buildColorButton(Colors.orange),
             // _buildColorButton(Colors.pink[100]!),
           ],

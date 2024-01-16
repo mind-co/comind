@@ -316,8 +316,8 @@ class ComindColors {
       // Return the list of colors
       return [
         primaryColor,
-        adjustBrightness(primaryColor, 2.0),
-        adjustBrightness(primaryColor, 2.5)
+        adjustBrightness(primaryColor, 1.5),
+        adjustBrightness(primaryColor, 3.0)
       ];
     }
 

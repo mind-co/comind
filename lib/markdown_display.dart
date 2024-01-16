@@ -368,7 +368,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   Visibility(
                       visible:
                           widget.type != MarkdownDisplayType.searchResult &&
-                              !widget.viewOnly &&
                               widget.showBody,
                       child: alternativeActionRow(context, onBackground)),
 
@@ -486,34 +485,14 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
   // The action row
   Row alternativeActionRow(BuildContext context, Color onBackground) {
-    // The cinewave divider
-    var expandedCineWave = Expanded(
-        child: SizedBox(
-            height: 20,
-            child: Divider(
-              color: onBackground.withAlpha(64),
-            )));
-
-    // The timestamp
-    var timestamp = Opacity(
-      opacity: 0.5,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(32, 0, 8, 0),
-        child: Text(
-          formatTimestamp(widget.thought.dateCreated),
-          style: Provider.of<ComindColorsNotifier>(context).textTheme.bodySmall,
-        ),
-      ),
-    );
-
     // The info button
-    var infoButton = newButton(
-        onBackground, context, widget.infoMode ? "Close" : "Info", () {
-      // Toggle info mode
-      setState(() {
-        widget.infoMode = !widget.infoMode;
-      });
-    });
+    // var infoButton = newButton(
+    //     onBackground, context, widget.infoMode ? "Close" : "Info", () {
+    //   // Toggle info mode
+    //   setState(() {
+    //     widget.infoMode = !widget.infoMode;
+    //   });
+    // });
 
     // The expand button
     var expandButton = newButton(
@@ -557,105 +536,109 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       }),
     );
 
-    var lockButton = Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-      child: IconButton(
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
-        enableFeedback: true,
-        splashRadius: 16,
-        onPressed: () {
-          // Toggle public/private
-          setState(() {
-            widget.thought.togglePublic(context);
-            // thought.isPublic = !thought.isPublic;
-          });
-        },
-        icon: Icon(
-          widget.thought.isPublic ? Icons.lock_open : Icons.lock,
-          size: 16,
-          color: Provider.of<ComindColorsNotifier>(context)
-              .colorScheme
-              .onPrimary
-              .withAlpha(128),
-        ),
+    var lockButton = newIconButton(
+      context,
+      () {
+        // Toggle public/private
+        setState(() {
+          widget.thought.togglePublic(context);
+          // thought.isPublic = !thought.isPublic;
+        });
+      },
+      Icon(
+        widget.thought.isPublic ? Icons.lock_open : Icons.lock,
+        size: 16,
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(128),
       ),
     );
 
     // Local variable storing the delete button underneath each thought
-    var deleteButton = Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-      child: IconButton(
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
-        enableFeedback: true,
-        splashRadius: 16,
-        onPressed: () async {
-          // TODO delete the thought
-          bool? shouldDelete = await showDialog<bool>(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                backgroundColor: Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .background,
-                surfaceTintColor: Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .secondary
-                    .withAlpha(64),
-                title: const Text(
-                  'Delete thought?',
-                  style: TextStyle(
-                      fontFamily: "Bungee",
-                      fontSize: 36,
-                      fontWeight: FontWeight.w400),
-                ),
-                content: const Text(
-                    'You sure you wanna delete this note? Cameron is really, really bad at making undo buttons. \n\nIf you delete this it will prolly be gone forever.'),
-                actions: <Widget>[
-                  ComindTextButton(
-                    text: "Cancel",
-                    opacity: 1,
-                    fontSize: 18,
-                    colorIndex: 1,
-                    onPressed: () {
-                      Navigator.of(context).pop(false);
-                    },
-                  ),
-                  ComindTextButton(
-                    text: "Delete",
-                    opacity: 1,
-                    fontSize: 18,
-                    colorIndex: 3,
-                    onPressed: () {
-                      Navigator.of(context).pop(true);
-                    },
-                  ),
-                ],
-                actionsAlignment: MainAxisAlignment.spaceBetween,
-              );
-            },
+    // var deleteButton = Padding(
+    //   padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+    //   child: IconButton(
+    //     padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+    //     visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+    //     enableFeedback: true,
+    //     splashRadius: 16,
+    //     ,
+    //     icon: Icon(
+    //       Icons.delete,
+    //       size: 16,
+    //       color: Provider.of<ComindColorsNotifier>(context)
+    //           .colorScheme
+    //           .onPrimary
+    //           .withAlpha(128),
+    //     ),
+    //   ),
+    // );
+
+    var deleteButton = newIconButton(context, () async {
+      // TODO delete the thought
+      bool? shouldDelete = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                .colorScheme
+                .background,
+            surfaceTintColor: Provider.of<ComindColorsNotifier>(context)
+                .colorScheme
+                .secondary
+                .withAlpha(64),
+            title: const Text(
+              'Delete thought?',
+              style: TextStyle(
+                  fontFamily: "Bungee",
+                  fontSize: 36,
+                  fontWeight: FontWeight.w400),
+            ),
+            content: const Text(
+                'You sure you wanna delete this note? Cameron is really, really bad at making undo buttons. \n\nIf you delete this it will prolly be gone forever.'),
+            actions: <Widget>[
+              ComindTextButton(
+                text: "Cancel",
+                opacity: 1,
+                fontSize: 18,
+                colorIndex: 1,
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              ComindTextButton(
+                text: "Delete",
+                opacity: 1,
+                fontSize: 18,
+                colorIndex: 3,
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+            actionsAlignment: MainAxisAlignment.spaceBetween,
           );
-
-          if (shouldDelete == true) {
-            // ignore: use_build_context_synchronously
-            deleteThought(context, widget.thought.id);
-
-            // Remove the thought from the list
-            Provider.of<ThoughtsProvider>(context, listen: false)
-                .removeThought(widget.thought);
-          }
         },
-        icon: Icon(
+      );
+
+      if (shouldDelete == true) {
+        // ignore: use_build_context_synchronously
+        deleteThought(context, widget.thought.id);
+
+        // Remove the thought from the list
+        Provider.of<ThoughtsProvider>(context, listen: false)
+            .removeThought(widget.thought);
+      }
+    },
+        Icon(
           Icons.delete,
           size: 16,
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
               .onPrimary
               .withAlpha(128),
-        ),
-      ),
-    );
+        ));
 
     // Local variable for edit button
     var editThoughtButton = Padding(
@@ -672,15 +655,48 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       }),
     );
 
-    //
-    return Row(children: [
-      timestamp,
+    // Info button
+    var infoButton = newIconButton(
+      context,
+      () {
+        // Toggle info mode
+        setState(() {
+          widget.infoMode = !widget.infoMode;
+        });
+      },
+      Icon(
+        Icons.info_outline,
+        size: 16,
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(128),
+      ),
+    );
 
+    // the more button
+    var moreButton = newIconButton(
+      context,
+      () {
+        // Toggle info mode
+        setState(() {
+          moreClicked = !moreClicked;
+        });
+      },
+      Icon(
+        Icons.more_horiz,
+        size: 16,
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(128),
+      ),
+    );
+
+    //
+    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
       // Lock icon
       lockButton,
-
-      // Cinewave
-      expandedCineWave,
 
       // Buttons
       Visibility(
@@ -707,11 +723,29 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           child: expandButton),
 
       // Show linked/more button
-      Visibility(visible: !newThoughtOpen, child: showLinkedButton),
+      // Visibility(visible: !newThoughtOpen, child: showLinkedButton),
 
       // Add thought button
-      addThoughtButton,
+      // addThoughtButton,
+
+      // More options button
+      Visibility(visible: !newThoughtOpen, child: moreButton),
     ]);
+  }
+
+  Padding newIconButton(
+      BuildContext context, void Function()? onPressed, Icon icon) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+      child: IconButton(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+        enableFeedback: true,
+        splashRadius: 16,
+        onPressed: onPressed,
+        icon: icon,
+      ),
+    );
   }
 
   TextButton newButton(Color onBackground, BuildContext context, String text,
@@ -774,9 +808,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   decoration: BoxDecoration(
                     color: Provider.of<ComindColorsNotifier>(context)
                         .primary
-                        .withAlpha(16),
-                    borderRadius:
-                        BorderRadius.circular(ComindColors.bubbleRadius),
+                        .withAlpha(8),
+                    // borderRadius:
+                    //     BorderRadius.circular(ComindColors.bubbleRadius),
                     border: Border.all(
                       color: Provider.of<ComindColorsNotifier>(context)
                           .colorScheme

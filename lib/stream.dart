@@ -1,8 +1,10 @@
 import 'package:comind/api.dart';
 import 'package:comind/bottom_sheet.dart';
 import 'package:comind/cine_wave.dart';
+import 'package:comind/color_picker.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/input_field.dart';
+import 'package:comind/main.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
@@ -181,49 +183,7 @@ class _StreamState extends State<Stream> {
         const SectionHeader(text: "Think something"),
 
         // The main text box
-        Visibility(
-          visible: Provider.of<AuthProvider>(context).isLoggedIn &&
-              Provider.of<AuthProvider>(context).username != "",
-          child: MainTextField(
-              primaryController: _primaryController,
-              onThoughtSubmitted: (String body) {
-                // If the body is empty, do nothing
-                if (body.isEmpty) {
-                  return;
-                }
-
-                // Create a new thought
-                final thought = Thought.fromString(
-                    body,
-                    Provider.of<AuthProvider>(context, listen: false).username,
-                    Provider.of<ComindColorsNotifier>(context, listen: false)
-                        .publicMode);
-
-                // Send the thought
-                saveThought(context, thought, newThought: true).then((value) {
-                  // Add the thought to the providerthis
-                  Provider.of<ThoughtsProvider>(context, listen: false)
-                      .addThought(thought);
-
-                  // Search for related thoughts
-                  searchThoughts(context, thought.body).then((value) {
-                    // Add the related thoughts to the provider
-                    Provider.of<ThoughtsProvider>(context, listen: false)
-                        .addThoughts(value);
-
-                    // Update the UI
-                    // setState(() {
-                    //   relatedThoughts = value;
-                    // });
-                  });
-
-                  // Lastly, update the UI
-                  setState(() {
-                    // topOfMind = thought;
-                  });
-                });
-              }),
-        ),
+        thinkBox(context),
 
         // Username
         Visibility(
@@ -239,16 +199,18 @@ class _StreamState extends State<Stream> {
               ),
               TextSpan(
                 text: Provider.of<AuthProvider>(context).username,
-                style: getTextTheme(context).titleMedium,
+                style: getTextTheme(context).titleLarge,
               ),
               TextSpan(
                 text: ", welcome back. It's ",
                 style: getTextTheme(context).bodyLarge,
               ),
 
-              // Time
+              // Time as hh:MM
               TextSpan(
-                text: DateTime.now().toIso8601String().substring(11, 16),
+                text: (DateTime.now().hour % 12).toString().padLeft(2, '0') +
+                    ":" +
+                    DateTime.now().minute.toString().padLeft(2, '0'),
                 style: getTextTheme(context).bodyLarge,
               ),
 
@@ -260,10 +222,25 @@ class _StreamState extends State<Stream> {
             ])),
           ),
         ),
+
         // Action row under the text box
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
           child: Wrap(children: [
+            // // Color picker
+            // ColorPicker(onColorSelected: (Color color) {
+            //   Provider.of<ComindColorsNotifier>(context, listen: false)
+            //       .modifyColors(color);
+            // }),
+            // Color picker button
+            TextButtonSimple(
+                text: "Color",
+                onPressed: () async {
+                  Color color = await colorDialog(context);
+                  Provider.of<ComindColorsNotifier>(context, listen: false)
+                      .modifyColors(color);
+                }),
+
             // Login button
             Visibility(
               visible: !Provider.of<AuthProvider>(context).isLoggedIn,
@@ -311,21 +288,22 @@ class _StreamState extends State<Stream> {
         ),
 
         // Top of mind divider
-        Visibility(
-            visible: getTopOfMind(context) != null,
-            child: const SectionHeader(text: "Top of Mind")),
+        // Visibility(
+        //     visible: Provider.of<ThoughtsProvider>(context).thoughts.length > 0,
+        //     child: const SectionHeader(text: "Top of Mind")),
 
         // The top of mind thought
         // if (getTopOfMind(context) != null)
         Visibility(
-          visible: getTopOfMind(context) != null,
-          child: MarkdownThought(
-            // type: MarkdownDisplayType,
-            thought: getTopOfMind(context) ??
-                Thought.fromString(
-                    "testing", "this is a testing thought", true),
-            viewOnly: true,
-          ),
+          visible: Provider.of<ThoughtsProvider>(context).topOfMind != null,
+          child: Text("Top of mind thought"),
+          // child: MarkdownThought(
+          //   // type: MarkdownDisplayType,
+          //   thought: getTopOfMind(context) ??
+          //       Thought.fromString(
+          //           "testing", "this is a testing thought", true),
+          //   viewOnly: true,
+          // ),
         ),
 
         // Top of mind divider
@@ -346,6 +324,52 @@ class _StreamState extends State<Stream> {
           },
         ),
       ],
+    );
+  }
+
+  Visibility thinkBox(BuildContext context) {
+    return Visibility(
+      visible: Provider.of<AuthProvider>(context).isLoggedIn &&
+          Provider.of<AuthProvider>(context).username != "",
+      child: MainTextField(
+          primaryController: _primaryController,
+          onThoughtSubmitted: (String body) {
+            // If the body is empty, do nothing
+            if (body.isEmpty) {
+              return;
+            }
+
+            // Create a new thought
+            final thought = Thought.fromString(
+                body,
+                Provider.of<AuthProvider>(context, listen: false).username,
+                Provider.of<ComindColorsNotifier>(context, listen: false)
+                    .publicMode);
+
+            // Send the thought
+            saveThought(context, thought, newThought: true).then((value) {
+              // Add the thought to the providerthis
+              Provider.of<ThoughtsProvider>(context, listen: false)
+                  .addThought(thought);
+
+              // Search for related thoughts
+              searchThoughts(context, thought.body).then((value) {
+                // Add the related thoughts to the provider
+                Provider.of<ThoughtsProvider>(context, listen: false)
+                    .addThoughts(value);
+
+                // Update the UI
+                // setState(() {
+                //   relatedThoughts = value;
+                // });
+              });
+
+              // Lastly, update the UI
+              setState(() {
+                // topOfMind = thought;
+              });
+            });
+          }),
     );
   }
 
@@ -400,32 +424,35 @@ class SectionHeader extends StatelessWidget {
     const double waveFrequency = 10;
 
     // Render
-    return Row(children: [
-      Expanded(
-          child: Padding(
-        padding: cineEdgeInsetsLeft,
-        child: CineWave(
-          amplitude: waveAmplitude,
-          frequency: waveFrequency,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 32, 0, 16),
+      child: Row(children: [
+        Expanded(
+            child: Padding(
+          padding: cineEdgeInsetsLeft,
+          child: CineWave(
+            amplitude: waveAmplitude,
+            frequency: waveFrequency,
+          ),
+        )),
+        Text(
+          text,
+          style: style ??
+              Provider.of<ComindColorsNotifier>(context)
+                  .currentColors
+                  .textTheme
+                  .titleMedium,
         ),
-      )),
-      Text(
-        text,
-        style: style ??
-            Provider.of<ComindColorsNotifier>(context)
-                .currentColors
-                .textTheme
-                .titleMedium,
-      ),
-      Expanded(
-          child: Padding(
-        padding: cineEdgeInsetsRight,
-        child: CineWave(
-          amplitude: waveAmplitude,
-          frequency: waveFrequency,
-          goLeft: true,
-        ),
-      )),
-    ]);
+        Expanded(
+            child: Padding(
+          padding: cineEdgeInsetsRight,
+          child: CineWave(
+            amplitude: waveAmplitude,
+            frequency: waveFrequency,
+            goLeft: true,
+          ),
+        )),
+      ]),
+    );
   }
 }

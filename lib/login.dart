@@ -24,6 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import 'package:bcrypt/bcrypt.dart';
 
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // for the utf8.encode method
@@ -747,13 +748,12 @@ class _LoginScreenState extends State<LoginScreen> {
             //   return;
             // }
 
-            // Hash that the period is valid
-            var bytes =
-                utf8.encode(_passwordController.text); // data being hashed
-            var digest = sha256.convert(bytes);
+            // generate bcrypt hash
+            final String hashed =
+                BCrypt.hashpw(_passwordController.text, BCrypt.gensalt());
 
-            var newUserResult = await newUser(_usernameController.text,
-                _emailController.text, digest.toString());
+            var newUserResult = await newUser(
+                _usernameController.text, _emailController.text, hashed);
 
             // ignore: use_build_context_synchronously
             ScaffoldMessenger.of(context).showSnackBar(

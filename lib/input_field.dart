@@ -321,7 +321,7 @@ class _MainTextFieldState extends State<MainTextField> {
                         focusNode: focusNode,
                         child: TextField(
                           scrollController: _scrollController,
-                          keyboardType: TextInputType.multiline,
+                          // keyboardType: TextInputType.multiline,
                           maxLines: 10,
                           minLines: 1,
                           // textInputAction: TextInputAction.send,

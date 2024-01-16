@@ -149,10 +149,10 @@ class CineWavePainter extends CustomPainter {
       var convergence = 1 - (x / size.width - (goLeft ? 0 : 1)).abs();
 
       // The base opacity
-      var a = 0.6;
+      var a = 1;
 
       // var opacity = sqrt(a * convergence);
-      var opacity = pow(a * convergence, 0.5).toDouble();
+      var opacity = pow(a * convergence, 1).toDouble();
       const double stroke = 2;
 
       var paint1 = Paint()

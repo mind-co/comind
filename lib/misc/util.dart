@@ -80,15 +80,15 @@ AppBar comindAppBar(BuildContext context) {
     toolbarHeight: 90,
     actions: [
       // Add dark mode toggle
-      IconButton(
-        icon: colors.darkMode
-            ? const Icon(Icons.dark_mode)
-            : const Icon(Icons.light_mode),
-        onPressed: () {
-          Provider.of<ComindColorsNotifier>(context, listen: false)
-              .toggleTheme(!colors.darkMode);
-        },
-      ),
+      // IconButton(
+      //   icon: colors.darkMode
+      //       ? const Icon(Icons.dark_mode)
+      //       : const Icon(Icons.light_mode),
+      //   onPressed: () {
+      //     Provider.of<ComindColorsNotifier>(context, listen: false)
+      //         .toggleTheme(!colors.darkMode);
+      //   },
+      // ),
     ],
   );
 }
