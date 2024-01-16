@@ -1,6 +1,7 @@
 import 'package:comind/types/thought.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Authentication provider
@@ -57,9 +58,10 @@ class AuthProvider extends ChangeNotifier {
 
 // Thought provider
 class ThoughtsProvider extends ChangeNotifier {
-  final Thought? topOfMind = Thought.fromString(
-      "I'm happy to have you here :smiley:", "Co", true,
-      title: "Welcome to comind");
+  // final Thought? topOfMind = Thought.fromString(
+  //     "I'm happy to have you here :smiley:", "Co", true,
+  //     title: "Welcome to comind");
+  final Thought? topOfMind = null;
 
   final List<Thought> _thoughts = [];
 
@@ -107,4 +109,13 @@ class ThoughtsProvider extends ChangeNotifier {
     print("Removing ${thought.id}");
     notifyListeners();
   }
+}
+
+Thought? getTopOfMind(BuildContext context) {
+  return Provider.of<ThoughtsProvider>(context, listen: false).topOfMind;
+}
+
+void setTopOfMind(BuildContext context, Thought thought) {
+  return Provider.of<ThoughtsProvider>(context, listen: false)
+      .setTopOfMind(thought);
 }

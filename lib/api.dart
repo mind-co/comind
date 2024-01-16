@@ -297,7 +297,6 @@ Future<List<Thought>> searchThoughts(BuildContext context, String query,
     var result = jsonResponse.map((thought) {
       if (thought is Map<String, dynamic>) {
         // Sort in descending order by cosine similarity
-        print(thought);
         return Thought.fromJson(thought);
       } else {
         throw Exception('Invalid data format');
@@ -368,6 +367,7 @@ Future<LoginResponse> login(String username, String password) async {
 
   final response = await http.post(url, body: body);
 
+  print(response.body);
   if (response.statusCode != 200) {
     throw Exception('Failed to login');
   }

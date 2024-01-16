@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:comind/color_button.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/think_button.dart';
@@ -107,17 +108,21 @@ class _MainTextFieldState extends State<MainTextField> {
       ),
       contentPadding: const EdgeInsets.fromLTRB(18, 12, 38, 12),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+        // borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+        borderRadius: const BorderRadius.only(
+          bottomRight: Radius.circular(ComindColors.bubbleRadius),
+          topRight: Radius.circular(ComindColors.bubbleRadius),
+        ),
         borderSide: BorderSide(
           width: 1,
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
               .onPrimary
-              .withAlpha(0),
+              .withAlpha(64),
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+        // borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         borderSide: BorderSide(
           width: 1,
           color: Provider.of<ComindColorsNotifier>(context)
@@ -293,17 +298,17 @@ class _MainTextFieldState extends State<MainTextField> {
                         .background,
                     child: Container(
                       // Bordered
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(ComindColors.bubbleRadius),
-                        border: Border.all(
-                          width: 1,
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onPrimary
-                              .withAlpha(64),
-                        ),
-                      ),
+                      decoration: const BoxDecoration(
+                          // borderRadius:
+                          //     BorderRadius.circular(ComindColors.bubbleRadius),
+                          // border: Border.all(
+                          //   width: 1,
+                          //   color: Provider.of<ComindColorsNotifier>(context)
+                          //       .colorScheme
+                          //       .onPrimary
+                          //       .withAlpha(64),
+                          // ),
+                          ),
 
                       // decoration: BoxDecoration(
                       // borderRadius:

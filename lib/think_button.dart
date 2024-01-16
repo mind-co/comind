@@ -13,11 +13,15 @@ class ThinkButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-        hoverColor:
-            Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
-        enableFeedback: true,
-        onPressed: onPressed,
-        icon: Icon(Icons.send));
+    return Stack(
+      children: [
+        IconButton(
+            hoverColor:
+                Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
+            enableFeedback: true,
+            onPressed: onPressed,
+            icon: Icon(Icons.send))
+      ],
+    );
   }
 }

@@ -4,6 +4,7 @@
 import 'package:comind/login.dart';
 import 'package:comind/main.dart';
 import 'package:comind/providers.dart';
+import 'package:comind/sign_up.dart';
 import 'package:comind/stream.dart';
 import 'package:comind/thought_editor_basic.dart';
 import 'package:flutter/material.dart';
@@ -91,10 +92,56 @@ class Dispatch extends StatelessWidget {
       return Navigator(
         pages: const [
           MaterialPage(
-            child: LoginScreen(),
+            child: Stream(),
+            // child: LoginScreen(),
           ),
         ],
         onPopPage: (route, result) => route.didPop(result),
+        onGenerateRoute: (settings) {
+          // Condition the onGenerateRoute on the path
+          if (settings.name == '/') {
+            return MaterialPageRoute(
+              builder: (context) => const Dispatch(),
+            );
+          }
+
+          // Handle '/login'
+          if (settings.name == '/login') {
+            return MaterialPageRoute(
+              builder: (context) => const LoginScreen(),
+            );
+          }
+
+          // Handle sign up
+          if (settings.name == '/signup') {
+            return MaterialPageRoute(
+                builder: (context) => const LoginScreen(initToSignUp: true));
+          }
+
+          // Handle '/thoughts'
+          if (settings.name == '/thoughts') {
+            return MaterialPageRoute(
+              builder: (context) => const ThoughtListScreen(),
+            );
+          }
+
+          // Handle '/thoughts/:id'
+          var uri = Uri.parse(settings.name!);
+          if (uri.pathSegments.length == 2 &&
+              uri.pathSegments.first == 'thoughts') {
+            var id = uri.pathSegments[1];
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ThoughtEditorScreen(id: id),
+              ),
+            );
+          }
+
+          // Handle '/'
+          return MaterialPageRoute(
+            builder: (context) => const ThoughtListScreen(),
+          );
+        },
       );
     }
   }

@@ -158,7 +158,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                 child: Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(4, 8, 4, 8),
-                                  child: Row(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       // Title
                                       MarkdownDisplayType.newThought !=
@@ -181,7 +183,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                                                 .thought.title,
                                                             style: Provider.of<
                                                                         ComindColorsNotifier>(
-                                                                    context)
+                                                                    context,
+                                                                    listen:
+                                                                        false)
                                                                 .textTheme
                                                                 .titleMedium,
                                                           ),
@@ -195,15 +199,15 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                           : Container(),
 
                                       // Expanded thing to fill the space between the title and the username
-                                      Expanded(
-                                          child: SizedBox(
-                                              height: 5,
-                                              child: Opacity(
-                                                  opacity: 0.0,
-                                                  child: Divider(
-                                                    color: onBackground
-                                                        .withAlpha(64),
-                                                  )))),
+                                      // Expanded(
+                                      //     child: SizedBox(
+                                      //         height: 5,
+                                      //         child: Opacity(
+                                      //             opacity: 0.0,
+                                      //             child: Divider(
+                                      //               color: onBackground
+                                      //                   .withAlpha(64),
+                                      //             )))),
 
                                       // Username
                                       Padding(
@@ -214,16 +218,38 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                             children: [
                                               TextSpan(
                                                 text: widget.thought.isPublic
-                                                    ? "🌎"
-                                                    : "🔒",
+                                                    ? "🌎 "
+                                                    : "🔒 ",
                                                 style: Provider.of<
                                                             ComindColorsNotifier>(
                                                         context)
                                                     .textTheme
-                                                    .titleMedium,
+                                                    .bodyMedium,
                                               ),
+
+                                              // Timestamp
                                               TextSpan(
-                                                text: "  ",
+                                                text: formatTimestamp(
+                                                    widget.thought.dateCreated),
+                                                style: Provider.of<
+                                                            ComindColorsNotifier>(
+                                                        context)
+                                                    .textTheme
+                                                    .bodyMedium,
+                                              ),
+
+                                              // Timestamp
+                                              TextSpan(
+                                                text: " · ",
+                                                style: Provider.of<
+                                                            ComindColorsNotifier>(
+                                                        context)
+                                                    .textTheme
+                                                    .bodyMedium,
+                                              ),
+
+                                              TextSpan(
+                                                text: " ",
                                                 style: Provider.of<
                                                             ComindColorsNotifier>(
                                                         context)
@@ -236,12 +262,12 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                                             ComindColorsNotifier>(
                                                         context)
                                                     .textTheme
-                                                    .titleMedium,
+                                                    .bodyMedium,
                                               ),
                                             ],
                                           ),
                                         ),
-                                      ),
+                                      ), // Username
                                     ],
                                   ),
                                 ))),

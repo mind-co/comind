@@ -121,7 +121,3 @@ Color getTertiaryColor(BuildContext context) {
 TextTheme getTextTheme(BuildContext context) {
   return Provider.of<ComindColorsNotifier>(context, listen: false).textTheme;
 }
-
-Thought? getTopOfMind(BuildContext context) {
-  return Provider.of<ThoughtsProvider>(context, listen: false).topOfMind;
-}

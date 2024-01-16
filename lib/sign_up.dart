@@ -17,7 +17,6 @@ import 'package:comind/bottom_sheet.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/misc/comind_logo.dart';
 import 'package:comind/providers.dart';
-import 'package:comind/sign_up.dart';
 import 'package:comind/text_button.dart';
 import 'package:comind/text_button_simple.dart';
 import 'package:flutter/material.dart';
@@ -28,17 +27,15 @@ import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // for the utf8.encode method
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key, this.initToSignUp = false}) : super(key: key);
-
-  final bool initToSignUp;
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController(text: "cameron");
   final _usernameController = TextEditingController(text: "cameron");
   final _passwordController = TextEditingController(text: "abc");
@@ -50,16 +47,6 @@ class _LoginScreenState extends State<LoginScreen> {
   static const double cursorWidth = 12;
 
   final edgeInsets = const EdgeInsets.fromLTRB(12, 16, 12, 16);
-
-  // Initialize the state
-  // currently this is only setting signUpMode to true if initToSignUp is true
-  @override
-  void initState() {
-    super.initState();
-    if (widget.initToSignUp) {
-      signUpMode = true;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
