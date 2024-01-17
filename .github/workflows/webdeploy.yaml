@@ -34,20 +34,16 @@ jobs:
       # Build and deploy (by default, to staging).
       - run: flutter build -v web --release --web-renderer html
 
-      - name: Save build results to 'web' branch
+      - name: Clean up root directory
         run: |
-          git config --global user.name "Cameron Pfiffer"
-          git config --global user.email "cameron@pfiffer.org"
-          git checkout -b web
+          find . -maxdepth 1 ! -name '.git' ! -name 'build' -exec rm -rf {} \;
 
-          # Remove all files except for .gitignore, .git, and the build directory.
-          find . -maxdepth 1 ! -name .gitignore ! -name .git ! -name build -exec rm -rf {} \;
-
-          # Move the build directory contents up one level.
+      - name: Move build results to root directory
+        run: |
           mv build/web/* .
-          rm -rf build
 
-          # Commit and push.
+      - name: Push to gh-pages
+        run: |
           git add .
-          git commit -m "Deploy to web"
-          git push -f origin web
+          git commit -m "Deploy to gh-pages"
+          git push origin gh-pages --force
