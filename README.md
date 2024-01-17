@@ -2,10 +2,27 @@
 
 This is the primary frontend for {comind}, a platform for thinking stuff together.
 
-
-
 The app is written in [Flutter](https://flutter.dev/), a cross-platform
 framework for building mobile apps.
+
+The front end is basically in a super-pre-alpha state. It is not ready for
+production use. It is not ready for testing. It is not ready for anything
+except for me to play around with. Please don't use it.
+
+## Disclaimer
+
+The app is 
+
+- Currently dogshit and I am working on it. Please don't judge me. 
+- Riddled security errors. Please don't hack me.
+- Not finished. Please don't ask me when it will be finished.
+- Not a good example of how to write flutter apps. Please don't use it as a reference.
+- Not a good example of how to write dart code. Please don't use it as a reference.
+- Not a good example of how to write code. Please don't use it as a reference.
+- Not a good example of how to write. Please don't use it as a reference.
+- Probably going to break constantly. Please don't be surprised.
+- Probably going to be slow. Please don't be surprised.
+- Probably going to be buggy. Please don't be surprised.
 
 ## Prerequisites
 
