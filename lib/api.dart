@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:comind/types/thought.dart';
 import 'package:dio/dio.dart';
@@ -10,9 +11,13 @@ import 'package:provider/provider.dart';
 // Initialize Dio
 final dio = Dio();
 
+String endpoint(String path) {
+  String serverUrl = dotenv.env['SERVER_URL'] ?? 'http://localhost:8000';
+  return serverUrl + path;
+}
+
 Future<List<Thought>> fetchThoughts(BuildContext context) async {
-  final url =
-      Uri.parse('http://nimbus.pfiffer.org:8000/api/user-thoughts/cameron/');
+  final url = Uri.parse(endpoint('/api/user-thoughts/cameron/'));
   final headers = {
     'ComindUsername': 'cameron',
     'ComindPageNo': '0',
@@ -33,7 +38,7 @@ Future<List<Thought>> fetchThoughts(BuildContext context) async {
 // body, isPublic, and an optional parentThoughtId
 Future<Thought> saveQuickThought(BuildContext context, String body,
     bool isPublic, String? parentThoughtId, String? childThoughtId) async {
-  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
+  final url = Uri.parse(endpoint('/api/thoughts/'));
 
   final headers = {
     'ComindUsername': 'cameron',
@@ -77,7 +82,7 @@ Future<Thought> saveQuickThought(BuildContext context, String body,
 
 Future<void> saveThought(BuildContext context, Thought thought,
     {bool? newThought}) async {
-  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
+  final url = Uri.parse(endpoint('/api/thoughts/'));
 
   // If the thought has an ID, we're updating an existing thought.
   // By default empty thoughts have and ID of length 0.
@@ -141,7 +146,7 @@ Future<void> saveThought(BuildContext context, Thought thought,
 }
 
 Future<void> deleteThought(BuildContext context, String thoughtId) async {
-  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
+  final url = Uri.parse(endpoint('/api/thoughts/'));
   final headers = {
     'ComindUsername': 'cameron',
     'ComindThoughtId': thoughtId,
@@ -168,7 +173,7 @@ Future<void> deleteThought(BuildContext context, String thoughtId) async {
 // 5. Alice parties.
 
 Future<bool> newUser(String username, String email, String password) async {
-  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/new-user/');
+  final url = Uri.parse(endpoint('/api/new-user/'));
   final headers = {
     'ComindUsername': username,
     'ComindHashedPassword': password,
@@ -186,7 +191,7 @@ Future<bool> newUser(String username, String email, String password) async {
 }
 
 Future<bool> userExists(String username) async {
-  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/user-exists/');
+  final url = Uri.parse(endpoint('/api/user-exists/'));
   final headers = {
     'ComindUsername': username,
   };
@@ -202,7 +207,7 @@ Future<bool> userExists(String username) async {
 }
 
 Future<bool> emailExists(String email) async {
-  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/email-taken/');
+  final url = Uri.parse(endpoint('/api/email-taken/'));
 
   final headers = {
     'ComindEmail': email,
@@ -256,7 +261,7 @@ class SearchResult {
 
 Future<List<Thought>> searchThoughts(BuildContext context, String query,
     {String? associatedId}) async {
-  final url = Uri.parse("http://nimbus.pfiffer.org:8000/api/search");
+  final url = Uri.parse(endpoint('/api/search/'));
   final body = associatedId == null
       ? jsonEncode(<String, dynamic>{
           'query': query,
@@ -282,11 +287,7 @@ Future<List<Thought>> searchThoughts(BuildContext context, String query,
 
   final response = await dio.post(
     url.toString(),
-    data: {
-      'query': query,
-      'limit': 10,
-      'pageno': 0,
-    },
+    data: body,
     options: Options(
       headers: headers,
     ),
@@ -314,7 +315,7 @@ Future<List<Thought>> searchThoughts(BuildContext context, String query,
 
 // Asks the database for a specific thought by ID
 Future<Thought> fetchThought(BuildContext context, String id) async {
-  final url = Uri.parse("http://nimbus.pfiffer.org:8000/api/thoughts/");
+  final url = Uri.parse(endpoint('/api/thoughts/'));
   final headers = {
     'ComindUsername': 'cameron',
     'ComindThoughtId': id,
@@ -358,7 +359,7 @@ class LoginResponse {
 }
 
 Future<LoginResponse> login(String username, String password) async {
-  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/login/');
+  final url = Uri.parse(endpoint('/api/login/'));
 
   final body = jsonEncode(<String, dynamic>{
     'username': username,
@@ -377,7 +378,7 @@ Future<LoginResponse> login(String username, String password) async {
 }
 
 Future<bool> linkThoughts(context, String fromId, String toId) async {
-  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/link/');
+  final url = Uri.parse(endpoint('/api/link/'));
 
   String token = getToken(context);
   final headers = {
@@ -405,7 +406,7 @@ Future<bool> linkThoughts(context, String fromId, String toId) async {
 // Fetch children
 Future<List<Thought>> fetchChildren(
     BuildContext context, String thoughtId) async {
-  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/children/');
+  final url = Uri.parse(endpoint('/api/children/'));
   final headers = {
     'ComindUsername':
         Provider.of<AuthProvider>(context, listen: false).username,
@@ -432,7 +433,7 @@ Future<List<Thought>> fetchChildren(
 // Fetch parents
 Future<List<Thought>> fetchParents(
     BuildContext context, String thoughtId) async {
-  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/parents/');
+  final url = Uri.parse(endpoint('/api/parents/'));
   final headers = {
     'ComindUsername':
         Provider.of<AuthProvider>(context, listen: false).username,
@@ -465,7 +466,7 @@ Future<List<Thought>> fetchParents(
 // with the thought ID and the new public value.
 Future<void> setPublic(
     BuildContext context, String thoughtId, bool isPublic) async {
-  final url = Uri.parse('http://nimbus.pfiffer.org:8000/api/thoughts/');
+  final url = Uri.parse(endpoint('/api/thoughts/'));
   final headers = {
     'ComindUsername':
         Provider.of<AuthProvider>(context, listen: false).username,

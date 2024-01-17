@@ -129,7 +129,7 @@ class ComindColors {
     labelLarge: labelStyle.copyWith(fontSize: fontScalar * 14),
 
     // Body style
-    bodySmall: bodyStyle.copyWith(fontSize: fontScalar * 10),
+    bodySmall: bodyStyle.copyWith(fontSize: fontScalar * 12),
     bodyMedium: bodyStyle.copyWith(fontSize: fontScalar * 14),
     bodyLarge: bodyStyle.copyWith(fontSize: fontScalar * 18),
 

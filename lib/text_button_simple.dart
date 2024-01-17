@@ -1,5 +1,6 @@
 import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TextButtonSimple extends StatelessWidget {
   final String text;
@@ -49,7 +50,9 @@ class TextButtonSimple extends StatelessWidget {
         ),
       ),
       onPressed: onPressed,
-      child: Text(text),
+      child: Text(text,
+          style:
+              Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall),
     );
   }
 }

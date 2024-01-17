@@ -61,26 +61,31 @@ class ThoughtsProvider extends ChangeNotifier {
   // final Thought? topOfMind = Thought.fromString(
   //     "I'm happy to have you here :smiley:", "Co", true,
   //     title: "Welcome to comind");
-  final Thought? topOfMind = null;
+  Thought? topOfMind = null;
 
   final List<Thought> _thoughts = [];
 
   List<Thought> get thoughts => _thoughts;
+  bool get hasThoughts => _thoughts.isNotEmpty;
+  bool get hasTopOfMind => topOfMind != null;
 
   // Set top of mind
-  void setTopOfMind(Thought thought) {
+  void setTopOfMind(Thought? thought) {
     // If the thought is already top of mind, do nothing
-    if (topOfMind == thought) {
-      return;
-    }
+    // if (topOfMind == thought) {
+    //   return;
+    // }
 
-    // If the thought is already in the list, remove it
-    if (_thoughts.contains(thought)) {
-      _thoughts.remove(thought);
-    }
+    // // If the thought is already in the list, remove it
+    // if (_thoughts.contains(thought)) {
+    //   _thoughts.remove(thought);
+    // }
 
-    // Add the thought to the top of the list
-    _thoughts.insert(0, thought);
+    // // Add the thought to the top of the list
+    // _thoughts.insert(0, thought);
+
+    // Update the top of mind
+    topOfMind = thought;
 
     // Update the UI
     notifyListeners();

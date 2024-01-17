@@ -4,6 +4,7 @@ import 'package:comind/color_picker.dart';
 import 'package:comind/login.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 // Expand button
 
@@ -22,7 +23,8 @@ import 'package:comind/thought_editor_basic.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/dispatch.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load();
   runApp(ChangeNotifierProvider(
     create: (_) => ComindColorsNotifier(),
     child: ChangeNotifierProvider(
@@ -702,167 +704,182 @@ Future<dynamic> colorDialog(BuildContext context) {
 
       var fontSize = 14.0;
       var unselectedOpacity = 0.4;
-      const edgeInsets = EdgeInsets.fromLTRB(0, 4, 0, 4);
+      const edgeInsets = EdgeInsets.fromLTRB(0, 8, 0, 8);
 
       return AlertDialog(
         backgroundColor: colorScheme.background,
-        title: const Text('Current Color Scheme'),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Hey, pick a color! It's fun probably",
-                    style: Provider.of<ComindColorsNotifier>(context)
-                        .textTheme
-                        .bodyMedium),
-                const SizedBox(height: 16),
-                ComindLogo(colors: Provider.of<ComindColorsNotifier>(context)),
-                const SizedBox(height: 16),
-                Text('Primary color  ',
-                    style: Provider.of<ComindColorsNotifier>(context)
-                        .textTheme
-                        .labelLarge),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                  child: Divider(
-                    color: colorScheme.onPrimary.withAlpha(32),
-                    thickness: 1,
-                    height: 1,
+        title: const Text('Colors'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                      "Hey, pick a color! This is how you show up to others. Your primary color is the color of your thoughts -- this is the color that thought will always be shown in unless you change a specific thought.",
+                      style: Provider.of<ComindColorsNotifier>(context)
+                          .textTheme
+                          .bodyMedium),
+                  const SizedBox(height: 16),
+                  Visibility(
+                      visible: MediaQuery.of(context).size.width > 800,
+                      child: ComindLogo(
+                          colors: Provider.of<ComindColorsNotifier>(context))),
+                  Visibility(
+                      visible: MediaQuery.of(context).size.width <= 800,
+                      child: ComindShortLogo(
+                          colors: Provider.of<ComindColorsNotifier>(context))),
+                  const SizedBox(height: 16),
+                  Text('Primary color  ',
+                      style: Provider.of<ComindColorsNotifier>(context)
+                          .textTheme
+                          .titleMedium),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    child: Divider(
+                      color: colorScheme.onPrimary.withAlpha(32),
+                      thickness: 1,
+                      height: 1,
+                    ),
                   ),
-                ),
-                ColorPicker(onColorSelected: (Color color) {
-                  Provider.of<ComindColorsNotifier>(context, listen: false)
-                      .modifyColors(color);
-                }),
-                const SizedBox(height: 16),
-                Text('Color scheme  ',
-                    style: Provider.of<ComindColorsNotifier>(context)
-                        .textTheme
-                        .labelLarge),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                  child: Divider(
-                    color: colorScheme.onPrimary.withAlpha(32),
-                    thickness: 1,
-                    height: 1,
+                  ColorPicker(onColorSelected: (Color color) {
+                    Provider.of<ComindColorsNotifier>(context, listen: false)
+                        .modifyColors(color);
+                  }),
+                  const SizedBox(height: 16),
+                  Text('Color scheme  ',
+                      style: Provider.of<ComindColorsNotifier>(context)
+                          .textTheme
+                          .titleMedium),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    child: Divider(
+                      color: colorScheme.onPrimary.withAlpha(32),
+                      thickness: 1,
+                      height: 1,
+                    ),
                   ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: edgeInsets,
-                      child: ComindTextButton(
-                          lineLocation: LineLocation.left,
-                          colorIndex: isTriadic(context) ? 1 : 0,
-                          opacity: isTriadic(context) ? 1 : unselectedOpacity,
-                          fontSize: fontSize,
-                          text: "triadic",
-                          onPressed: () {
-                            Provider.of<ComindColorsNotifier>(context,
-                                    listen: false)
-                                .setColorMethod(ColorMethod.triadic);
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: edgeInsets,
+                        child: ComindTextButton(
+                            lineLocation: LineLocation.left,
+                            colorIndex: isTriadic(context) ? 1 : 0,
+                            opacity: isTriadic(context) ? 1 : unselectedOpacity,
+                            fontSize: fontSize,
+                            text: "triadic",
+                            onPressed: () {
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .setColorMethod(ColorMethod.triadic);
 
-                            // Calculate the new scheme for the primary color
-                            Provider.of<ComindColorsNotifier>(context,
-                                    listen: false)
-                                .modifyColors(
-                                    Provider.of<ComindColorsNotifier>(context)
-                                        .currentColors
-                                        .primaryColor);
-                          }),
-                    ),
-                    Padding(
-                      padding: edgeInsets,
-                      child: ComindTextButton(
-                          lineLocation: LineLocation.left,
-                          colorIndex: isComplementary(context) ? 1 : 0,
-                          opacity:
-                              isComplementary(context) ? 1 : unselectedOpacity,
-                          fontSize: fontSize,
-                          text: "complementary",
-                          onPressed: () {
-                            Provider.of<ComindColorsNotifier>(context,
-                                    listen: false)
-                                .setColorMethod(ColorMethod.complementary);
-                          }),
-                    ),
-                    Padding(
-                      padding: edgeInsets,
-                      child: ComindTextButton(
-                          lineLocation: LineLocation.left,
-                          colorIndex: Provider.of<ComindColorsNotifier>(context)
-                                      .colorMethod ==
-                                  ColorMethod.splitComplementary
-                              ? 1
-                              : 0,
-                          opacity: Provider.of<ComindColorsNotifier>(context)
-                                      .colorMethod ==
-                                  ColorMethod.splitComplementary
-                              ? 1
-                              : unselectedOpacity,
-                          fontSize: fontSize,
-                          text: "split complementary",
-                          onPressed: () {
-                            Provider.of<ComindColorsNotifier>(context,
-                                    listen: false)
-                                .setColorMethod(ColorMethod.splitComplementary);
-                          }),
-                    ),
-                    // Analogous
-                    Padding(
-                      padding: edgeInsets,
-                      child: ComindTextButton(
-                          lineLocation: LineLocation.left,
-                          colorIndex: Provider.of<ComindColorsNotifier>(context)
-                                      .colorMethod ==
-                                  ColorMethod.analogous
-                              ? 1
-                              : 0,
-                          opacity: Provider.of<ComindColorsNotifier>(context)
-                                      .colorMethod ==
-                                  ColorMethod.analogous
-                              ? 1
-                              : unselectedOpacity,
-                          fontSize: fontSize,
-                          text: "analogous",
-                          onPressed: () {
-                            Provider.of<ComindColorsNotifier>(context,
-                                    listen: false)
-                                .setColorMethod(ColorMethod.analogous);
-                          }),
-                    ),
+                              // Calculate the new scheme for the primary color
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .modifyColors(
+                                      Provider.of<ComindColorsNotifier>(context)
+                                          .currentColors
+                                          .primaryColor);
+                            }),
+                      ),
+                      Padding(
+                        padding: edgeInsets,
+                        child: ComindTextButton(
+                            lineLocation: LineLocation.left,
+                            colorIndex: isComplementary(context) ? 1 : 0,
+                            opacity: isComplementary(context)
+                                ? 1
+                                : unselectedOpacity,
+                            fontSize: fontSize,
+                            text: "complementary",
+                            onPressed: () {
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .setColorMethod(ColorMethod.complementary);
+                            }),
+                      ),
+                      Padding(
+                        padding: edgeInsets,
+                        child: ComindTextButton(
+                            lineLocation: LineLocation.left,
+                            colorIndex:
+                                Provider.of<ComindColorsNotifier>(context)
+                                            .colorMethod ==
+                                        ColorMethod.splitComplementary
+                                    ? 1
+                                    : 0,
+                            opacity: Provider.of<ComindColorsNotifier>(context)
+                                        .colorMethod ==
+                                    ColorMethod.splitComplementary
+                                ? 1
+                                : unselectedOpacity,
+                            fontSize: fontSize,
+                            text: "split complementary",
+                            onPressed: () {
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .setColorMethod(
+                                      ColorMethod.splitComplementary);
+                            }),
+                      ),
+                      // Analogous
+                      Padding(
+                        padding: edgeInsets,
+                        child: ComindTextButton(
+                            lineLocation: LineLocation.left,
+                            colorIndex:
+                                Provider.of<ComindColorsNotifier>(context)
+                                            .colorMethod ==
+                                        ColorMethod.analogous
+                                    ? 1
+                                    : 0,
+                            opacity: Provider.of<ComindColorsNotifier>(context)
+                                        .colorMethod ==
+                                    ColorMethod.analogous
+                                ? 1
+                                : unselectedOpacity,
+                            fontSize: fontSize,
+                            text: "analogous",
+                            onPressed: () {
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .setColorMethod(ColorMethod.analogous);
+                            }),
+                      ),
 
-                    // Monochromatic
-                    Padding(
-                      padding: edgeInsets,
-                      child: ComindTextButton(
-                          lineLocation: LineLocation.left,
-                          colorIndex: Provider.of<ComindColorsNotifier>(context)
-                                      .colorMethod ==
-                                  ColorMethod.monochromatic
-                              ? 1
-                              : 0,
-                          opacity: Provider.of<ComindColorsNotifier>(context)
-                                      .colorMethod ==
-                                  ColorMethod.monochromatic
-                              ? 1
-                              : unselectedOpacity,
-                          fontSize: fontSize,
-                          text: "monochromatic",
-                          onPressed: () {
-                            Provider.of<ComindColorsNotifier>(context,
-                                    listen: false)
-                                .setColorMethod(ColorMethod.monochromatic);
-                          }),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                      // Monochromatic
+                      Padding(
+                        padding: edgeInsets,
+                        child: ComindTextButton(
+                            lineLocation: LineLocation.left,
+                            colorIndex:
+                                Provider.of<ComindColorsNotifier>(context)
+                                            .colorMethod ==
+                                        ColorMethod.monochromatic
+                                    ? 1
+                                    : 0,
+                            opacity: Provider.of<ComindColorsNotifier>(context)
+                                        .colorMethod ==
+                                    ColorMethod.monochromatic
+                                ? 1
+                                : unselectedOpacity,
+                            fontSize: fontSize,
+                            text: "monochromatic",
+                            onPressed: () {
+                              Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .setColorMethod(ColorMethod.monochromatic);
+                            }),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
         actions: <Widget>[
           // TextButton(

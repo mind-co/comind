@@ -22,8 +22,7 @@ class _ColorPickerState extends State<ColorPicker> {
         //     style: Provider.of<ComindColorsNotifier>(context)
         //         .textTheme
         //         .titleMedium),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
           children: [
             _buildColorButton(const Color.fromARGB(255, 151, 0, 251)),
 
