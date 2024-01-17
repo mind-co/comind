@@ -484,7 +484,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   }
 
   // The action row
-  Row alternativeActionRow(BuildContext context, Color onBackground) {
+  Visibility alternativeActionRow(BuildContext context, Color onBackground) {
     // The info button
     // var infoButton = newButton(
     //     onBackground, context, widget.infoMode ? "Close" : "Info", () {
@@ -694,43 +694,46 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     );
 
     //
-    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-      // Lock icon
-      lockButton,
+    return Visibility(
+      visible: !widget.viewOnly,
+      child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+        // Lock icon
+        lockButton,
 
-      // Buttons
-      Visibility(
-          visible:
-              !widget.showTextBox && !widget.relatedMode && !newThoughtOpen,
-          child: deleteButton),
+        // Buttons
+        Visibility(
+            visible:
+                !widget.showTextBox && !widget.relatedMode && !newThoughtOpen,
+            child: deleteButton),
 
-      // Edit button
-      Visibility(
-          visible: !widget.viewOnly &&
-              !widget.relatedMode &&
-              !newThoughtOpen &&
-              widget.thought.username ==
-                  Provider.of<AuthProvider>(context).username,
-          child: editThoughtButton),
+        // Edit button
+        Visibility(
+            visible: !widget.viewOnly &&
+                !widget.relatedMode &&
+                !newThoughtOpen &&
+                widget.thought.username ==
+                    Provider.of<AuthProvider>(context).username,
+            child: editThoughtButton),
 
-      // Info button
-      Visibility(
-          visible: !widget.relatedMode && !newThoughtOpen, child: infoButton),
+        // Info button
+        Visibility(
+            visible: !widget.relatedMode && !newThoughtOpen, child: infoButton),
 
-      Visibility(
-          visible: widget.type == MarkdownDisplayType.searchResult &&
-              !newThoughtOpen,
-          child: expandButton),
+        Visibility(
+            visible: widget.type == MarkdownDisplayType.searchResult &&
+                !newThoughtOpen,
+            child: expandButton),
 
-      // Show linked/more button
-      // Visibility(visible: !newThoughtOpen, child: showLinkedButton),
+        // Show linked/more button
+        // Visibility(visible: !newThoughtOpen, child: showLinkedButton),
 
-      // Add thought button
-      // addThoughtButton,
+        // Add thought button
+        // addThoughtButton,
 
-      // More options button
-      Visibility(visible: !newThoughtOpen, child: moreButton),
-    ]);
+        // More options button
+        Visibility(visible: !newThoughtOpen, child: moreButton),
+      ]),
+    );
   }
 
   Padding newIconButton(

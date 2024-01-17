@@ -15,6 +15,7 @@
 import 'package:comind/api.dart';
 import 'package:comind/bottom_sheet.dart';
 import 'package:comind/colors.dart';
+import 'package:comind/markdown_display.dart';
 import 'package:comind/misc/comind_logo.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/sign_up.dart';
@@ -143,6 +144,12 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // coThought(context, "Welcome to Comind!"),
+
+              // ALERT DO NOT ENTER SENSITIVE PASSWORDS
+              coThought(
+                  context,
+                  "This is a **test version** of Comind. Do not enter any sensitive passwords. HTTPs does not work yet, so your password will be sent in plain text.",
+                  "Warning"),
 
               // Email field
               Padding(
@@ -279,298 +286,308 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Center signUpPage(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: ComindColors.maxWidth,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Sign up",
-                style: Provider.of<ComindColorsNotifier>(context)
-                    .textTheme
-                    .titleSmall,
-              ),
+  SingleChildScrollView signUpPage(BuildContext context) {
+    return SingleChildScrollView(
+      child: Center(
+        child: SizedBox(
+          width: ComindColors.maxWidth,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // ALERT DO NOT ENTER SENSITIVE PASSWORDS
+                coThought(
+                    context,
+                    "This is a **test version** of Comind. Do not enter any sensitive passwords. HTTPs does not work yet, so your password will be sent in plain text.",
+                    "Warning"),
 
-              // Username field
-              Padding(
-                padding: edgeInsets,
-                child: TextFormField(
-                  cursorWidth: cursorWidth,
-                  controller: _usernameController,
-                  onChanged: (value) async {
-                    usernameAvailable = (!await userExists(value));
-                    setState(() {
-                      // signUpMode = value.contains('@');
-                      // Check if the username is available
-                      print("Username available: $usernameAvailable");
-                    });
-                  },
-                  // ignore: library_private_types_in_public_api
-                  validator: (val) => validateUsername(val!),
-                  // ignore: library_private_types_in_public_api
-                  onSaved: (val) => _usernameController.text = val!,
-                  decoration: InputDecoration(
-                    labelStyle: TextStyle(
-                        color: _usernameController.text.isEmpty
+                Text(
+                  "Sign up",
+                  style: Provider.of<ComindColorsNotifier>(context)
+                      .textTheme
+                      .titleSmall,
+                ),
+
+                // Username field
+                Padding(
+                  padding: edgeInsets,
+                  child: TextFormField(
+                    cursorWidth: cursorWidth,
+                    controller: _usernameController,
+                    onChanged: (value) async {
+                      usernameAvailable = (!await userExists(value));
+                      setState(() {
+                        // signUpMode = value.contains('@');
+                        // Check if the username is available
+                        print("Username available: $usernameAvailable");
+                      });
+                    },
+                    // ignore: library_private_types_in_public_api
+                    validator: (val) => validateUsername(val!),
+                    // ignore: library_private_types_in_public_api
+                    onSaved: (val) => _usernameController.text = val!,
+                    decoration: InputDecoration(
+                      labelStyle: TextStyle(
+                          color: _usernameController.text.isEmpty
+                              ? Provider.of<ComindColorsNotifier>(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withAlpha(150)
+                              : usernameAvailable
+                                  ? ComindColors.primaryColorDefault
+                                  : ComindColors.secondaryColorDefault),
+                      // ignore: library_private_types_in_public_api
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(150),
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(50),
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                      ),
+                      border: OutlineInputBorder(),
+                      labelText: _usernameController.text.isEmpty
+                          ? 'Username'
+                          : usernameAvailable
+                              ? 'Username available'
+                              : 'Username taken',
+                    ),
+                  ),
+                ),
+
+                // Email field
+                Padding(
+                  padding: edgeInsets,
+                  child: TextFormField(
+                    cursorWidth: cursorWidth,
+                    controller: _emailController,
+                    onChanged: (value) async {
+                      emailAvailable = (!await emailExists(value));
+                      setState(() {});
+                    },
+                    // ignore: library_private_types_in_public_api
+                    validator: (val) =>
+                        !val!.contains('@') ? 'Invalid Email' : null,
+                    // ignore: library_private_types_in_public_api
+                    onSaved: (val) => _emailController.text = val!,
+                    decoration: InputDecoration(
+                      labelStyle: TextStyle(
+                        color: _emailController.text.isEmpty
                             ? Provider.of<ComindColorsNotifier>(context)
                                 .colorScheme
                                 .onBackground
                                 .withAlpha(150)
-                            : usernameAvailable
-                                ? ComindColors.primaryColorDefault
-                                : ComindColors.secondaryColorDefault),
-                    // ignore: library_private_types_in_public_api
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(150),
-                          width: 1.0,
-                          style: BorderStyle.solid),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(50),
-                          width: 1.0,
-                          style: BorderStyle.solid),
-                    ),
-                    border: OutlineInputBorder(),
-                    labelText: _usernameController.text.isEmpty
-                        ? 'Username'
-                        : usernameAvailable
-                            ? 'Username available'
-                            : 'Username taken',
-                  ),
-                ),
-              ),
-
-              // Email field
-              Padding(
-                padding: edgeInsets,
-                child: TextFormField(
-                  cursorWidth: cursorWidth,
-                  controller: _emailController,
-                  onChanged: (value) async {
-                    emailAvailable = (!await emailExists(value));
-                    setState(() {});
-                  },
-                  // ignore: library_private_types_in_public_api
-                  validator: (val) =>
-                      !val!.contains('@') ? 'Invalid Email' : null,
-                  // ignore: library_private_types_in_public_api
-                  onSaved: (val) => _emailController.text = val!,
-                  decoration: InputDecoration(
-                    labelStyle: TextStyle(
-                      color: _emailController.text.isEmpty
-                          ? Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(150)
+                            : EmailValidator.validate(_emailController.text)
+                                ? emailAvailable
+                                    ? ComindColors.primaryColorDefault
+                                    : ComindColors.secondaryColorDefault
+                                : ComindColors.secondaryColorDefault,
+                      ),
+                      // ignore: library_private_types_in_public_api
+                      border: OutlineInputBorder(),
+                      labelText: _emailController.text.isEmpty
+                          ? 'Email'
                           : EmailValidator.validate(_emailController.text)
                               ? emailAvailable
-                                  ? ComindColors.primaryColorDefault
-                                  : ComindColors.secondaryColorDefault
-                              : ComindColors.secondaryColorDefault,
-                    ),
-                    // ignore: library_private_types_in_public_api
-                    border: OutlineInputBorder(),
-                    labelText: _emailController.text.isEmpty
-                        ? 'Email'
-                        : EmailValidator.validate(_emailController.text)
-                            ? emailAvailable
-                                ? 'Email available'
-                                : 'Email taken'
-                            : 'Email not valid',
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(150),
-                          width: 1.0,
-                          style: BorderStyle.solid),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(50),
-                          width: 1.0,
-                          style: BorderStyle.solid),
-                    ),
-                    // icon: Icon(
-                    //   Icons.mail,
-                    //   color: Colors.grey,
-                    // ),
-                  ),
-                ),
-              ),
-
-              // Divider
-              Padding(
-                padding: edgeInsets,
-                child: const Divider(
-                  height: 2,
-                  color: Colors.grey,
-                ),
-              ),
-
-              // Password field
-              Padding(
-                padding: edgeInsets,
-                child: TextFormField(
-                  cursorWidth: cursorWidth,
-                  controller: _passwordController,
-                  // ignore: library_private_types_in_public_api
-                  validator: (val) =>
-                      val!.length < 6 ? 'Password too short' : null,
-                  // ignore: library_private_types_in_public_api
-                  onSaved: (val) => _passwordController.text = val!,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelStyle: TextStyle(
-                        color: Provider.of<ComindColorsNotifier>(context)
-                            .colorScheme
-                            .onBackground
-                            .withAlpha(150)),
-                    // ignore: library_private_types_in_public_api
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(150),
-                          width: 1.0,
-                          style: BorderStyle.solid),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(50),
-                          width: 1.0,
-                          style: BorderStyle.solid),
-                    ),
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                    // icon: Icon(
-                    //   Icons.lock,
-                    //   color: Colors.grey,
-                    // ),
-                  ),
-                ),
-              ),
-
-              // Password confirmation field
-              if (signUpMode)
-                Center(
-                  child: Padding(
-                    padding: edgeInsets,
-                    child: TextFormField(
-                      cursorWidth: cursorWidth,
-                      controller: _passwordConfirmationController,
-                      // ignore: library_private_types_in_public_api
-                      validator: (val) =>
-                          val!.length < 6 ? 'Password too short' : null,
-                      // ignore: library_private_types_in_public_api
-                      onSaved: (val) => _passwordController.text = val!,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        // ignore: library_private_types_in_public_api
-                        border: OutlineInputBorder(),
-                        labelText: 'Confirm Password',
-                        labelStyle: TextStyle(
+                                  ? 'Email available'
+                                  : 'Email taken'
+                              : 'Email not valid',
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
                             color: Provider.of<ComindColorsNotifier>(context)
                                 .colorScheme
                                 .onBackground
-                                .withAlpha(150)),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Provider.of<ComindColorsNotifier>(context)
-                                  .colorScheme
-                                  .onBackground
-                                  .withAlpha(150),
-                              width: 1.0,
-                              style: BorderStyle.solid),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Provider.of<ComindColorsNotifier>(context)
-                                  .colorScheme
-                                  .onBackground
-                                  .withAlpha(50),
-                              width: 1.0,
-                              style: BorderStyle.solid),
-                        ),
-                        // icon: Icon(
-                        //   Icons.lock,
-                        //   color: Colors.grey,
-                        // ),
+                                .withAlpha(150),
+                            width: 1.0,
+                            style: BorderStyle.solid),
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(50),
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                      ),
+                      // icon: Icon(
+                      //   Icons.mail,
+                      //   color: Colors.grey,
+                      // ),
                     ),
                   ),
                 ),
 
-              if (_passwordController.text !=
-                  _passwordConfirmationController.text)
+                // Divider
                 Padding(
                   padding: edgeInsets,
-                  child: const Text("Passwords don't match",
-                      style: TextStyle(color: Colors.red)),
+                  child: const Divider(
+                    height: 2,
+                    color: Colors.grey,
+                  ),
                 ),
 
-              Container(
-                width: double.infinity,
-                child: Padding(
-                  padding: const EdgeInsets.all(0),
-                  // padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      //////////////
-                      /// Sign up  button
-                      ///
-                      signupButton(1),
-
-                      // Divider line
-                      // horizontalSpacerLine(context),
-
-                      //////////////
-                      // orTextLoginRow(context),
-
-                      // Vertical spacer
-                      Container(
-                          height: 16,
-                          width: 1,
+                // Password field
+                Padding(
+                  padding: edgeInsets,
+                  child: TextFormField(
+                    cursorWidth: cursorWidth,
+                    controller: _passwordController,
+                    // ignore: library_private_types_in_public_api
+                    validator: (val) =>
+                        val!.length < 6 ? 'Password too short' : null,
+                    // ignore: library_private_types_in_public_api
+                    onSaved: (val) => _passwordController.text = val!,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelStyle: TextStyle(
                           color: Provider.of<ComindColorsNotifier>(context)
                               .colorScheme
                               .onBackground
                               .withAlpha(150)),
-
-                      // Divider line
-                      // horizontalSpacerLine(context),
-
-                      // Login button
-                      loginButton(0.4),
-                    ],
+                      // ignore: library_private_types_in_public_api
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(150),
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(50),
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                      ),
+                      border: OutlineInputBorder(),
+                      labelText: 'Password',
+                      // icon: Icon(
+                      //   Icons.lock,
+                      //   color: Colors.grey,
+                      // ),
+                    ),
                   ),
                 ),
-              ),
 
-              sorry(),
-            ],
+                // Password confirmation field
+                if (signUpMode)
+                  Center(
+                    child: Padding(
+                      padding: edgeInsets,
+                      child: TextFormField(
+                        cursorWidth: cursorWidth,
+                        controller: _passwordConfirmationController,
+                        // ignore: library_private_types_in_public_api
+                        validator: (val) =>
+                            val!.length < 6 ? 'Password too short' : null,
+                        // ignore: library_private_types_in_public_api
+                        onSaved: (val) => _passwordController.text = val!,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          // ignore: library_private_types_in_public_api
+                          border: OutlineInputBorder(),
+                          labelText: 'Confirm Password',
+                          labelStyle: TextStyle(
+                              color: Provider.of<ComindColorsNotifier>(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withAlpha(150)),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color:
+                                    Provider.of<ComindColorsNotifier>(context)
+                                        .colorScheme
+                                        .onBackground
+                                        .withAlpha(150),
+                                width: 1.0,
+                                style: BorderStyle.solid),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color:
+                                    Provider.of<ComindColorsNotifier>(context)
+                                        .colorScheme
+                                        .onBackground
+                                        .withAlpha(50),
+                                width: 1.0,
+                                style: BorderStyle.solid),
+                          ),
+                          // icon: Icon(
+                          //   Icons.lock,
+                          //   color: Colors.grey,
+                          // ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                if (_passwordController.text !=
+                    _passwordConfirmationController.text)
+                  Padding(
+                    padding: edgeInsets,
+                    child: const Text("Passwords don't match",
+                        style: TextStyle(color: Colors.red)),
+                  ),
+
+                Container(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.all(0),
+                    // padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        //////////////
+                        /// Sign up  button
+                        ///
+                        signupButton(1),
+
+                        // Divider line
+                        // horizontalSpacerLine(context),
+
+                        //////////////
+                        // orTextLoginRow(context),
+
+                        // Vertical spacer
+                        Container(
+                            height: 16,
+                            width: 1,
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(150)),
+
+                        // Divider line
+                        // horizontalSpacerLine(context),
+
+                        // Login button
+                        loginButton(0.4),
+                      ],
+                    ),
+                  ),
+                ),
+
+                sorry(),
+              ],
+            ),
           ),
         ),
       ),
