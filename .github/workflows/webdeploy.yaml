@@ -19,6 +19,11 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Set Git Identity
+        run: |
+          git config --global user.email "cameron@pfiffer.org"
+          git config --global user.name "Cameron Pfiffer"
+
       # Set up Flutter.
       - name: Clone Flutter repository with master channel
         uses: subosito/flutter-action@cc97e1648fff6ca5cc647fa67f47e70f7895510b
