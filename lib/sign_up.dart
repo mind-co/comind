@@ -36,10 +36,10 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final _emailController = TextEditingController(text: "cameron");
-  final _usernameController = TextEditingController(text: "cameron");
-  final _passwordController = TextEditingController(text: "abc");
-  final _passwordConfirmationController = TextEditingController(text: "abc");
+  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _passwordConfirmationController = TextEditingController();
   static const double fontSize = 18;
   bool signUpMode = false;
   bool usernameAvailable = false;
