@@ -197,7 +197,7 @@ class _MainTextFieldState extends State<MainTextField> {
                     color: Provider.of<ComindColorsNotifier>(context)
                         .colorScheme
                         .onBackground
-                        .withAlpha(30),
+                        .withAlpha(8),
 
                     // Top and bottom border only
                     border: Border(
@@ -240,6 +240,8 @@ class _MainTextFieldState extends State<MainTextField> {
                           widget.type == TextFieldType.newThought,
                       controller: widget._primaryController,
 
+                      textInputAction: TextInputAction.send,
+
                       onSubmitted: (value) => {
                         _submit(context)(),
                         // Clear the text field because sometimes random newline chars
@@ -272,8 +274,8 @@ class _MainTextFieldState extends State<MainTextField> {
 
               // ThinkButton only, send button
               Positioned(
-                bottom: widget.type == TextFieldType.newThought ? 5 : 4,
-                right: widget.type == TextFieldType.newThought ? 5 : 16,
+                bottom: widget.type == TextFieldType.newThought ? 5 : 0,
+                right: widget.type == TextFieldType.newThought ? 5 : 0,
                 child: Visibility(
                   visible: widget.type == TextFieldType.main ||
                       widget.type == TextFieldType.newThought,

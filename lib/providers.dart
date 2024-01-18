@@ -61,33 +61,19 @@ class ThoughtsProvider extends ChangeNotifier {
   // final Thought? topOfMind = Thought.fromString(
   //     "I'm happy to have you here :smiley:", "Co", true,
   //     title: "Welcome to comind");
-  Thought? topOfMind = null;
+  // Thought? topOfMind = null;
+  List<Thought> brainBuffer = [];
 
   final List<Thought> _thoughts = [];
 
   List<Thought> get thoughts => _thoughts;
   bool get hasThoughts => _thoughts.isNotEmpty;
-  bool get hasTopOfMind => topOfMind != null;
+  bool get hasTopOfMind => brainBuffer.isNotEmpty;
 
-  // Set top of mind
-  void setTopOfMind(Thought? thought) {
-    // If the thought is already top of mind, do nothing
-    // if (topOfMind == thought) {
-    //   return;
-    // }
-
-    // // If the thought is already in the list, remove it
-    // if (_thoughts.contains(thought)) {
-    //   _thoughts.remove(thought);
-    // }
-
-    // // Add the thought to the top of the list
-    // _thoughts.insert(0, thought);
-
-    // Update the top of mind
-    topOfMind = thought;
-
-    // Update the UI
+  // Add a thought to the top of mind
+  void addTopOfMind(Thought thought) {
+    print("Adding ${thought.id} to top of mind");
+    brainBuffer.add(thought);
     notifyListeners();
   }
 
@@ -117,10 +103,17 @@ class ThoughtsProvider extends ChangeNotifier {
 }
 
 Thought? getTopOfMind(BuildContext context) {
-  return Provider.of<ThoughtsProvider>(context, listen: false).topOfMind;
+  // return Provider.of<ThoughtsProvider>(context, listen: false).brainBuffer.last;
+  if (Provider.of<ThoughtsProvider>(context, listen: false).hasTopOfMind) {
+    return Provider.of<ThoughtsProvider>(context, listen: false)
+        .brainBuffer
+        .last;
+  } else {
+    return null;
+  }
 }
 
-void setTopOfMind(BuildContext context, Thought thought) {
+void addTopOfMind(BuildContext context, Thought thought) {
   return Provider.of<ThoughtsProvider>(context, listen: false)
-      .setTopOfMind(thought);
+      .addTopOfMind(thought);
 }

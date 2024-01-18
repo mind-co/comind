@@ -38,8 +38,7 @@ class CineWavePainter extends CustomPainter {
   });
 
   double f(x, {double amplitude = 1, double frequency = 1}) {
-    return amplitude *
-        math.sin((x + startPoint) * frequency * 1 * (math.pi / 180));
+    return amplitude * math.sin((x + startPoint) * frequency * (math.pi));
     // return x;
   }
 
@@ -57,72 +56,6 @@ class CineWavePainter extends CustomPainter {
       return false;
     }
   }
-
-//   @override
-//   void paint(Canvas canvas, Size size) {
-//     for (int x = 0; x < size.width; x++) {
-//       // Rotation should be a score of 1 to 100 for percentage of rotation. It is
-//       // descaled by the frequency.
-//       // final rotation = x / size.width * frequency * pi / 90;
-//       final rotation = (x / size.width) * 3;
-
-//       final rotationInThree = rotation % 3;
-
-//       // tracks which color we are on.
-//       int colorIndex = rotationInThree < 1
-//           ? 1
-//           : rotationInThree < 2
-//               ? 2
-//               : 3;
-
-//       // Get amplitude and frequency scalars
-//       // based on the color we are on.
-//       var amplitudeScalar = colorIndex == 1
-//           ? primaryAmplitude
-//           : colorIndex == 2
-//               ? secondaryAmplitude
-//               : tertiaryAmplitude;
-//       var frequencyScalar = colorIndex == 1
-//           ? primaryFrequency
-//           : colorIndex == 2
-//               ? secondaryFrequency
-//               : tertiaryFrequency;
-
-//       final y = f(x.toDouble()) * size.height;
-
-//       Color color;
-
-//       // This is the interpolation for the first color.
-//       if (rotationInThree < 1) {
-//         // Set the color
-//         color = Color.lerp(primaryColor, secondaryColor, rotationInThree)!;
-//       }
-//       // This is the interpolation for the second color.
-//       else if (rotationInThree < 2) {
-//         // Set the color
-//         color = Color.lerp(secondaryColor, tertiaryColor, rotationInThree - 1)!;
-//       }
-
-//       // This is the interpolation for the third color.
-//       else {
-//         // Set the color
-//         color = Color.lerp(tertiaryColor, primaryColor, rotationInThree - 2)!;
-//       }
-
-//       final paint = Paint()
-//         ..color = color
-//         // ..color = color.withOpacity((rotationInThree % 1))
-//         ..style = PaintingStyle.stroke
-//         ..strokeWidth = 20;
-
-//       if (x > 0) {
-//         // Draw the line.
-//         canvas.drawLine(Offset((x - 1).toDouble(), f((x - 1).toDouble())),
-//             Offset(x.toDouble(), y), paint);
-//       }
-//     }
-//   }
-// }
 
 // Simpler paint method
   @override
@@ -146,58 +79,75 @@ class CineWavePainter extends CustomPainter {
 
       // Alternate convergence parameter. This is 1 at the outside edge
       // and 0 at the inside edge.
-      var convergence = 1 - (x / size.width - (goLeft ? 0 : 1)).abs();
+      // var convergence = 1 - (x / size.width - (goLeft ? 0 : 1)).abs();
+
+      // No convergence parameter. This is 1 everywhere.
+      var convergence = 1;
 
       // The base opacity
       var a = 1;
 
       // var opacity = sqrt(a * convergence);
       var opacity = pow(a * convergence, 1).toDouble();
+
+      // Set the stroke width
       const double stroke = 2;
 
       var paint1 = Paint()
-        ..color = primaryColor.withOpacity(opacity)
-        ..strokeWidth = stroke * 1.8;
+        ..color = secondaryColor.withOpacity(opacity)
+        ..strokeWidth = stroke;
 
       var paint2 = Paint()
-        ..color = secondaryColor.withOpacity(opacity)
-        ..strokeWidth = stroke * 1.3;
-
-      var paint3 = Paint()
         ..color = tertiaryColor.withOpacity(opacity)
         ..strokeWidth = stroke;
 
+      var paint3 = Paint()
+        ..color = primaryColor.withOpacity(opacity)
+        ..strokeWidth = stroke;
+
+      const double baseAmp = 2;
+      const double baseFreq = 0.01 * pi; // Debug
+      // const double baseFreq = 18;
+
       const double shift1 = 0;
-      const double amp1 = 4;
-      const double freq1 = 3.4;
+      const double amp1 = baseAmp;
+      const double freq1 = baseFreq;
 
       const double shift2 = 0;
-      const double amp2 = 6;
-      const double freq2 = 3.8;
+      const double amp2 = baseAmp;
+      const double freq2 = baseFreq;
 
-      const double shift3 = 10;
-      const double amp3 = 4;
-      const double freq3 = 8;
+      const double shift3 = 0;
+      const double amp3 = baseAmp;
+      const double freq3 = baseFreq;
 
+      // Line 1
       var startPoint1 = Offset(
           x - 1,
           f(x + shift1 - 1, amplitude: amp1 * convergence, frequency: freq1)
-                  .toDouble() *
-              convergence);
+                      .toDouble() *
+                  convergence -
+              5);
       var endPoint1 = Offset(
           x - 0,
           f(x + shift1, amplitude: amp1 * convergence, frequency: freq1)
-                  .toDouble() *
-              convergence);
+                      .toDouble() *
+                  convergence -
+              5);
 
+      // Line 2
       var startPoint2 = Offset(
           x - 1,
           f(x - 1 + shift2, amplitude: amp2, frequency: freq2).toDouble() *
-              convergence);
+                  convergence +
+              5);
       var endPoint2 = Offset(
           x.toDouble(),
           f(x + shift2, amplitude: amp2, frequency: freq2).toDouble() *
-              convergence);
+                  convergence +
+              5);
+
+      // Line 3
       var startPoint3 = Offset(
           x - 1,
           f(x - 1 + shift3, amplitude: amp3, frequency: freq3).toDouble() *
@@ -278,31 +228,33 @@ class _CineWaveState extends State<CineWave>
     super.initState();
 
     _controller = AnimationController(
-      duration: const Duration(seconds: 30),
+      duration: const Duration(seconds: 8),
       // duration: const Duration(milliseconds: 800),
       vsync: this,
-    )..repeat(reverse: true);
+    )..repeat(reverse: false);
 
     // _animation = Tween<double>(begin: 0, end: 0).animate(
     if (widget.goLeft) {
-      _animation = Tween<double>(begin: 0, end: 3 / 2 * pi).animate(
+      _animation = Tween<double>(begin: 0, end: 10 * pi).animate(
         CurvedAnimation(
             parent: _controller,
             // curve: Curves.easeInOutCubicEmphasized,
             // curve: Curves.slowMiddle,
-            curve: Curves.easeInOut
+            // curve: Curves.bounceInOut
+            // curve: Curves.easeInOut
+            curve: Curves.linear
             //
             ),
       );
     } else {
-      _animation = Tween<double>(begin: 3 / 2 * pi, end: 0).animate(
+      _animation = Tween<double>(begin: 10 * pi, end: 0).animate(
         CurvedAnimation(
             parent: _controller,
             // curve: Curves.easeInOutCubicEmphasized,
             // curve: Curves.slowMiddle,
-            curve: Curves.easeInOut
-
-            // curve: Curves.linear
+            // curve: Curves.easeInOut
+            // curve: Curves.bounceInOut
+            curve: Curves.linear
             //
             ),
       );
@@ -329,13 +281,14 @@ class _CineWaveState extends State<CineWave>
                 //         10 *
                 //         (3 / 2 * pi - _animation.value).abs() +
                 //     1,
-                frequency: widget.frequency,
+                frequency: 1,
+                // frequency: widget.frequency,
                 // frequency: log(widget.frequency * _animation.value + 1),
                 // amplitude: (_animation.value - 3 / 4 * pi).abs() *
                 //     widget.amplitude *
                 //     50,
-                amplitude: widget.amplitude,
-                startPoint: _animation.value * 100,
+                amplitude: 1,
+                startPoint: _animation.value * 4,
                 // startPoint: 0,
                 primaryColor: colorNotifier.currentColors.primaryColor,
                 secondaryColor: colorNotifier.currentColors.secondaryColor,

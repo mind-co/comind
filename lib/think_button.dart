@@ -15,12 +15,29 @@ class ThinkButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        IconButton(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 3, 3, 3),
+          child: IconButton(
+            style: ButtonStyle(
+              // backgroundColor: MaterialStateProperty.all<Color>(
+              //     Provider.of<ComindColorsNotifier>(context)
+              //         .colorScheme
+              //         .primary),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              ),
+              fixedSize: MaterialStateProperty.all<Size>(Size(45, 45)),
+            ),
             hoverColor:
                 Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
             enableFeedback: true,
             onPressed: onPressed,
-            icon: Icon(Icons.send)),
+            icon: Icon(Icons.send),
+            iconSize: 24,
+          ),
+        ),
       ],
     );
   }

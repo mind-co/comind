@@ -29,8 +29,8 @@ class Thought {
   final int? numLinks;
   final double? cosineSimilarity;
   final String? associatedId;
-  final String? linkedFrom;
-  final String? linkedTo;
+  final bool linkedFrom;
+  final bool linkedTo;
 
   Thought({
     required this.title,
@@ -50,32 +50,33 @@ class Thought {
     this.numLinks = 0,
     this.cosineSimilarity = 0.0,
     this.associatedId = '',
-    this.linkedFrom = '',
-    this.linkedTo = '',
+    this.linkedFrom = false,
+    this.linkedTo = false,
   });
 
   factory Thought.fromJson(Map<String, dynamic> json) {
     return Thought(
-      title: json['title'],
-      body: json['body'],
-      username: json['username'],
-      dateCreated: json['date_created'],
-      dateUpdated: json['date_updated'],
-      revision: json['revision'],
-      id: json['id'],
-      isPublic: json['public'],
-      isSynthetic: json['synthetic'],
-      origin: json['origin'],
-      accepts: json['accepts'],
-      rejects: json['rejects'],
-      rethinks: json['rethinks'],
-      refs: json['refs'],
-      numLinks: json['numlinks'],
-      cosineSimilarity: json['cosinesimilarity'],
-      associatedId: json['associated_id'],
-      linkedFrom: json['linked_to'],
-      linkedTo: json['linked_from'],
-    );
+        title: json['title'],
+        body: json['body'],
+        username: json['username'],
+        dateCreated: json['date_created'],
+        dateUpdated: json['date_updated'],
+        revision: json['revision'],
+        id: json['id'],
+        isPublic: json['public'],
+        isSynthetic: json['synthetic'],
+        origin: json['origin'],
+        accepts: json['accepts'],
+        rejects: json['rejects'],
+        rethinks: json['rethinks'],
+        refs: json['refs'],
+        numLinks: json['numlinks'],
+        cosineSimilarity: json['cosinesimilarity'],
+        associatedId: json['associated_id'],
+        linkedFrom: json['linked_to'],
+        linkedTo: json['linked_from']
+        //
+        );
   }
 
   // Constructor to accept a string and return a thought. Optional parameters

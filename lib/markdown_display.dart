@@ -124,109 +124,103 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     return Column(children: [
       // Main text box
       Card(
-        // color: Colors.red,
         color: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Cinewave username
-              Row(
-                children: [
-                  // Cinewave username line
-                  Visibility(
-                    visible: !widget.noTitle && !widget.showBody,
-                    child: titleBar(context),
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Cinewave username
+                Row(
+                  children: [
+                    // Cinewave username line
+                    Visibility(
+                      visible: !widget.noTitle && !widget.showBody,
+                      child: titleBar(context),
+                    ),
 
-                  // Link button for child thoughts
-                  Visibility(
-                    visible: widget.type == MarkdownDisplayType.searchResult,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-                      child: HoverIconButton(
-                        icon: Icons.add_link,
-                        onPressed: () async {
-                          // If there is a parent thought
-                          if (widget.parentThought != null) {
-                            // Link the thoughts
-                            if (widget.thought.id != widget.parentThought &&
-                                widget.parentThought != null) {
-                              await linkThoughts(context, widget.thought.id,
-                                  widget.parentThought!);
+                    // Link button for child thoughts
+                    Visibility(
+                      visible: widget.type == MarkdownDisplayType.searchResult,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                        child: HoverIconButton(
+                          icon: Icons.add_link,
+                          onPressed: () async {
+                            // If there is a parent thought
+                            if (widget.parentThought != null) {
+                              // Link the thoughts
+                              if (widget.thought.id != widget.parentThought &&
+                                  widget.parentThought != null) {
+                                await linkThoughts(context, widget.thought.id,
+                                    widget.parentThought!);
+                              }
                             }
-                          }
-                        },
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-
-              // Show cosine similarity
-              // Text(widget.thought.cosineSimilarity.toString(),
-              //     style: Provider.of<ComindColorsNotifier>(context)
-              //         .textTheme
-              //         .bodySmall),
-
-              // Add thought body
-              Visibility(
-                  visible: widget.showBody && !widget.showTextBox,
-                  child: thoughtBody(context)),
-
-              expandableEditBox(context),
-
-              // Alternative action row
-              Visibility(
-                  visible: widget.type != MarkdownDisplayType.searchResult &&
-                      widget.showBody,
-                  child: alternativeActionRow(context, onBackground)),
-
-              // Show new thought box
-              // Padding(
-              //   padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-              //   child: Row(
-              //     children: [
-              //       Visibility(
-              //         visible: newThoughtOpen,
-              //         child: IconButton(
-              //           padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-              //           enableFeedback: true,
-              //           splashRadius: 16,
-              //           onPressed: () {
-              //             // Toggle the body
-              //             setState(() {
-              //               newThoughtOpen = !newThoughtOpen;
-              //             });
-              //           },
-              //           icon: Icon(
-              //             Icons.subdirectory_arrow_right,
-              //             size: 16,
-              //             color: Provider.of<ComindColorsNotifier>(context)
-              //                 .colorScheme
-              //                 .onBackground
-              //                 .withAlpha(200),
-              //           ),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-
-              // New thought box
-              // newThoughtBox(context),
-              Visibility(
-                visible: newThoughtOpen,
-                child: Container(
-                  height: 8,
-                  width: 100,
-                  color: Colors.red,
+                  ],
                 ),
-              )
-            ],
+
+                // Show cosine similarity
+                // Text(widget.thought.cosineSimilarity.toString(),
+                //     style: Provider.of<ComindColorsNotifier>(context)
+                //         .textTheme
+                //         .bodySmall),
+
+                // Add thought body
+                Visibility(
+                    visible: widget.showBody && !widget.showTextBox,
+                    child: thoughtBody(context)),
+
+                expandableEditBox(context),
+
+                // Alternative action row
+                Visibility(
+                    visible: widget.type != MarkdownDisplayType.searchResult &&
+                        widget.showBody,
+                    child: alternativeActionRow(context, onBackground)),
+
+                // Show new thought box
+                // Padding(
+                //   padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                //   child: Row(
+                //     children: [
+                //       Visibility(
+                //         visible: newThoughtOpen,
+                //         child: IconButton(
+                //           padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                //           enableFeedback: true,
+                //           splashRadius: 16,
+                //           onPressed: () {
+                //             // Toggle the body
+                //             setState(() {
+                //               newThoughtOpen = !newThoughtOpen;
+                //             });
+                //           },
+                //           icon: Icon(
+                //             Icons.subdirectory_arrow_right,
+                //             size: 16,
+                //             color: Provider.of<ComindColorsNotifier>(context)
+                //                 .colorScheme
+                //                 .onBackground
+                //                 .withAlpha(200),
+                //           ),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+
+                // New thought box
+                newThoughtBox(context),
+              ],
+            ),
           ),
         ),
       ),
@@ -435,16 +429,37 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       }
     });
 
-    // The "add thought" button
-    var addThoughtButton = Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-      child: newButton(onBackground, context, newThoughtOpen ? "Close" : "Add",
-          () {
-        // Toggle the new thought box
-        setState(() {
-          newThoughtOpen = !newThoughtOpen;
-        });
-      }),
+    // // The "add thought" button
+    // var addThoughtButton = Padding(
+    //   padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+    //   child: newButton(
+    //       onBackground, context, newThoughtOpen ? "Close" : "Think", () {
+    //     // Toggle the new thought box
+    //     setState(() {
+    //       newThoughtOpen = !newThoughtOpen;
+    //     });
+    //   }),
+    // );
+
+    var thinkButton = ComindTextButton(
+      text: newThoughtOpen ? "Close" : "Think",
+      opacity: 0.4,
+      fontSize: 12,
+      colorIndex: 1,
+      onPressed: () {
+        // Link to parent
+        if (widget.parentThought != null) {
+          // Link the thoughts
+          if (widget.thought.id != widget.parentThought &&
+              widget.parentThought != null) {
+            linkThoughts(context, widget.thought.id, widget.parentThought!);
+          }
+        }
+
+        // Next, add it to the topOfMind array
+        Provider.of<ThoughtsProvider>(context, listen: false)
+            .addTopOfMind(widget.thought);
+      },
     );
 
     var lockButton = newIconButton(
@@ -566,6 +581,30 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     //   }),
     // );
 
+    // The link button
+    var linkButton = newIconButton(
+      context,
+      () async {
+        // If there is a parent thought
+        if (widget.parentThought != null) {
+          // Link the thoughts
+          if (widget.thought.id != widget.parentThought &&
+              widget.parentThought != null) {
+            await linkThoughts(
+                context, widget.thought.id, widget.parentThought!);
+          }
+        }
+      },
+      Icon(
+        Icons.add_link,
+        size: 16,
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .onPrimary
+            .withAlpha(128),
+      ),
+    );
+
     // Edit button
     var editThoughtButton = newIconButton(
       context,
@@ -626,7 +665,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       ),
     );
 
-    //
+    // the action row
     return Visibility(
       visible: !widget.viewOnly,
       child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -660,11 +699,14 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         // Show linked/more button
         // Visibility(visible: !newThoughtOpen, child: showLinkedButton),
 
-        // Add thought button
-        // addThoughtButton,
-
         // More options button
         Visibility(visible: !newThoughtOpen, child: moreButton),
+
+        // Link button
+        linkButton,
+
+        // Add thought button
+        thinkButton,
       ]),
     );
   }
@@ -776,8 +818,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
                         // Link button for child thoughts
                         Visibility(
-                          visible: widget.thought.linkedTo != null &&
-                              widget.thought.linkedTo!.isNotEmpty,
+                          visible: widget.thought.linkedTo,
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
                             child: HoverIconButton(
@@ -803,7 +844,10 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                     ),
 
                     // Markdown body
-                    TheMarkdownBox(thought: widget.thought),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                      child: TheMarkdownBox(thought: widget.thought),
+                    ),
 
                     // Info mode display
                     InfoCard(widget: widget, thought: widget.thought),
@@ -833,54 +877,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                         ],
                       ),
                   ],
-                ),
-              ),
-
-              // Add thought button
-              Visibility(
-                // visible: !widget.viewOnly &&
-                //     !widget.relatedMode &&
-                //     !newThoughtOpen &&
-                //     widget.type != MarkdownDisplayType.searchResult,
-                child: Positioned(
-                  bottom: 4,
-                  right: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-
-                    child: HoverIconButton(
-                      icon: Icons.add,
-                      onPressed: () {
-                        // Toggle the new thought box
-                        setState(() {
-                          newThoughtOpen = !newThoughtOpen;
-                        });
-                      },
-                    ),
-
-                    // child: IconButton(
-                    //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    //   enableFeedback: true,
-                    //   splashRadius: 16,
-                    //   hoverColor: Provider.of<ComindColorsNotifier>(context)
-                    //       .colorScheme
-                    //       .primary
-                    //       .withAlpha(
-                    //           255), // Increase the alpha value to make it brighter
-                    //   onPressed: () {
-                    //     // Toggle the new thought box
-                    //     setState(() {
-                    //       newThoughtOpen = !newThoughtOpen;
-                    //     });
-                    //   },
-                    //   icon: Icon(Icons.add,
-                    //       size: 32,
-                    //       color: Provider.of<ComindColorsNotifier>(context)
-                    //           .colorScheme
-                    //           .onPrimary
-                    //           .withAlpha(128)),
-                    // ),
-                  ),
                 ),
               ),
             ],
@@ -1097,6 +1093,34 @@ class InfoCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
               child: SelectableText("ID: ${thought.id}",
+                  style: Provider.of<ComindColorsNotifier>(context)
+                      .textTheme
+                      .bodyMedium),
+            ),
+
+            // Show from thought
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+              child: SelectableText("From: ${thought.linkedFrom}",
+                  style: Provider.of<ComindColorsNotifier>(context)
+                      .textTheme
+                      .bodyMedium),
+            ),
+
+            // Show to thought
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+              child: SelectableText("To: ${thought.linkedTo}",
+                  style: Provider.of<ComindColorsNotifier>(context)
+                      .textTheme
+                      .bodyMedium),
+            ),
+
+            // Show cosine similarity
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+              child: SelectableText(
+                  "Cosine similarity: ${thought.cosineSimilarity?.toStringAsFixed(2)}",
                   style: Provider.of<ComindColorsNotifier>(context)
                       .textTheme
                       .bodyMedium),

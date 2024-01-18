@@ -25,6 +25,9 @@ class _StreamState extends State<Stream> {
   // the text controller
   final _primaryController = TextEditingController();
 
+  // List of related thoughts
+  List<Thought> relatedThoughts = [];
+
   // Method to fetch thoughts related to the top of mind thought.
   // These are stored in the ThoughtsProvider.
   void fetchRelatedThoughts() async {
@@ -46,7 +49,7 @@ class _StreamState extends State<Stream> {
           .addThoughts(relatedThoughts);
 
       // Set the top of mind
-      setTopOfMind(context, topOfMind);
+      addTopOfMind(context, topOfMind);
     });
   }
 
@@ -126,7 +129,7 @@ class _StreamState extends State<Stream> {
                             // }),
 
                             Text("Menu",
-                                style: getTextTheme(context).titleSmall),
+                                style: getTextTheme(context).titleMedium),
                             SizedBox(height: 0),
 
                             // Public/private button
@@ -153,6 +156,19 @@ class _StreamState extends State<Stream> {
                                   Provider.of<ComindColorsNotifier>(context,
                                           listen: false)
                                       .modifyColors(color);
+                                }),
+
+                            // Dark mode
+                            TextButtonSimple(
+                                text: "Dark mode",
+                                onPressed: () {
+                                  Provider.of<ComindColorsNotifier>(context,
+                                          listen: false)
+                                      .toggleTheme(
+                                          !Provider.of<ComindColorsNotifier>(
+                                                  context,
+                                                  listen: false)
+                                              .darkMode);
                                 }),
 
                             // Login button
@@ -191,7 +207,7 @@ class _StreamState extends State<Stream> {
 
                             const SizedBox(height: 20),
                             Text("Dev buttons",
-                                style: getTextTheme(context).titleSmall),
+                                style: getTextTheme(context).titleMedium),
 
                             // Debug button to add a top of mind thought
                             Visibility(
@@ -201,7 +217,7 @@ class _StreamState extends State<Stream> {
                                   onPressed: () {
                                     Provider.of<ThoughtsProvider>(context,
                                             listen: false)
-                                        .setTopOfMind(Thought.fromString(
+                                        .addTopOfMind(Thought.fromString(
                                             "I'm happy to have you here :smiley:",
                                             "Co",
                                             true,
@@ -211,7 +227,7 @@ class _StreamState extends State<Stream> {
 
                             const SizedBox(height: 20),
                             Text("Other stuff",
-                                style: getTextTheme(context).titleSmall),
+                                style: getTextTheme(context).titleMedium),
 
                             // Logout button
                             Visibility(
@@ -272,6 +288,8 @@ class _StreamState extends State<Stream> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   // columnOfThings(context),
 
@@ -299,100 +317,97 @@ class _StreamState extends State<Stream> {
     );
   }
 
-  ConstrainedBox columnOfThings(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: MediaQuery.of(context).size.height - 100,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Visibility(
-              visible: !Provider.of<ThoughtsProvider>(context).hasTopOfMind,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                child: const SectionHeader(text: "Think something"),
-              )),
+  Column columnOfThings(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Visibility(
+            visible: !Provider.of<ThoughtsProvider>(context).hasTopOfMind,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+              child:
+                  const SectionHeader(text: "{ THINK SOMETHING }", waves: true),
+            )),
 
-          // Top of mind divider
-          Visibility(
-              visible: Provider.of<ThoughtsProvider>(context).hasTopOfMind,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                child: const SectionHeader(text: "Top of Mind", waves: true),
-              )),
-
-          // The top of mind thought
-          Visibility(
+        // Top of mind divider
+        Visibility(
             visible: Provider.of<ThoughtsProvider>(context).hasTopOfMind,
-            child: Stack(
-                // Stack settings
-                alignment: Alignment.topLeft,
-                clipBehavior: Clip.none,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+              child: const SectionHeader(text: "{ Top of Mind }", waves: true),
+            )),
 
-                // Stack children
-                children: [
-                  MarkdownThought(
-                    // type: MarkdownDisplayType,
-                    thought: getTopOfMind(context) ??
-                        Thought.fromString(
-                            "testing", "this is a testing thought", true),
-                    viewOnly: true,
-                    noTitle: true,
-                  ),
+        // Top of mind builder (use brainbuffer)
+        // The rest of the thoughts
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: Provider.of<ThoughtsProvider>(context).brainBuffer.length,
+          // itemCount: relatedThoughts.length,
+          itemBuilder: (context, index) {
+            return MarkdownThought(
+              // type: MarkdownDisplayType,
+              thought:
+                  Provider.of<ThoughtsProvider>(context).brainBuffer[index],
+              linkable: true,
+              // TODO this should maybe link to all thoughts in the brain buffer
+              parentThought:
+                  getTopOfMind(context)?.id, // Link to most recent thought
+            );
+          },
+        ),
 
-                  // // X button on top left to close top of mind
-                  // Positioned(
-                  //   top: -16,
-                  //   left: 0,
-                  //   child: IconButton(
-                  //     icon: const Icon(Icons.close),
-                  //     onPressed: () {
-                  //       // Remove the top of mind thought
-                  //       Provider.of<ThoughtsProvider>(context, listen: false)
-                  //           .setTopOfMind(null);
-                  //     },
-                  //   ),
-                  // ),
-                ]),
-          ),
+        // // The top of mind thought
+        // Visibility(
+        //   visible: Provider.of<ThoughtsProvider>(context).hasTopOfMind,
+        //   child: Stack(
+        //       // Stack settings
+        //       alignment: Alignment.topLeft,
+        //       clipBehavior: Clip.none,
 
-          // The main text box
-          thinkBox(context),
+        //       // Stack children
+        //       children: [
+        //         MarkdownThought(
+        //           // type: MarkdownDisplayType,
+        //           thought: getTopOfMind(context) ??
+        //               Thought.fromString(
+        //                   "testing", "this is a testing thought", true),
+        //           viewOnly: true,
+        //           noTitle: true,
+        //         ),
+        //       ]),
+        // ),
 
-          // Widget for the action bar
-          ActionBar(),
+        // The main text box
+        thinkBox(context),
 
-          // Top of mind divider
-          Visibility(
-              visible: getTopOfMind(context) != null,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: const SectionHeader(text: "The Stream"),
-              )),
+        // Widget for the action bar
+        ActionBar(),
 
-          // The rest of the thoughts
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
-            itemBuilder: (context, index) {
-              return Container(
-                color: Colors.red.withOpacity(
-                    Provider.of<ThoughtsProvider>(context)
-                            .thoughts[index]
-                            .cosineSimilarity ??
-                        1),
-                child: MarkdownThought(
-                  // type: MarkdownDisplayType,
-                  thought:
-                      Provider.of<ThoughtsProvider>(context).thoughts[index],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+        // Top of mind divider
+        Visibility(
+            visible: getTopOfMind(context) != null,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: const SectionHeader(text: "{ STREAM }", waves: false),
+            )),
+
+        // The rest of the thoughts
+        ListView.builder(
+          shrinkWrap: true,
+          // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+          itemCount: relatedThoughts.length,
+          itemBuilder: (context, index) {
+            return MarkdownThought(
+              // type: MarkdownDisplayType,
+              thought: relatedThoughts[index],
+              linkable: true,
+              parentThought: getTopOfMind(context)?.id,
+              // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -429,15 +444,15 @@ class _StreamState extends State<Stream> {
                     .addThoughts(value);
 
                 // Update the UI
-                // setState(() {
-                //   relatedThoughts = value;
-                // });
+                setState(() {
+                  relatedThoughts = value;
+                });
               });
 
               // Lastly, update the UI
               setState(() {
                 Provider.of<ThoughtsProvider>(context, listen: false)
-                    .setTopOfMind(thought);
+                    .addTopOfMind(thought);
               });
             });
           }),
@@ -486,7 +501,7 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const outsidePadding = 8.0;
+    const outsidePadding = 0.0;
     const insidePadding = 0.0;
     const cineEdgeInsetsLeft =
         EdgeInsets.fromLTRB(outsidePadding, 0, insidePadding, 0);
@@ -514,7 +529,7 @@ class SectionHeader extends StatelessWidget {
             Provider.of<ComindColorsNotifier>(context)
                 .currentColors
                 .textTheme
-                .titleMedium,
+                .titleLarge,
       ),
       if (waves)
         Expanded(
