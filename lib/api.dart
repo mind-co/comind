@@ -12,8 +12,9 @@ import 'package:provider/provider.dart';
 final dio = Dio();
 
 String endpoint(String path) {
-  String serverUrl = dotenv.env['SERVER_URL'] ?? 'http://localhost:8000';
-  // String serverUrl = const String.fromEnvironment('SERVER_URL');
+  // String serverUrl = dotenv.env['SERVER_URL'] ?? 'http://localhost:8000';
+  String serverUrl = const String.fromEnvironment('SERVER_URL',
+      defaultValue: 'http://localhost:8000');
   return serverUrl + path;
 }
 

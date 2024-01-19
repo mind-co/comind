@@ -54,7 +54,6 @@ flutter:
     - assets/images/
     - assets/fonts/
     - fonts/
-    - .env
 
   fonts:
     - family: "Bungee Pop"
