@@ -11,7 +11,6 @@ import 'package:comind/markdown_display.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/soul_blob.dart';
-import 'package:comind/text_button.dart';
 import 'package:comind/text_button_simple.dart';
 import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';

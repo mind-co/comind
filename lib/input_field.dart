@@ -1,15 +1,10 @@
 import 'dart:math';
 
-import 'package:comind/color_button.dart';
 import 'package:comind/colors.dart';
-import 'package:comind/providers.dart';
 import 'package:comind/think_button.dart';
 import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
-import 'package:comind/text_button.dart';
 import 'package:comind/types/thought.dart';
-import 'package:comind/api.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 // Enums for type of text field
@@ -177,7 +172,7 @@ class _MainTextFieldState extends State<MainTextField> {
           : min(
               ComindColors.maxWidth - 130,
               MediaQuery.of(context).size.width -
-                  80), // TODO this shit is hacky as fuck
+                  80), // this shit is hacky as fuck
       child: Column(
         children: [
           Stack(
@@ -223,7 +218,7 @@ class _MainTextFieldState extends State<MainTextField> {
                   //     .colorScheme
                   //     .surface
                   //     .withAlpha(30)),
-                  child: RawKeyboardListener(
+                  child: KeyboardListener(
                     focusNode: focusNode,
                     child: TextField(
                       scrollController: _scrollController,
@@ -313,7 +308,6 @@ class _MainTextFieldState extends State<MainTextField> {
           }
         : widget.type == TextFieldType.edit
             ? () {
-                // TODO
                 // This is the editor save button, which
                 // should save the thought and close the
                 // editor.

@@ -632,12 +632,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Provider.of<AuthProvider>(context, listen: false).login()
                 });
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                showCloseIcon: true,
-                content: Text("Login successful"),
-              ),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  showCloseIcon: true,
+                  content: Text("Login successful"),
+                ),
+              );
+            }
 
             // Go home, '/'
             // ignore: use_build_context_synchronously

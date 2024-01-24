@@ -6,6 +6,7 @@ import 'package:comind/main.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/stream.dart';
 import 'package:comind/thought_editor_basic.dart';
+import 'package:comind/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +20,8 @@ class Dispatch extends StatelessWidget {
 
     // Return loading screen
     //authProvider.isLoggedIn == null) {
+
+    return WelcomePage();
 
     // If the user is logged in, send them to the home page
     if (authProvider.isLoggedIn) {

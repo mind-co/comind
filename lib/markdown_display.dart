@@ -851,7 +851,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                     // Markdown body
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                      child: TheMarkdownBox(thought: widget.thought),
+                      child: TheMarkdownBox(text: widget.thought.body),
                     ),
 
                     // Info mode display
@@ -930,12 +930,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 }
 
 class TheMarkdownBox extends StatelessWidget {
-  const TheMarkdownBox({
-    super.key,
-    required this.thought,
-  });
+  const TheMarkdownBox({super.key, required this.text});
 
-  final Thought thought;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -964,7 +961,7 @@ class TheMarkdownBox extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
         child: MarkdownBody(
           // Use the thought content
-          data: thought.body,
+          data: text,
           selectable: true,
 
           // Allow hyperlinks

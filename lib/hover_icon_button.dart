@@ -14,10 +14,10 @@ class HoverIconButton extends StatefulWidget {
       this.size = 32.0});
 
   @override
-  _HoverIconButtonState createState() => _HoverIconButtonState();
+  HoverIconButtonState createState() => HoverIconButtonState();
 }
 
-class _HoverIconButtonState extends State<HoverIconButton> {
+class HoverIconButtonState extends State<HoverIconButton> {
   bool _isHovering = false;
 
   @override

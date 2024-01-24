@@ -93,18 +93,18 @@ class ComindColors {
 
   // Text themes
   // static final bodyStyle = GoogleFonts.hankenGrotesk(
-  // static final bodyStyle = GoogleFonts.ibmPlexSans(
-  //   fontWeight: FontWeight.w400,
-  //   height: 1.2,
-  // );
+  static final bodyStyle = GoogleFonts.ibmPlexSans(
+    fontWeight: FontWeight.w300,
+    height: 1.2,
+  );
   // Ignore formatted
   // static final bodyStyle = GoogleFonts.nunito(
   //   fontWeight: FontWeight.w400,
   //   height: 1.2,
   // );
 
-  static final bodyStyle =
-      GoogleFonts.questrial(fontWeight: FontWeight.w400, height: 1.2);
+  // static final bodyStyle =
+  //     GoogleFonts.questrial(fontWeight: FontWeight.w400, height: 1.2);
 
   static final titleStyle = GoogleFonts.bungee(
     fontWeight: FontWeight.w400,
