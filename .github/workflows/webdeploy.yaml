@@ -46,11 +46,12 @@ jobs:
 
       - name: Clean up root directory
         run: |
-          find . -maxdepth 1 ! -name '.git' ! -name 'build' -exec rm -rf {} \;
+          find . -maxdepth 1 ! -name '.git' ! -name 'web' -exec rm -rf {} \;
 
       - name: Move build results to root directory
         run: |
-          mv build/web/* .
+          mv web/* .
+          rm web -R
 
       - name: Push to gh-pages
         run: |
