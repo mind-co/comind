@@ -45,6 +45,7 @@ class TextButtonSimple extends StatelessWidget {
         ),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
+            // borderRadius: BorderRadius.circular(0),
             borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
           ),
         ),
@@ -52,7 +53,7 @@ class TextButtonSimple extends StatelessWidget {
       onPressed: onPressed,
       child: Text(text,
           style:
-              Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall),
+              Provider.of<ComindColorsNotifier>(context).textTheme.titleMedium),
     );
   }
 }

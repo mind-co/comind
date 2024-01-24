@@ -187,9 +187,7 @@ class _MainTextFieldState extends State<MainTextField> {
               Material(
                 // elevation: 2,
                 borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-                color: Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .background,
+                color: Colors.transparent,
                 child: Container(
                   // Bordered
                   decoration: BoxDecoration(

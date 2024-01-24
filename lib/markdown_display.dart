@@ -23,6 +23,7 @@ enum MarkdownDisplayType {
   inline,
   searchResult,
   newThought,
+  topOfMind,
 }
 
 //
@@ -167,7 +168,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   ],
                 ),
 
-                // Show cosine similarity
+                // // Show cosine similarity
                 // Text(widget.thought.cosineSimilarity.toString(),
                 //     style: Provider.of<ComindColorsNotifier>(context)
                 //         .textTheme
@@ -182,7 +183,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
                 // Alternative action row
                 Visibility(
-                    visible: widget.type != MarkdownDisplayType.searchResult &&
+                    visible: widget.type != MarkdownDisplayType.topOfMind &&
                         widget.showBody,
                     child: alternativeActionRow(context, onBackground)),
 
@@ -243,12 +244,14 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   // Title
-                  MarkdownDisplayType.newThought != widget.type
-                      ? Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 0, 8, 0),
+                  if (MarkdownDisplayType.newThought != widget.type)
+                    Opacity(
+                      opacity: 0.7,
+                      child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                           // Version where body is truncated
                           child: widget.thought.title == ""
                               ? Container()
@@ -264,7 +267,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                                     context,
                                                     listen: true)
                                                 .textTheme
-                                                .bodyMedium,
+                                                .titleSmall,
                                       ),
                                     ],
                                   ),
@@ -272,8 +275,10 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
                           // child: Text(thought.title, style: getTextTheme(context).labelMedium),
                           // child: Text(thought.title, style: getTextTheme(context).titleSmall),
-                          )
-                      : Container(),
+                          ),
+                    )
+                  else
+                    Container(),
 
                   // Username
                   Opacity(
@@ -408,26 +413,26 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       });
     });
 
-    // The "show linked" button
-    var showLinkedButton = newButton(
-        onBackground, context, widget.relatedMode ? "Close" : "More", () async {
-      if (relatedResults.isEmpty) {
-        // Semantic search on the body of the text
-        var res = await searchThoughts(context, widget.thought.body,
-            associatedId: widget.thought.id);
+    // // The "show linked" button
+    // var showLinkedButton = newButton(
+    //     onBackground, context, widget.relatedMode ? "Close" : "More", () async {
+    //   if (relatedResults.isEmpty) {
+    //     // Semantic search on the body of the text
+    //     var res = await searchThoughts(context, widget.thought.body,
+    //         associatedId: widget.thought.id);
 
-        // Toggle info mode
-        setState(() {
-          widget.relatedMode = !widget.relatedMode;
-          relatedResults =
-              res.where((item) => widget.thought.id != item.id).toList();
-        });
-      } else {
-        setState(() {
-          widget.relatedMode = !widget.relatedMode;
-        });
-      }
-    });
+    //     // Toggle info mode
+    //     setState(() {
+    //       widget.relatedMode = !widget.relatedMode;
+    //       relatedResults =
+    //           res.where((item) => widget.thought.id != item.id).toList();
+    //     });
+    //   } else {
+    //     setState(() {
+    //       widget.relatedMode = !widget.relatedMode;
+    //     });
+    //   }
+    // });
 
     // // The "add thought" button
     // var addThoughtButton = Padding(
@@ -502,7 +507,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     // );
 
     var deleteButton = newIconButton(context, () async {
-      // TODO delete the thought
       bool? shouldDelete = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
@@ -808,7 +812,8 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                       children: [
                         // Titlebar inside the box
                         Visibility(
-                            visible: !widget.noTitle,
+                            visible: !widget.noTitle &&
+                                widget.type != MarkdownDisplayType.topOfMind,
                             child: Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
@@ -845,7 +850,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
                     // Markdown body
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                       child: TheMarkdownBox(thought: widget.thought),
                     ),
 
@@ -956,7 +961,7 @@ class TheMarkdownBox extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
         child: MarkdownBody(
           // Use the thought content
           data: thought.body,

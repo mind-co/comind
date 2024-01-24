@@ -10,7 +10,9 @@
             "type": "dart",
             "args": [
                 "--web-renderer",
-                "html"
+                "html",
+                "--dart-define",
+                "COMIND_SERVER_URL=http://nimbus.pfiffer.org:8000"
             ]
         },
         {

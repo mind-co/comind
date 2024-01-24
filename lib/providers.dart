@@ -1,3 +1,4 @@
+import 'package:comind/api.dart';
 import 'package:comind/types/thought.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
@@ -58,10 +59,8 @@ class AuthProvider extends ChangeNotifier {
 
 // Thought provider
 class ThoughtsProvider extends ChangeNotifier {
-  // final Thought? topOfMind = Thought.fromString(
-  //     "I'm happy to have you here :smiley:", "Co", true,
-  //     title: "Welcome to comind");
-  // Thought? topOfMind = null;
+  // Brain buffer
+  static const maxBufferSize = 3;
   List<Thought> brainBuffer = [];
 
   final List<Thought> _thoughts = [];
@@ -72,8 +71,13 @@ class ThoughtsProvider extends ChangeNotifier {
 
   // Add a thought to the top of mind
   void addTopOfMind(Thought thought) {
-    print("Adding ${thought.id} to top of mind");
     brainBuffer.add(thought);
+
+    // Remove the oldest thought if the buffer is too big
+    if (brainBuffer.length > maxBufferSize) {
+      brainBuffer.removeAt(0);
+    }
+
     notifyListeners();
   }
 
@@ -100,6 +104,13 @@ class ThoughtsProvider extends ChangeNotifier {
     print("Removing ${thought.id}");
     notifyListeners();
   }
+
+  // Remove all thoughts/brain buffer
+  void clear() {
+    _thoughts.clear();
+    brainBuffer.clear();
+    notifyListeners();
+  }
 }
 
 Thought? getTopOfMind(BuildContext context) {
@@ -116,4 +127,14 @@ Thought? getTopOfMind(BuildContext context) {
 void addTopOfMind(BuildContext context, Thought thought) {
   return Provider.of<ThoughtsProvider>(context, listen: false)
       .addTopOfMind(thought);
+}
+
+void linkToTopOfMind(BuildContext context, String id) {
+  // iterate through all top of mind thoughts and link them to the thought
+  // with the given id
+  Provider.of<ThoughtsProvider>(context, listen: false)
+      .brainBuffer
+      .forEach((element) {
+    linkThoughts(context, element.id, id);
+  });
 }

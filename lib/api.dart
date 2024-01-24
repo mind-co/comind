@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:comind/types/thought.dart';
 import 'package:dio/dio.dart';
@@ -12,9 +11,8 @@ import 'package:provider/provider.dart';
 final dio = Dio();
 
 String endpoint(String path) {
-  // String serverUrl = dotenv.env['SERVER_URL'] ?? 'http://localhost:8000';
-  String serverUrl = const String.fromEnvironment('SERVER_URL',
-      defaultValue: 'http://localhost:8000');
+  // String serverUrl = dotenv.env['COMIND_SERVER_URL'] ?? 'http://localhost:8000';
+  String serverUrl = const String.fromEnvironment('COMIND_SERVER_URL');
   return serverUrl + path;
 }
 
@@ -139,7 +137,7 @@ Future<void> saveThought(BuildContext context, Thought thought,
 
     // Try to parse the response as json
     try {
-      print("Sent thought with body ${thought.body} to server");
+      // print("Sent thought with body ${thought.body} to server");
       // final jsonResponse = json.decode(response.body);
     } catch (e) {
       throw Exception('Failed to parse new thought as JSON');
@@ -370,7 +368,7 @@ Future<LoginResponse> login(String username, String password) async {
 
   final response = await http.post(url, body: body);
 
-  print(response.body);
+  // print(response.body);
   if (response.statusCode != 200) {
     throw Exception('Failed to login');
   }

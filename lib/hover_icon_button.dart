@@ -7,8 +7,11 @@ class HoverIconButton extends StatefulWidget {
   final VoidCallback onPressed;
   final double size;
 
-  HoverIconButton(
-      {required this.icon, required this.onPressed, this.size = 32.0});
+  const HoverIconButton(
+      {super.key,
+      required this.icon,
+      required this.onPressed,
+      this.size = 32.0});
 
   @override
   _HoverIconButtonState createState() => _HoverIconButtonState();

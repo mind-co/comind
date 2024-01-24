@@ -46,7 +46,7 @@ AppBar comindAppBar(BuildContext context) {
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      MediaQuery.of(context).size.width > ComindColors.maxWidth
+      MediaQuery.of(context).size.width > 550
           ? ComindLogo(
               key: UniqueKey(),
               colors: colors,
@@ -77,7 +77,7 @@ AppBar comindAppBar(BuildContext context) {
     elevation: 0,
 
     // Add toolbar
-    toolbarHeight: 90,
+    toolbarHeight: 120,
     actions: [
       // Add dark mode toggle
       // IconButton(

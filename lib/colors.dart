@@ -116,7 +116,7 @@ class ComindColors {
     fontSize: 20,
   );
 
-  static const fontScalar = 1.0;
+  static const fontScalar = 1.5;
   static const double maxWidth = 600;
   static const double bubbleRadius = 30;
 

@@ -1,5 +1,4 @@
 // Opens the color picker menu
-import 'package:comind/misc/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

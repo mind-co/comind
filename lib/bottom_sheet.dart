@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ComindBottomSheet extends StatelessWidget {
+  const ComindBottomSheet({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(

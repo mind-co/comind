@@ -24,6 +24,7 @@ import 'package:comind/misc/util.dart';
 import 'package:comind/dispatch.dart';
 
 Future<void> main() async {
+  // await dotenv.load(fileName: ".env");
   runApp(ChangeNotifierProvider(
     create: (_) => ComindColorsNotifier(),
     child: ChangeNotifierProvider(

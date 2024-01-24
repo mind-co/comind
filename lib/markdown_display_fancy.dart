@@ -548,7 +548,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           child: Row(
             children: [
               // Info action button
-              // TODO #2 delete thought should remove the thought
               //      from the train and mask it from the user.
               //      If the user is the owner of the thought,
               //      it should be deleted from the database.
@@ -573,19 +572,16 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   buttonOpacity),
 
               // Edit action button
-              // TODO enter edit mode, allow the user to edit
               //      the thought
               editActionButton(edgeInsets, context, edgeInsets2, buttonOpacity,
                   buttonFontSize),
 
               // Link action button
-              // TODO enter link mode, show relevant thoughts
               //      that could be linked to this one
               relatedActionButton(edgeInsets, context, edgeInsets2,
                   buttonFontSize, buttonOpacity),
 
               // Link action button
-              // TODO enter link mode, show relevant thoughts
               //      that could be linked to this one
               Visibility(
                 visible: widget.parentThought != null,
@@ -791,7 +787,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             text: "Delete",
             colorIndex: 0,
             onPressed: () async {
-              // TODO delete the thought
               bool? shouldDelete = await showDialog<bool>(
                 context: context,
                 builder: (BuildContext context) {

@@ -4,7 +4,6 @@
 import 'package:comind/login.dart';
 import 'package:comind/main.dart';
 import 'package:comind/providers.dart';
-import 'package:comind/sign_up.dart';
 import 'package:comind/stream.dart';
 import 'package:comind/thought_editor_basic.dart';
 import 'package:flutter/material.dart';

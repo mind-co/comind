@@ -105,7 +105,7 @@ class CineWavePainter extends CustomPainter {
         ..color = primaryColor.withOpacity(opacity)
         ..strokeWidth = stroke;
 
-      const double baseAmp = 2;
+      const double baseAmp = 0;
       const double baseFreq = 0.01 * pi; // Debug
       // const double baseFreq = 18;
 
@@ -195,7 +195,7 @@ class CineWave extends StatefulWidget {
   // This is the direction the wave will go.
   final bool goLeft;
 
-  CineWave(
+  const CineWave(
       {super.key,
       this.amplitude = 0,
       this.frequency = 0

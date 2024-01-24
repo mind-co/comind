@@ -57,7 +57,7 @@ class ComindShortLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const size = 56.0;
+    const size = 68.0;
     return (Row(
       mainAxisAlignment: mainAxisAlignment,
       children: [
@@ -122,7 +122,7 @@ class ComindLogo extends StatelessWidget {
   // Build the widget
   @override
   Widget build(BuildContext context) {
-    const size = 44.0;
+    const size = 68.0;
     return (Row(
       mainAxisAlignment: mainAxisAlignment,
       children: [
