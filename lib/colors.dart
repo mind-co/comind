@@ -117,7 +117,7 @@ class ComindColors {
   );
 
   static const fontScalar = 1.3;
-  static const double maxWidth = 700;
+  static const double maxWidth = 600;
   static const double bubbleRadius = 30;
 
   TextTheme textTheme = TextTheme(

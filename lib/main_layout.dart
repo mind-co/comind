@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:comind/colors.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -91,12 +93,7 @@ class _MainLayoutState extends State<MainLayout> {
         focusNode: focusNode,
         child: SingleChildScrollView(
           controller: _scrollController, // Add this line
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
-            ),
-            child: rowOfColumns(context),
-          ),
+          child: rowOfColumns(context),
         ),
       ),
     );
@@ -115,7 +112,7 @@ class _MainLayoutState extends State<MainLayout> {
           ),
 
         // Middle column
-        SizedBox(
+        Container(
           width: centerColumnWidth(context),
           child: widget.middleColumn,
         ),
@@ -131,7 +128,7 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   bool showSideColumns(BuildContext context) =>
-      MediaQuery.of(context).size.width > 800;
+      MediaQuery.of(context).size.width > 0;
   // MediaQuery.of(context).size.width > 800 && getTopOfMind(context) != null;
 
   //
@@ -149,8 +146,8 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   double centerColumnWidth(BuildContext context) {
-    return MediaQuery.of(context).size.width > 550
-        ? 550
+    return MediaQuery.of(context).size.width >= ComindColors.maxWidth
+        ? ComindColors.maxWidth
         : MediaQuery.of(context).size.width;
   }
 

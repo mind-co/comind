@@ -2,9 +2,7 @@
 Welcome to Comind, an app in development.
 
 Comind is a public square for the increasingly weird world we live in.
-It's a place to share thoughts, to think out loud, to be creative, and to
-be weird. It's a place to be yourself, or to be someone else. It's a place
-where concepts come to life.
+It's a place to share thoughts, to think out loud, to be creative, and to mess around. It's where concepts come to life.
 
 Most importantly, it's a place for me to build a thing that I think is cool.
 I want to make something weird and cool and different, and I think that's
