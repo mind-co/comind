@@ -51,7 +51,7 @@ jobs:
         run: flutter test
 
       - name: Build Web App
-        run: flutter build web
+        run: flutter build web --dart-define="COMIND_SERVER_URL=${{ secrets.COMIND_SERVER_URL }}"
 
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4
