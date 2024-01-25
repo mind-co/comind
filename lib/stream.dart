@@ -114,169 +114,153 @@ class _StreamState extends State<Stream> {
     );
   }
 
-  bool _hover = false;
+  bool _hover = true;
   Widget leftColumn(BuildContext context) {
-    return MouseRegion(
-      onEnter: (PointerEnterEvent event) {
-        setState(() {
-          _hover = true;
-        });
-      },
-      onExit: (PointerExitEvent event) {
-        setState(() {
-          _hover = false;
-        });
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          // Action row under the text box
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-            child: Opacity(
-              opacity: _hover ? 1 : .3,
-              child: Wrap(direction: Axis.vertical, children: [
-                // // Color picker
-                // ColorPicker(onColorSelected: (Color color) {
-                //   Provider.of<ComindColorsNotifier>(context, listen: false)
-                //       .modifyColors(color);
-                // }),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        // Action row under the text box
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+          child: Opacity(
+            opacity: _hover ? 1 : .3,
+            child: Wrap(direction: Axis.vertical, children: [
+              // // Color picker
+              // ColorPicker(onColorSelected: (Color color) {
+              //   Provider.of<ComindColorsNotifier>(context, listen: false)
+              //       .modifyColors(color);
+              // }),
 
-                Text("Menu", style: getTextTheme(context).titleMedium),
+              Text("Menu", style: getTextTheme(context).titleMedium),
 
-                const SizedBox(height: 0),
+              const SizedBox(height: 0),
 
-                // Public/private button
-                ComindTextButton(
+              // Public/private button
+              ComindTextButton(
+                  lineLocation: LineLocation.left,
+                  text: Provider.of<ComindColorsNotifier>(context).publicMode
+                      ? "Public"
+                      : "Private",
+                  onPressed: () {
+                    Provider.of<ComindColorsNotifier>(context, listen: false)
+                        .togglePublicMode(!Provider.of<ComindColorsNotifier>(
+                                context,
+                                listen: false)
+                            .publicMode);
+                  }),
+
+              // Clear top of mind
+              ComindTextButton(
+                  lineLocation: LineLocation.left,
+                  text: "Clear",
+                  onPressed: () {
+                    Provider.of<ThoughtsProvider>(context, listen: false)
+                        .clear();
+
+                    // Remove related thoughts
+                    relatedThoughts.clear();
+                  }),
+
+              // Color picker button
+              ComindTextButton(
+                  lineLocation: LineLocation.left,
+                  text: "Color",
+                  onPressed: () async {
+                    Color color = await colorDialog(context);
+                    Provider.of<ComindColorsNotifier>(context, listen: false)
+                        .modifyColors(color);
+                  }),
+
+              // Dark mode
+              ComindTextButton(
+                  lineLocation: LineLocation.left,
+                  text: "Dark mode",
+                  onPressed: () {
+                    Provider.of<ComindColorsNotifier>(context, listen: false)
+                        .toggleTheme(!Provider.of<ComindColorsNotifier>(context,
+                                listen: false)
+                            .darkMode);
+                  }),
+
+              // Login button
+              Visibility(
+                visible: !Provider.of<AuthProvider>(context).isLoggedIn,
+                child: ComindTextButton(
                     lineLocation: LineLocation.left,
-                    text: Provider.of<ComindColorsNotifier>(context).publicMode
-                        ? "Public"
-                        : "Private",
+                    text: "Log in",
+                    // Navigate to login page.
                     onPressed: () {
-                      Provider.of<ComindColorsNotifier>(context, listen: false)
-                          .togglePublicMode(!Provider.of<ComindColorsNotifier>(
-                                  context,
-                                  listen: false)
-                              .publicMode);
+                      Navigator.pushNamed(context, "/login");
                     }),
+              ),
 
-                // Clear top of mind
-                ComindTextButton(
+              // Sign up button
+              Visibility(
+                visible: !Provider.of<AuthProvider>(context).isLoggedIn,
+                child: ComindTextButton(
                     lineLocation: LineLocation.left,
-                    text: "Clear",
+                    text: "Sign up",
+                    // Navigate to sign up page.
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/signup");
+                    }),
+              ),
+
+              // Settings
+              // Visibility(
+              //   child: ComindTextButton(
+              // lineLocation: LineLocation.left,
+              //       text: "Settings",
+              //       onPressed: () {
+              //         Navigator.pushNamed(
+              //             context, "/settings");
+              //       }),
+              // ),
+
+              const SizedBox(height: 20),
+              Text("Dev buttons", style: getTextTheme(context).titleMedium),
+
+              // Debug button to add a top of mind thought
+              Visibility(
+                visible: true,
+                child: ComindTextButton(
+                    lineLocation: LineLocation.left,
+                    text: "TOM",
                     onPressed: () {
                       Provider.of<ThoughtsProvider>(context, listen: false)
-                          .clear();
-
-                      // Remove related thoughts
-                      relatedThoughts.clear();
+                          .addTopOfMind(Thought.fromString(
+                              "I'm happy to have you here :smiley:", "Co", true,
+                              title: "Welcome to comind"));
                     }),
+              ),
 
-                // Color picker button
-                ComindTextButton(
+              const SizedBox(height: 20),
+              Text("Other stuff", style: getTextTheme(context).titleMedium),
+
+              // Logout button
+              Visibility(
+                visible: Provider.of<AuthProvider>(context).isLoggedIn,
+                child: ComindTextButton(
                     lineLocation: LineLocation.left,
-                    text: "Color",
-                    onPressed: () async {
-                      Color color = await colorDialog(context);
-                      Provider.of<ComindColorsNotifier>(context, listen: false)
-                          .modifyColors(color);
-                    }),
+                    text: "Log out",
+                    onPressed: () => {
+                          // Clear all thoughts
+                          Provider.of<ThoughtsProvider>(context, listen: false)
+                              .clear(),
 
-                // Dark mode
-                ComindTextButton(
-                    lineLocation: LineLocation.left,
-                    text: "Dark mode",
-                    onPressed: () {
-                      Provider.of<ComindColorsNotifier>(context, listen: false)
-                          .toggleTheme(!Provider.of<ComindColorsNotifier>(
-                                  context,
-                                  listen: false)
-                              .darkMode);
-                    }),
+                          // Remove related thoughts
+                          relatedThoughts.clear(),
 
-                // Login button
-                Visibility(
-                  visible: !Provider.of<AuthProvider>(context).isLoggedIn,
-                  child: ComindTextButton(
-                      lineLocation: LineLocation.left,
-                      text: "Log in",
-                      // Navigate to login page.
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/login");
-                      }),
-                ),
-
-                // Sign up button
-                Visibility(
-                  visible: !Provider.of<AuthProvider>(context).isLoggedIn,
-                  child: ComindTextButton(
-                      lineLocation: LineLocation.left,
-                      text: "Sign up",
-                      // Navigate to sign up page.
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/signup");
-                      }),
-                ),
-
-                // Settings
-                // Visibility(
-                //   child: ComindTextButton(
-                // lineLocation: LineLocation.left,
-                //       text: "Settings",
-                //       onPressed: () {
-                //         Navigator.pushNamed(
-                //             context, "/settings");
-                //       }),
-                // ),
-
-                const SizedBox(height: 20),
-                Text("Dev buttons", style: getTextTheme(context).titleMedium),
-
-                // Debug button to add a top of mind thought
-                Visibility(
-                  visible: true,
-                  child: ComindTextButton(
-                      lineLocation: LineLocation.left,
-                      text: "TOM",
-                      onPressed: () {
-                        Provider.of<ThoughtsProvider>(context, listen: false)
-                            .addTopOfMind(Thought.fromString(
-                                "I'm happy to have you here :smiley:",
-                                "Co",
-                                true,
-                                title: "Welcome to comind"));
-                      }),
-                ),
-
-                const SizedBox(height: 20),
-                Text("Other stuff", style: getTextTheme(context).titleMedium),
-
-                // Logout button
-                Visibility(
-                  visible: Provider.of<AuthProvider>(context).isLoggedIn,
-                  child: ComindTextButton(
-                      lineLocation: LineLocation.left,
-                      text: "Log out",
-                      onPressed: () => {
-                            // Clear all thoughts
-                            Provider.of<ThoughtsProvider>(context,
-                                    listen: false)
-                                .clear(),
-
-                            // Remove related thoughts
-                            relatedThoughts.clear(),
-
-                            // Logout
-                            Provider.of<AuthProvider>(context, listen: false)
-                                .logout()
-                          }),
-                ),
-              ]),
-            ),
+                          // Logout
+                          Provider.of<AuthProvider>(context, listen: false)
+                              .logout()
+                        }),
+              ),
+            ]),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
