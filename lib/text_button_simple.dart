@@ -53,7 +53,7 @@ class TextButtonSimple extends StatelessWidget {
       onPressed: onPressed,
       child: Text(text,
           style:
-              Provider.of<ComindColorsNotifier>(context).textTheme.titleMedium),
+              Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall),
     );
   }
 }

@@ -7,12 +7,14 @@ import 'package:comind/colors.dart';
 import 'package:comind/hover_icon_button.dart';
 import 'package:comind/input_field.dart';
 import 'package:comind/main.dart';
+import 'package:comind/main_layout.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/soul_blob.dart';
 import 'package:comind/text_button_simple.dart';
 import 'package:comind/types/thought.dart';
+import 'package:comind/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -85,7 +87,24 @@ class _StreamState extends State<Stream> {
               // Your code here
               // Use authProvider to access authentication related data
               // Return the desired widget tree
-              return mainStream(constraints, context);
+
+              if (authProvider.isLoggedIn) {
+                return mainStream(constraints, context);
+              } else {
+                return MainLayout(
+                    middleColumn: Column(children: [
+                  coThought(
+                      context, "I see that you're not logged in!", "Howdy"),
+
+                  // Login button
+                  TextButtonSimple(
+                      text: "Log in",
+                      // Navigate to login page.
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/login");
+                      }),
+                ]));
+              }
             },
           );
         },
@@ -93,204 +112,186 @@ class _StreamState extends State<Stream> {
     );
   }
 
-  SingleChildScrollView mainStream(
-      BoxConstraints constraints, BuildContext context) {
-    return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: constraints.maxHeight,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Left column
-            Visibility(
-              visible: showSideColumns(context),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  width: leftColumnWidth(context),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      // Action row under the text box
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                        child: Wrap(direction: Axis.vertical, children: [
-                          // // Color picker
-                          // ColorPicker(onColorSelected: (Color color) {
-                          //   Provider.of<ComindColorsNotifier>(context, listen: false)
-                          //       .modifyColors(color);
-                          // }),
+  Widget leftColumn(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        // Action row under the text box
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+          child: Opacity(
+            opacity: 0.5,
+            child: Wrap(direction: Axis.vertical, children: [
+              // // Color picker
+              // ColorPicker(onColorSelected: (Color color) {
+              //   Provider.of<ComindColorsNotifier>(context, listen: false)
+              //       .modifyColors(color);
+              // }),
 
-                          Text("Menu",
-                              style: getTextTheme(context).titleMedium),
+              Text("Menu", style: getTextTheme(context).titleMedium),
 
-                          const SizedBox(height: 0),
+              const SizedBox(height: 0),
 
-                          // Public/private button
-                          TextButtonSimple(
-                              text: Provider.of<ComindColorsNotifier>(context)
-                                      .publicMode
-                                  ? "Public"
-                                  : "Private",
-                              onPressed: () {
-                                Provider.of<ComindColorsNotifier>(context,
-                                        listen: false)
-                                    .togglePublicMode(
-                                        !Provider.of<ComindColorsNotifier>(
-                                                context,
-                                                listen: false)
-                                            .publicMode);
-                              }),
+              // Public/private button
+              TextButtonSimple(
+                  text: Provider.of<ComindColorsNotifier>(context).publicMode
+                      ? "Public"
+                      : "Private",
+                  onPressed: () {
+                    Provider.of<ComindColorsNotifier>(context, listen: false)
+                        .togglePublicMode(!Provider.of<ComindColorsNotifier>(
+                                context,
+                                listen: false)
+                            .publicMode);
+                  }),
 
-                          // Clear top of mind
-                          TextButtonSimple(
-                              text: "Clear",
-                              onPressed: () {
-                                Provider.of<ThoughtsProvider>(context,
-                                        listen: false)
-                                    .clear();
-                              }),
+              // Clear top of mind
+              TextButtonSimple(
+                  text: "Clear",
+                  onPressed: () {
+                    Provider.of<ThoughtsProvider>(context, listen: false)
+                        .clear();
 
-                          // Color picker button
-                          TextButtonSimple(
-                              text: "Color",
-                              onPressed: () async {
-                                Color color = await colorDialog(context);
-                                Provider.of<ComindColorsNotifier>(context,
-                                        listen: false)
-                                    .modifyColors(color);
-                              }),
+                    // Remove related thoughts
+                    relatedThoughts.clear();
+                  }),
 
-                          // Dark mode
-                          TextButtonSimple(
-                              text: "Dark mode",
-                              onPressed: () {
-                                Provider.of<ComindColorsNotifier>(context,
-                                        listen: false)
-                                    .toggleTheme(
-                                        !Provider.of<ComindColorsNotifier>(
-                                                context,
-                                                listen: false)
-                                            .darkMode);
-                              }),
+              // Color picker button
+              TextButtonSimple(
+                  text: "Color",
+                  onPressed: () async {
+                    Color color = await colorDialog(context);
+                    Provider.of<ComindColorsNotifier>(context, listen: false)
+                        .modifyColors(color);
+                  }),
 
-                          // Login button
-                          Visibility(
-                            visible:
-                                !Provider.of<AuthProvider>(context).isLoggedIn,
-                            child: TextButtonSimple(
-                                text: "Log in",
-                                // Navigate to login page.
-                                onPressed: () {
-                                  Navigator.pushNamed(context, "/login");
-                                }),
-                          ),
+              // Dark mode
+              TextButtonSimple(
+                  text: "Dark mode",
+                  onPressed: () {
+                    Provider.of<ComindColorsNotifier>(context, listen: false)
+                        .toggleTheme(!Provider.of<ComindColorsNotifier>(context,
+                                listen: false)
+                            .darkMode);
+                  }),
 
-                          // Sign up button
-                          Visibility(
-                            visible:
-                                !Provider.of<AuthProvider>(context).isLoggedIn,
-                            child: TextButtonSimple(
-                                text: "Sign up",
-                                // Navigate to sign up page.
-                                onPressed: () {
-                                  Navigator.pushNamed(context, "/signup");
-                                }),
-                          ),
-
-                          // Settings
-                          // Visibility(
-                          //   child: TextButtonSimple(
-                          //       text: "Settings",
-                          //       onPressed: () {
-                          //         Navigator.pushNamed(
-                          //             context, "/settings");
-                          //       }),
-                          // ),
-
-                          const SizedBox(height: 20),
-                          Text("Dev buttons",
-                              style: getTextTheme(context).titleMedium),
-
-                          // Debug button to add a top of mind thought
-                          Visibility(
-                            visible: true,
-                            child: TextButtonSimple(
-                                text: "TOM",
-                                onPressed: () {
-                                  Provider.of<ThoughtsProvider>(context,
-                                          listen: false)
-                                      .addTopOfMind(Thought.fromString(
-                                          "I'm happy to have you here :smiley:",
-                                          "Co",
-                                          true,
-                                          title: "Welcome to comind"));
-                                }),
-                          ),
-
-                          const SizedBox(height: 20),
-                          Text("Other stuff",
-                              style: getTextTheme(context).titleMedium),
-
-                          // Logout button
-                          Visibility(
-                            visible:
-                                Provider.of<AuthProvider>(context).isLoggedIn,
-                            child: TextButtonSimple(
-                                text: "Log out",
-                                onPressed: () => {
-                                      // Clear all thoughts
-                                      Provider.of<ThoughtsProvider>(context,
-                                              listen: false)
-                                          .clear(),
-
-                                      // Remove related thoughts
-                                      relatedThoughts.clear(),
-
-                                      // Logout
-                                      Provider.of<AuthProvider>(context,
-                                              listen: false)
-                                          .logout()
-                                    }),
-                          ),
-                        ]),
-                      ),
-                    ],
-                  ),
-                ),
+              // Login button
+              Visibility(
+                visible: !Provider.of<AuthProvider>(context).isLoggedIn,
+                child: TextButtonSimple(
+                    text: "Log in",
+                    // Navigate to login page.
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/login");
+                    }),
               ),
-            ),
 
-            // Center column
-            CenterColumn(context),
-
-            // Right column
-            Visibility(
-              visible: showSideColumns(context),
-              child: SizedBox(
-                width: rightColumnWidth(context),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    // Text("Notifications",
-                    //     style: getTextTheme(context).titleMedium),
-                    Text("", style: getTextTheme(context).titleMedium),
-                  ],
-                ),
+              // Sign up button
+              Visibility(
+                visible: !Provider.of<AuthProvider>(context).isLoggedIn,
+                child: TextButtonSimple(
+                    text: "Sign up",
+                    // Navigate to sign up page.
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/signup");
+                    }),
               ),
-            ),
-          ],
+
+              // Settings
+              // Visibility(
+              //   child: TextButtonSimple(
+              //       text: "Settings",
+              //       onPressed: () {
+              //         Navigator.pushNamed(
+              //             context, "/settings");
+              //       }),
+              // ),
+
+              const SizedBox(height: 20),
+              Text("Dev buttons", style: getTextTheme(context).titleMedium),
+
+              // Debug button to add a top of mind thought
+              Visibility(
+                visible: true,
+                child: TextButtonSimple(
+                    text: "TOM",
+                    onPressed: () {
+                      Provider.of<ThoughtsProvider>(context, listen: false)
+                          .addTopOfMind(Thought.fromString(
+                              "I'm happy to have you here :smiley:", "Co", true,
+                              title: "Welcome to comind"));
+                    }),
+              ),
+
+              const SizedBox(height: 20),
+              Text("Other stuff", style: getTextTheme(context).titleMedium),
+
+              // Logout button
+              Visibility(
+                visible: Provider.of<AuthProvider>(context).isLoggedIn,
+                child: TextButtonSimple(
+                    text: "Log out",
+                    onPressed: () => {
+                          // Clear all thoughts
+                          Provider.of<ThoughtsProvider>(context, listen: false)
+                              .clear(),
+
+                          // Remove related thoughts
+                          relatedThoughts.clear(),
+
+                          // Logout
+                          Provider.of<AuthProvider>(context, listen: false)
+                              .logout()
+                        }),
+              ),
+            ]),
+          ),
         ),
-      ),
+      ],
     );
+  }
+
+  Widget mainStream(BoxConstraints constraints, BuildContext context) {
+    return MainLayout(
+      leftColumn: leftColumn(context),
+      middleColumn: CenterColumn(context),
+      // rightColumn: rightColumn(context),
+    );
+
+    // return SingleChildScrollView(
+    //   child: ConstrainedBox(
+    //     constraints: BoxConstraints(
+    //       minHeight: constraints.maxHeight,
+    //     ),
+    //     child: Row(
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       children: [
+
+    //         // // Center column
+    //         // CenterColumn(context),
+
+    //         // // Right column
+    //         // Visibility(
+    //           visible: showSideColumns(context),
+    //           child: SizedBox(
+    //             width: rightColumnWidth(context),
+    //             child: Column(
+    //               crossAxisAlignment: CrossAxisAlignment.center,
+    //               mainAxisAlignment: MainAxisAlignment.start,
+    //               children: [
+    //                 // Text("Notifications",
+    //                 //     style: getTextTheme(context).titleMedium),
+    //                 Text("", style: getTextTheme(context).titleMedium),
+    //               ],
+    //             ),
+    //           ),
+    //         ),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 
   // ignore: non_constant_identifier_names
@@ -299,52 +300,50 @@ class _StreamState extends State<Stream> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        SizedBox(
-          width: centerColumnWidth(context),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // columnOfThings(context),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // columnOfThings(context),
 
-                  // Make column of things a consumer of thoughtprovider,
-                  // so that it rebuilds when the thoughts change.
-                  Consumer<ThoughtsProvider>(
-                    builder: (context, thoughtsProvider, child) {
-                      return columnOfThings(context);
-                    },
-                  ),
+                // Make column of things a consumer of thoughtprovider,
+                // so that it rebuilds when the thoughts change.
+                Consumer<ThoughtsProvider>(
+                  builder: (context, thoughtsProvider, child) {
+                    return columnOfThings(context);
+                  },
+                ),
 
-                  // MarkdownThought(
-                  //     type: MarkdownDisplayType.newThought,
-                  //     thought: Thought.fromString(
-                  //         "",
-                  //         Provider.of<AuthProvider>(context).username,
-                  //         true,
-                  //         title: "Good morning")),
-                ],
-              )
-            ],
-          ),
+                // MarkdownThought(
+                //     type: MarkdownDisplayType.newThought,
+                //     thought: Thought.fromString(
+                //         "",
+                //         Provider.of<AuthProvider>(context).username,
+                //         true,
+                //         title: "Good morning")),
+              ],
+            )
+          ],
         ),
       ],
     );
   }
 
-  Column columnOfThings(BuildContext context) {
-    return Column(
+  Widget columnOfThings(BuildContext context) {
+    return Flex(
+      direction: Axis.vertical,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Visibility(
             visible: !Provider.of<ThoughtsProvider>(context).hasTopOfMind,
             child: const Padding(
-              padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-              child: SectionHeader(text: " THINK SOMETHING ", waves: true),
+              padding: EdgeInsets.fromLTRB(0, 8, 0, 32),
+              child: SectionHeader(text: " THINK SOMETHING ", waves: false),
             )),
 
         // Top of mind divider
@@ -398,8 +397,14 @@ class _StreamState extends State<Stream> {
         // The main text box
         thinkBox(context),
 
-        // Widget for the action bar
-        const ActionBar(),
+        // Widget for the action bar.
+        // padding is larger with no top of mind thought
+        Padding(
+          padding: getTopOfMind(context) == null
+              ? const EdgeInsets.fromLTRB(0, 32, 0, 0)
+              : const EdgeInsets.fromLTRB(0, 8, 0, 0),
+          child: const ActionBar(),
+        ),
 
         // Top of mind divider
         Visibility(
@@ -483,34 +488,6 @@ class _StreamState extends State<Stream> {
             }),
       ]),
     );
-  }
-
-  bool showSideColumns(BuildContext context) =>
-      MediaQuery.of(context).size.width > 800;
-  // MediaQuery.of(context).size.width > 800 && getTopOfMind(context) != null;
-
-  //
-  // Column width methods
-  //
-  double baseOuterWidth(BuildContext context) {
-    return (MediaQuery.of(context).size.width -
-            centerColumnWidth(context) -
-            25) /
-        2;
-  }
-
-  double leftColumnWidth(BuildContext context) {
-    return min(300, baseOuterWidth(context));
-  }
-
-  double centerColumnWidth(BuildContext context) {
-    return MediaQuery.of(context).size.width > 550
-        ? 550
-        : MediaQuery.of(context).size.width;
-  }
-
-  double rightColumnWidth(BuildContext context) {
-    return min(300, baseOuterWidth(context));
   }
 }
 

@@ -21,7 +21,7 @@ class Dispatch extends StatelessWidget {
     // Return loading screen
     //authProvider.isLoggedIn == null) {
 
-    return WelcomePage();
+    // return WelcomePage();
 
     // If the user is logged in, send them to the home page
     if (authProvider.isLoggedIn) {

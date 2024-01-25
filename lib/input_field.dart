@@ -108,8 +108,26 @@ class _MainTextFieldState extends State<MainTextField> {
       // Top and bottom border only.
       // This is handled by the decoration for the container
       // wrapping the text field.
-      enabledBorder: InputBorder.none,
-      focusedBorder: InputBorder.none,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(64),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(128),
+        ),
+      ),
     );
 
     //
@@ -186,29 +204,14 @@ class _MainTextFieldState extends State<MainTextField> {
                 child: Container(
                   // Bordered
                   decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.circular(ComindColors.bubbleRadius),
+
                     // Fill color
                     color: Provider.of<ComindColorsNotifier>(context)
                         .colorScheme
                         .onBackground
                         .withAlpha(8),
-
-                    // Top and bottom border only
-                    border: Border(
-                      top: BorderSide(
-                        width: 1,
-                        color: Provider.of<ComindColorsNotifier>(context)
-                            .colorScheme
-                            .onPrimary
-                            .withAlpha(64),
-                      ),
-                      bottom: BorderSide(
-                        width: 1,
-                        color: Provider.of<ComindColorsNotifier>(context)
-                            .colorScheme
-                            .onPrimary
-                            .withAlpha(64),
-                      ),
-                    ),
                   ),
 
                   // decoration: BoxDecoration(

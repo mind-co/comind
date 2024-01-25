@@ -128,11 +128,14 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     return Column(children: [
       // Main text box
       Card(
-        color: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
+        // elevation: 0.1,
+        color: Provider.of<ComindColorsNotifier>(context)
+            .colorScheme
+            .surfaceVariant,
+        // surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
         child: Padding(
-          padding: const EdgeInsets.all(0.0),
+          padding: const EdgeInsets.all(6.0),
           child: SizedBox(
             width: double.infinity,
             child: Column(
@@ -234,121 +237,151 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   Padding titleBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title with grey line from end of title to far right
-          Row(
-            children: [
-              // Title
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: RichText(
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: widget.thought.title,
-                          style: Provider.of<ComindColorsNotifier>(context,
-                                  listen: false)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                  color: Provider.of<ComindColorsNotifier>(
-                                          context,
-                                          listen: false)
-                                      .colorScheme
-                                      .onBackground),
-                        ),
-                      ],
-                    ),
-                  )
-
-                  // child: Text(thought.title, style: getTextTheme(context).labelMedium),
-                  // child: Text(thought.title, style: getTextTheme(context).titleSmall),
+      child: Opacity(
+        opacity: widget.showBody ? 1 : 0.4,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title with grey line from end of title to far right
+            Row(
+              children: [
+                // Colorbar
+                Visibility(
+                  visible: !widget.noTitle,
+                  child: Container(
+                    width: 10,
+                    height: 24,
+                    color: Provider.of<ComindColorsNotifier>(context).primary,
                   ),
-
-              // Grey line
-              Expanded(
-                child: Container(
-                  height: 1,
-                  color: Provider.of<ComindColorsNotifier>(context)
-                      .colorScheme
-                      .onBackground
-                      .withAlpha(64),
                 ),
-              ),
 
-              // Expand/contract button
-              Padding(
-                padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                child: newIconButton(
-                  context,
-                  () {
-                    // Toggle the body
-                    setState(() {
-                      widget.showBody = !widget.showBody;
-                    });
-                  },
-                  Icon(
-                    // Expand or contract icon
-                    widget.showBody ? Icons.close : Icons.circle_outlined,
-                    size: 24,
+                // Title
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    child: RichText(
+                      overflow: TextOverflow.fade,
+                      softWrap: false,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: widget.thought.title,
+                            style: Provider.of<ComindColorsNotifier>(context,
+                                    listen: false)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                    color: Provider.of<ComindColorsNotifier>(
+                                            context,
+                                            listen: false)
+                                        .colorScheme
+                                        .onBackground),
+                          ),
+                        ],
+                      ),
+                    )
+
+                    // child: Text(thought.title, style: getTextTheme(context).labelMedium),
+                    // child: Text(thought.title, style: getTextTheme(context).titleSmall),
+                    ),
+
+                // Grey line
+                Expanded(
+                  child: Container(
+                    height: 1,
                     color: Provider.of<ComindColorsNotifier>(context)
                         .colorScheme
-                        .onPrimary
-                        .withAlpha(32),
+                        .onBackground
+                        .withAlpha(64),
                   ),
                 ),
-              )
-            ],
-          ),
 
-          // Username
-          Opacity(
-            opacity: 0.7,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
-              child: SelectableText.rich(
-                TextSpan(
-                  children: [
-                    // Timestamp
-                    TextSpan(
-                      text: formatTimestamp(widget.thought.dateCreated),
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .bodySmall,
+                // Expand/contract button
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                  child: newIconButton(
+                    context,
+                    () {
+                      // Toggle the body
+                      setState(() {
+                        widget.showBody = !widget.showBody;
+                      });
+                    },
+                    Icon(
+                      // Expand or contract icon
+                      widget.showBody ? Icons.close : Icons.circle_outlined,
+                      size: 24,
+                      color: Provider.of<ComindColorsNotifier>(context)
+                          .colorScheme
+                          .onPrimary
+                          .withAlpha(128),
                     ),
-
-                    // Timestamp
-                    TextSpan(
-                      text: " · ",
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .bodySmall,
-                    ),
-
-                    TextSpan(
-                      text: widget.thought.username,
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .bodySmall,
-                    ),
-
-                    TextSpan(
-                      text:
-                          widget.thought.isPublic ? " · public" : " · private",
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .bodySmall,
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                )
+              ],
             ),
-          ), // Username
-        ],
+
+            // Username
+            Row(
+              children: [
+                // Colorbar padding with no color
+                Visibility(
+                  visible: !widget.noTitle,
+                  child: Container(
+                    width: 8,
+                    height: 24,
+                    // color: Provider.of<ComindColorsNotifier>(context)
+                    //     .colorScheme
+                    //     .primary,
+                  ),
+                ),
+
+                Opacity(
+                  opacity: 0.7,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
+                    child: SelectableText.rich(
+                      TextSpan(
+                        children: [
+                          // Timestamp
+                          TextSpan(
+                            text: formatTimestamp(widget.thought.dateCreated),
+                            style: Provider.of<ComindColorsNotifier>(context)
+                                .textTheme
+                                .bodySmall,
+                          ),
+
+                          // Timestamp
+                          TextSpan(
+                            text: " · ",
+                            style: Provider.of<ComindColorsNotifier>(context)
+                                .textTheme
+                                .bodySmall,
+                          ),
+
+                          TextSpan(
+                            text: widget.thought.username,
+                            style: Provider.of<ComindColorsNotifier>(context)
+                                .textTheme
+                                .bodySmall,
+                          ),
+
+                          TextSpan(
+                            text: widget.thought.isPublic
+                                ? " · public"
+                                : " · private",
+                            style: Provider.of<ComindColorsNotifier>(context)
+                                .textTheme
+                                .bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ), // Username
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -532,26 +565,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       ),
     );
 
-    // Local variable storing the delete button underneath each thought
-    // var deleteButton = Padding(
-    //   padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-    //   child: IconButton(
-    //     padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-    //     visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
-    //     enableFeedback: true,
-    //     splashRadius: 16,
-    //     ,
-    //     icon: Icon(
-    //       Icons.delete,
-    //       size: 16,
-    //       color: Provider.of<ComindColorsNotifier>(context)
-    //           .colorScheme
-    //           .onPrimary
-    //           .withAlpha(128),
-    //     ),
-    //   ),
-    // );
-
     var deleteButton = newIconButton(context, () async {
       bool? shouldDelete = await showDialog<bool>(
         context: context,
@@ -616,45 +629,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
               .withAlpha(128),
         ));
 
-    // // Local variable for edit button
-    // var editThoughtButton = Padding(
-    //   padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-    //   child: newButton(
-    //       onBackground, context, widget.showTextBox ? "Close" : "Edit", () {
-    //     // Update the edit box with the thought
-    //     _editController.text = widget.thought.body;
-
-    //     // Toggle the new thought box
-    //     setState(() {
-    //       widget.showTextBox = !widget.showTextBox;
-    //     });
-    //   }),
-    // );
-
-    // // The link button
-    // var linkButton = newIconButton(
-    //   context,
-    //   () async {
-    //     // If there is a parent thought
-    //     if (widget.parentThought != null) {
-    //       // Link the thoughts
-    //       if (widget.thought.id != widget.parentThought &&
-    //           widget.parentThought != null) {
-    //         await linkThoughts(
-    //             context, widget.thought.id, widget.parentThought!);
-    //       }
-    //     }
-    //   },
-    //   Icon(
-    //     Icons.add_link,
-    //     size: 16,
-    //     color: Provider.of<ComindColorsNotifier>(context)
-    //         .colorScheme
-    //         .onPrimary
-    //         .withAlpha(128),
-    //   ),
-    // );
-
     // Edit button
     var editThoughtButton = newIconButton(
       context,
@@ -688,45 +662,26 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       },
       Icon(
         widget.infoMode ? Icons.close : Icons.info_outline,
-        size: 16,
+        size: 24,
         color: Provider.of<ComindColorsNotifier>(context)
             .colorScheme
             .onPrimary
-            .withAlpha(128),
+            .withAlpha(64),
       ),
     );
 
-    // // the more button
-    // var moreButton = newIconButton(
-    //   context,
-    //   () {
-    //     // Toggle info mode
-    //     setState(() {
-    //       moreClicked = !moreClicked;
-    //     });
-    //   },
-    //   Icon(
-    //     Icons.more_horiz,
-    //     size: 16,
-    //     color: Provider.of<ComindColorsNotifier>(context)
-    //         .colorScheme
-    //         .onPrimary
-    //         .withAlpha(128),
-    //   ),
-    // );
-
     // the action row
     return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-      // Gray line
-      Expanded(
-        child: Container(
-          height: 1,
-          color: Provider.of<ComindColorsNotifier>(context)
-              .colorScheme
-              .onPrimary
-              .withAlpha(64),
-        ),
-      ),
+      // // Gray line
+      // Expanded(
+      //   child: Container(
+      //     height: 1,
+      //     color: Provider.of<ComindColorsNotifier>(context)
+      //         .colorScheme
+      //         .onPrimary
+      //         .withAlpha(64),
+      //   ),
+      // ),
 
       // Lock icon
       Visibility(
@@ -752,7 +707,8 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
       // Info button
       Visibility(
-          visible: !widget.relatedMode && !newThoughtOpen, child: infoButton),
+          visible: !widget.relatedMode && !newThoughtOpen && !widget.viewOnly,
+          child: infoButton),
 
       Visibility(
           visible: widget.type == MarkdownDisplayType.searchResult &&

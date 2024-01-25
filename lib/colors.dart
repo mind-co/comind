@@ -94,7 +94,7 @@ class ComindColors {
   // Text themes
   // static final bodyStyle = GoogleFonts.hankenGrotesk(
   static final bodyStyle = GoogleFonts.ibmPlexSans(
-    fontWeight: FontWeight.w300,
+    fontWeight: FontWeight.w400,
     height: 1.2,
   );
   // Ignore formatted
@@ -135,8 +135,8 @@ class ComindColors {
 
     // Title style
     titleSmall: titleStyle.copyWith(fontSize: fontScalar * 10),
-    titleMedium: titleStyle.copyWith(fontSize: fontScalar * 14),
-    titleLarge: titleStyle.copyWith(fontSize: fontScalar * 18),
+    titleMedium: titleStyle.copyWith(fontSize: fontScalar * 12),
+    titleLarge: titleStyle.copyWith(fontSize: fontScalar * 14),
 
     // Header style
     headlineLarge: titleStyle.copyWith(fontSize: fontScalar * 20),
