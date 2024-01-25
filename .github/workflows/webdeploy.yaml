@@ -58,3 +58,4 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: build/web
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
