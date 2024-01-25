@@ -368,10 +368,6 @@ Future<LoginResponse> login(String username, String password) async {
 
   final response = await http.post(url, body: body);
 
-  print("URL: $url");
-  print("Body: $body");
-  print("Response: ${response.body}");
-
   // print(response.body);
   if (response.statusCode != 200) {
     throw Exception('Failed to login');
