@@ -378,9 +378,12 @@ class _StreamState extends State<Stream> {
                         : MediaQuery.of(context).size.height <= 600
                             ? 64
                             : 128),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(0, 8, 0, 32),
-                  child: SectionHeader(text: " THINK SOMETHING ", waves: false),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 32),
+                  child: SectionHeader(
+                      text:
+                          " THINK SOMETHING, ${Provider.of<AuthProvider>(context).username} ",
+                      waves: false),
                 ),
               ],
             )),
