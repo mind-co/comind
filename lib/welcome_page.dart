@@ -1,15 +1,9 @@
-import 'package:comind/colors.dart';
 import 'package:comind/main_layout.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:comind/misc/util.dart';
-import 'package:comind/stream.dart';
-import 'package:comind/text_button.dart';
 import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 Future<String> loadMarkdownAsset(String assetPath) async {
   return await rootBundle.loadString(assetPath);

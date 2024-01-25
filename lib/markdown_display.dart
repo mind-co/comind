@@ -241,34 +241,33 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           Row(
             children: [
               // Title
-              if (MarkdownDisplayType.newThought != widget.type)
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    // Version where body is truncated
-                    child: widget.thought.title == ""
-                        ? Container()
-                        : RichText(
-                            overflow: TextOverflow.fade,
-                            softWrap: false,
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: widget.thought.title,
-                                  style: Provider.of<ComindColorsNotifier>(
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: RichText(
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: widget.thought.title,
+                          style: Provider.of<ComindColorsNotifier>(context,
+                                  listen: false)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                  color: Provider.of<ComindColorsNotifier>(
                                           context,
-                                          listen: true)
-                                      .textTheme
-                                      .titleMedium,
-                                ),
-                              ],
-                            ),
-                          )
+                                          listen: false)
+                                      .colorScheme
+                                      .onBackground),
+                        ),
+                      ],
+                    ),
+                  )
 
-                    // child: Text(thought.title, style: getTextTheme(context).labelMedium),
-                    // child: Text(thought.title, style: getTextTheme(context).titleSmall),
-                    )
-              else
-                Container(),
+                  // child: Text(thought.title, style: getTextTheme(context).labelMedium),
+                  // child: Text(thought.title, style: getTextTheme(context).titleSmall),
+                  ),
 
               // Grey line
               Expanded(
@@ -1040,7 +1039,7 @@ class TheMarkdownBox extends StatelessWidget {
               decorationColor: Provider.of<ComindColorsNotifier>(context)
                   .colorScheme
                   .primary,
-              decorationThickness: 1,
+              decorationThickness: 2,
             ),
 
             // Smush the text together
