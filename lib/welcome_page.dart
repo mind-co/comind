@@ -1,4 +1,5 @@
 import 'package:comind/colors.dart';
+import 'package:comind/main_layout.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/stream.dart';
@@ -37,77 +38,67 @@ class _WelcomePageState extends State<WelcomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: comindAppBar(context),
-      body: SizedBox(
-        width: ComindColors.maxWidth,
-        child: SingleChildScrollView(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Empty thing to make it centered
-              Expanded(
-                child: Container(width: 200),
-              ),
-              SizedBox(
-                width: ComindColors.maxWidth,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    MarkdownThought(
-                        thought: Thought.fromString(
-                          intro,
-                          "cameron",
-                          true,
-                          title: "Welcome to Comind",
-                        ),
-                        type: MarkdownDisplayType.fullScreen),
+      body: MainLayout(middleColumn: middleColumn(context)),
+    );
+  }
 
-                    // Padding(
-                    //   padding: const EdgeInsets.all(8.0),
-                    //   child: TheMarkdownBox(text: intro),
-                    // ),
-
-                    // Button row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ComindTextButton(
-                          onPressed: () async {
-                            // Make uri
-                            var url = Uri(
-                              scheme: 'https',
-                              host: 'www.patreon.com',
-                              path: 'comind',
-                            );
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(url);
-                            } else {
-                              throw 'Could not launch $url';
-                            }
-                          },
-                          text: 'Patreon',
-                        ),
-                        ComindTextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/register');
-                          },
-                          text: 'Register',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Empty thing to make it centered
-              Expanded(
-                child: Container(),
-              ),
-            ],
+  Widget middleColumn(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Intro
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: MarkdownThought(
+            viewOnly: true,
+            thought: Thought.fromString(intro, "cameron", true, title: "Howdy"),
           ),
         ),
-      ),
+
+        // Buttons
+        // Padding(
+        //   padding: const EdgeInsets.all(16.0),
+        //   child: Row(
+        //     children: [
+        //       // Login button
+        //       TextButton(
+        //         onPressed: () {
+        //           Navigator.of(context).pushNamed('/login');
+        //         },
+        //         child: Text('Login'),
+        //       ),
+
+        //       // Spacer
+        //       Spacer(),
+
+        //       // Signup button
+        //       TextButton(
+        //         onPressed: () {
+        //           Navigator.of(context).pushNamed('/signup');
+        //         },
+        //         child: Text('Signup'),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+
+        // Spacer
+        // Spacer(),
+
+        // // fin
+        // Padding(
+        //   padding: const EdgeInsets.all(16.0),
+        //   child: Text(
+        //     'fin',
+        //     style: TextStyle(
+        //       color: Provider.of<ComindColorsNotifier>(context)
+        //           .colorScheme
+        //           .onPrimary
+        //           .withAlpha(255),
+        //     ),
+        //   ),
+        // ),
+      ],
     );
   }
 }

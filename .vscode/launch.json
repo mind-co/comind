@@ -9,8 +9,8 @@
             "request": "launch",
             "type": "dart",
             "args": [
-                "--web-renderer",
-                "html",
+                // "--web-renderer",
+                // "html",
                 "--dart-define",
                 "COMIND_SERVER_URL=http://nimbus.pfiffer.org:8000"
             ]

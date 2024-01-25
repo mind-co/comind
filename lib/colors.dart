@@ -116,8 +116,8 @@ class ComindColors {
     fontSize: 20,
   );
 
-  static const fontScalar = 1.5;
-  static const double maxWidth = 600;
+  static const fontScalar = 1.3;
+  static const double maxWidth = 700;
   static const double bubbleRadius = 30;
 
   TextTheme textTheme = TextTheme(
@@ -129,9 +129,9 @@ class ComindColors {
     labelLarge: labelStyle.copyWith(fontSize: fontScalar * 14),
 
     // Body style
-    bodySmall: bodyStyle.copyWith(fontSize: fontScalar * 12),
-    bodyMedium: bodyStyle.copyWith(fontSize: fontScalar * 14),
-    bodyLarge: bodyStyle.copyWith(fontSize: fontScalar * 18),
+    bodySmall: bodyStyle.copyWith(fontSize: fontScalar * 10),
+    bodyMedium: bodyStyle.copyWith(fontSize: fontScalar * 12),
+    bodyLarge: bodyStyle.copyWith(fontSize: fontScalar * 14),
 
     // Title style
     titleSmall: titleStyle.copyWith(fontSize: fontScalar * 10),

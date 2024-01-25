@@ -157,7 +157,8 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
 
   // Fetch thoughts
   void _fetchThoughts() async {
-    while (!Provider.of<AuthProvider>(context, listen: false).isLoggedIn) {
+    while (mounted &&
+        !Provider.of<AuthProvider>(context, listen: false).isLoggedIn) {
       await Future.delayed(const Duration(milliseconds: 100));
     }
 
@@ -475,25 +476,6 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
                         ? 2
                         : 1),
           ),
-
-          // SizedBox(
-          //   width:
-          //       min(ComindColors.maxWidth, MediaQuery.of(context).size.width),
-          //   height: 900,
-          //   child: Consumer<ThoughtsProvider>(
-          //     builder: (context, thoughtsProvider, child) {
-          //       return ListView.builder(
-          //         itemCount: thoughtsProvider.thoughts.length,
-          //         itemBuilder: (context, index) {
-          //           final thought = thoughtsProvider.thoughts[index];
-          //           return SizedBox(
-          //               width: 600, height: 100, child: Text(thought.body));
-          //           // Use 'thought' to build your widgets.
-          //         },
-          //       );
-          //     },
-          //   ),
-          // )
 
           /// THOUGHTS LIST VIEW / STREAM OF CONCIOUSNESS
           ///////////////////////////

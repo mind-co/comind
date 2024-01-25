@@ -25,7 +25,7 @@ String formatTimestamp(String timestamp) {
   } else if (difference.inMinutes >= 5) {
     return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
   } else {
-    return '';
+    return 'just now';
   }
 }
 
