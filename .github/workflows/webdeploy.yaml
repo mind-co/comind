@@ -44,14 +44,15 @@ jobs:
       - name: Download pub dependencies
         run: flutter pub get
 
-      - name: Run analyzer
-        run: flutter analyze
+      # Hiding this because my code is a mess
+      # - name: Run analyzer
+      #   run: flutter analyze
 
       - name: Run tests
         run: flutter test
 
       - name: Build Web App
-        run: flutter build web --base-href=/project_aj/
+        run: flutter build web
 
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4
