@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:comind/colors.dart';
+import 'package:comind/providers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -128,8 +129,8 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   bool showSideColumns(BuildContext context) =>
-      MediaQuery.of(context).size.width > 0;
-  // MediaQuery.of(context).size.width > 800 && getTopOfMind(context) != null;
+      MediaQuery.of(context).size.width > ComindColors.maxWidth &&
+      getTopOfMind(context) != null;
 
   //
   // Column width methods

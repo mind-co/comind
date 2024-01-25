@@ -65,7 +65,7 @@ class ComindShortLogo extends StatelessWidget {
           '{',
           style: TextStyle(
             color: colors.currentColors.primaryColor,
-            fontFamily: "Bungee",
+            fontFamily: "bunpop",
             fontSize: size,
           ),
         ),

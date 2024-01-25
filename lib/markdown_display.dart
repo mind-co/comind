@@ -127,102 +127,106 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
     return Column(children: [
       // Main text box
-      Card(
-        // elevation: 0.1,
-        color: Provider.of<ComindColorsNotifier>(context)
-            .colorScheme
-            .surfaceVariant,
-        // surfaceTintColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-        child: Padding(
-          padding: const EdgeInsets.all(6.0),
-          child: SizedBox(
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Cinewave username
-                Row(
-                  children: [
-                    // Link button for child thoughts
-                    Visibility(
-                      visible: widget.type == MarkdownDisplayType.searchResult,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-                        child: HoverIconButton(
-                          icon: Icons.add_link,
-                          onPressed: () async {
-                            // If there is a parent thought
-                            if (widget.parentThought != null) {
-                              // Link the thoughts
-                              if (widget.thought.id != widget.parentThought &&
-                                  widget.parentThought != null) {
-                                await linkThoughts(context, widget.thought.id,
-                                    widget.parentThought!);
+      Opacity(
+        opacity: widget.showBody ? 1.0 : 0.5,
+        child: Card(
+          // elevation: 0.1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .surfaceVariant,
+          // surfaceTintColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Cinewave username
+                  Row(
+                    children: [
+                      // Link button for child thoughts
+                      Visibility(
+                        visible:
+                            widget.type == MarkdownDisplayType.searchResult,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                          child: HoverIconButton(
+                            icon: Icons.add_link,
+                            onPressed: () async {
+                              // If there is a parent thought
+                              if (widget.parentThought != null) {
+                                // Link the thoughts
+                                if (widget.thought.id != widget.parentThought &&
+                                    widget.parentThought != null) {
+                                  await linkThoughts(context, widget.thought.id,
+                                      widget.parentThought!);
+                                }
                               }
-                            }
-                          },
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
 
-                // // Show cosine similarity
-                // Text(widget.thought.cosineSimilarity.toString(),
-                //     style: Provider.of<ComindColorsNotifier>(context)
-                //         .textTheme
-                //         .bodySmall),
+                  // // Show cosine similarity
+                  // Text(widget.thought.cosineSimilarity.toString(),
+                  //     style: Provider.of<ComindColorsNotifier>(context)
+                  //         .textTheme
+                  //         .bodySmall),
 
-                titleBar(context),
+                  titleBar(context),
 
-                // Add thought body
-                Visibility(
-                    visible: widget.showBody && !widget.showTextBox,
-                    child: thoughtBody(context)),
+                  // Add thought body
+                  Visibility(
+                      visible: widget.showBody && !widget.showTextBox,
+                      child: thoughtBody(context)),
 
-                expandableEditBox(context),
+                  expandableEditBox(context),
 
-                // Alternative action row
-                Visibility(
-                    visible: widget.type != MarkdownDisplayType.topOfMind &&
-                        widget.showBody,
-                    child: alternativeActionRow(context, onBackground)),
+                  // Alternative action row
+                  Visibility(
+                      visible: widget.type != MarkdownDisplayType.topOfMind &&
+                          widget.showBody,
+                      child: alternativeActionRow(context, onBackground)),
 
-                // Show new thought box
-                // Padding(
-                //   padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-                //   child: Row(
-                //     children: [
-                //       Visibility(
-                //         visible: newThoughtOpen,
-                //         child: IconButton(
-                //           padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                //           enableFeedback: true,
-                //           splashRadius: 16,
-                //           onPressed: () {
-                //             // Toggle the body
-                //             setState(() {
-                //               newThoughtOpen = !newThoughtOpen;
-                //             });
-                //           },
-                //           icon: Icon(
-                //             Icons.subdirectory_arrow_right,
-                //             size: 16,
-                //             color: Provider.of<ComindColorsNotifier>(context)
-                //                 .colorScheme
-                //                 .onBackground
-                //                 .withAlpha(200),
-                //           ),
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
+                  // Show new thought box
+                  // Padding(
+                  //   padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                  //   child: Row(
+                  //     children: [
+                  //       Visibility(
+                  //         visible: newThoughtOpen,
+                  //         child: IconButton(
+                  //           padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  //           enableFeedback: true,
+                  //           splashRadius: 16,
+                  //           onPressed: () {
+                  //             // Toggle the body
+                  //             setState(() {
+                  //               newThoughtOpen = !newThoughtOpen;
+                  //             });
+                  //           },
+                  //           icon: Icon(
+                  //             Icons.subdirectory_arrow_right,
+                  //             size: 16,
+                  //             color: Provider.of<ComindColorsNotifier>(context)
+                  //                 .colorScheme
+                  //                 .onBackground
+                  //                 .withAlpha(200),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
 
-                // New thought box
-                newThoughtBox(context),
-              ],
+                  // New thought box
+                  newThoughtBox(context),
+                ],
+              ),
             ),
           ),
         ),
@@ -237,151 +241,148 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   Padding titleBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Opacity(
-        opacity: widget.showBody ? 1 : 0.4,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title with grey line from end of title to far right
-            Row(
-              children: [
-                // Colorbar
-                Visibility(
-                  visible: !widget.noTitle,
-                  child: Container(
-                    width: 10,
-                    height: 24,
-                    color: Provider.of<ComindColorsNotifier>(context).primary,
-                  ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title with grey line from end of title to far right
+          Row(
+            children: [
+              // Colorbar
+              Visibility(
+                visible: !widget.noTitle,
+                child: Container(
+                  width: 10,
+                  height: 24,
+                  color: Provider.of<ComindColorsNotifier>(context).primary,
                 ),
+              ),
 
-                // Title
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: RichText(
-                      overflow: TextOverflow.fade,
-                      softWrap: false,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: widget.thought.title,
-                            style: Provider.of<ComindColorsNotifier>(context,
-                                    listen: false)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                    color: Provider.of<ComindColorsNotifier>(
-                                            context,
-                                            listen: false)
-                                        .colorScheme
-                                        .onBackground),
-                          ),
-                        ],
-                      ),
-                    )
-
-                    // child: Text(thought.title, style: getTextTheme(context).labelMedium),
-                    // child: Text(thought.title, style: getTextTheme(context).titleSmall),
+              // Title
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: RichText(
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: widget.thought.title,
+                          style: Provider.of<ComindColorsNotifier>(context,
+                                  listen: false)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                  color: Provider.of<ComindColorsNotifier>(
+                                          context,
+                                          listen: false)
+                                      .colorScheme
+                                      .onBackground),
+                        ),
+                      ],
                     ),
+                  )
 
-                // Grey line
-                Expanded(
-                  child: Container(
-                    height: 1,
+                  // child: Text(thought.title, style: getTextTheme(context).labelMedium),
+                  // child: Text(thought.title, style: getTextTheme(context).titleSmall),
+                  ),
+
+              // Grey line
+              Expanded(
+                child: Container(
+                  height: 1,
+                  color: Provider.of<ComindColorsNotifier>(context)
+                      .colorScheme
+                      .onBackground
+                      .withAlpha(64),
+                ),
+              ),
+
+              // Expand/contract button
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                child: newIconButton(
+                  context,
+                  () {
+                    // Toggle the body
+                    setState(() {
+                      widget.showBody = !widget.showBody;
+                    });
+                  },
+                  Icon(
+                    // Expand or contract icon
+                    widget.showBody ? Icons.close : Icons.circle_outlined,
+                    size: 24,
                     color: Provider.of<ComindColorsNotifier>(context)
                         .colorScheme
-                        .onBackground
-                        .withAlpha(64),
+                        .onPrimary
+                        .withAlpha(128),
                   ),
                 ),
+              )
+            ],
+          ),
 
-                // Expand/contract button
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                  child: newIconButton(
-                    context,
-                    () {
-                      // Toggle the body
-                      setState(() {
-                        widget.showBody = !widget.showBody;
-                      });
-                    },
-                    Icon(
-                      // Expand or contract icon
-                      widget.showBody ? Icons.close : Icons.circle_outlined,
-                      size: 24,
-                      color: Provider.of<ComindColorsNotifier>(context)
-                          .colorScheme
-                          .onPrimary
-                          .withAlpha(128),
+          // Username
+          Row(
+            children: [
+              // Colorbar padding with no color
+              Visibility(
+                visible: !widget.noTitle,
+                child: Container(
+                  width: 8,
+                  height: 24,
+                  // color: Provider.of<ComindColorsNotifier>(context)
+                  //     .colorScheme
+                  //     .primary,
+                ),
+              ),
+
+              Opacity(
+                opacity: 0.7,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
+                  child: SelectableText.rich(
+                    TextSpan(
+                      children: [
+                        // Timestamp
+                        TextSpan(
+                          text: formatTimestamp(widget.thought.dateCreated),
+                          style: Provider.of<ComindColorsNotifier>(context)
+                              .textTheme
+                              .bodySmall,
+                        ),
+
+                        // Timestamp
+                        TextSpan(
+                          text: " · ",
+                          style: Provider.of<ComindColorsNotifier>(context)
+                              .textTheme
+                              .bodySmall,
+                        ),
+
+                        TextSpan(
+                          text: widget.thought.username,
+                          style: Provider.of<ComindColorsNotifier>(context)
+                              .textTheme
+                              .bodySmall,
+                        ),
+
+                        TextSpan(
+                          text: widget.thought.isPublic
+                              ? " · public"
+                              : " · private",
+                          style: Provider.of<ComindColorsNotifier>(context)
+                              .textTheme
+                              .bodySmall,
+                        ),
+                      ],
                     ),
-                  ),
-                )
-              ],
-            ),
-
-            // Username
-            Row(
-              children: [
-                // Colorbar padding with no color
-                Visibility(
-                  visible: !widget.noTitle,
-                  child: Container(
-                    width: 8,
-                    height: 24,
-                    // color: Provider.of<ComindColorsNotifier>(context)
-                    //     .colorScheme
-                    //     .primary,
                   ),
                 ),
-
-                Opacity(
-                  opacity: 0.7,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
-                    child: SelectableText.rich(
-                      TextSpan(
-                        children: [
-                          // Timestamp
-                          TextSpan(
-                            text: formatTimestamp(widget.thought.dateCreated),
-                            style: Provider.of<ComindColorsNotifier>(context)
-                                .textTheme
-                                .bodySmall,
-                          ),
-
-                          // Timestamp
-                          TextSpan(
-                            text: " · ",
-                            style: Provider.of<ComindColorsNotifier>(context)
-                                .textTheme
-                                .bodySmall,
-                          ),
-
-                          TextSpan(
-                            text: widget.thought.username,
-                            style: Provider.of<ComindColorsNotifier>(context)
-                                .textTheme
-                                .bodySmall,
-                          ),
-
-                          TextSpan(
-                            text: widget.thought.isPublic
-                                ? " · public"
-                                : " · private",
-                            style: Provider.of<ComindColorsNotifier>(context)
-                                .textTheme
-                                .bodySmall,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ), // Username
-              ],
-            ),
-          ],
-        ),
+              ), // Username
+            ],
+          ),
+        ],
       ),
     );
   }
