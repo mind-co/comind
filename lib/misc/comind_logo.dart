@@ -65,7 +65,7 @@ class ComindShortLogo extends StatelessWidget {
           '{',
           style: TextStyle(
             color: colors.currentColors.primaryColor,
-            fontFamily: "Bungee Pop",
+            fontFamily: "Bungee",
             fontSize: size,
           ),
         ),
@@ -73,7 +73,7 @@ class ComindShortLogo extends StatelessWidget {
           'c',
           style: TextStyle(
             color: colors.currentColors.secondaryColor,
-            fontFamily: "Bungee Pop",
+            fontFamily: "bunpop",
             fontSize: size,
           ),
         ),
@@ -81,7 +81,7 @@ class ComindShortLogo extends StatelessWidget {
           'o',
           style: TextStyle(
             color: colors.currentColors.tertiaryColor,
-            fontFamily: "Bungee Pop",
+            fontFamily: "bunpop",
             fontSize: size,
           ),
         ),
@@ -89,7 +89,7 @@ class ComindShortLogo extends StatelessWidget {
           '}',
           style: TextStyle(
               color: colors.currentColors.primaryColor,
-              fontFamily: "Bungee Pop",
+              fontFamily: "bunpop",
               fontSize: size),
         ),
       ],
@@ -220,7 +220,7 @@ class ComindLogo extends StatelessWidget {
             // decorationThickness: 2,
             // decoration: TextDecoration.underline,
             color: colors.currentColors.primaryColor,
-            fontFamily: "Bungee Pop",
+            fontFamily: "bunpop",
             fontSize: size,
           ),
         ),
@@ -230,7 +230,7 @@ class ComindLogo extends StatelessWidget {
             // decorationThickness: 2,
             // decoration: TextDecoration.underline,
             color: colors.currentColors.secondaryColor,
-            fontFamily: "Bungee Pop",
+            fontFamily: "bunpop",
             fontSize: size,
           ),
         ),
@@ -240,7 +240,7 @@ class ComindLogo extends StatelessWidget {
             // decorationThickness: 2,
             // decoration: TextDecoration.underline,
             color: colors.currentColors.tertiaryColor,
-            fontFamily: "Bungee Pop",
+            fontFamily: "bunpop",
             fontSize: size,
           ),
         ),
@@ -251,39 +251,8 @@ class ComindLogo extends StatelessWidget {
               // decorationThickness: 2,
 
               color: colors.currentColors.primaryColor,
-              fontFamily: "Bungee Pop",
+              fontFamily: "bunpop",
               fontSize: size),
-        ),
-      ],
-    ));
-  }
-}
-
-// The above but as a class
-class ComindHeader extends StatelessWidget {
-  // Allow arbitrary text
-  final String text;
-
-  const ComindHeader({Key? key, required this.text}) : super(key: key);
-
-  // Add a main axis alignment property, default to center
-  final MainAxisAlignment mainAxisAlignment = MainAxisAlignment.center;
-
-  @override
-  Widget build(BuildContext context) {
-    const size = 34.0;
-    return (Row(
-      mainAxisAlignment: mainAxisAlignment,
-      children: [
-        Text(
-          text,
-          style: TextStyle(
-            color: Provider.of<ComindColorsNotifier>(context)
-                .currentColors
-                .primaryColor,
-            fontFamily: "Bungee Shade",
-            fontSize: size,
-          ),
         ),
       ],
     ));
@@ -344,8 +313,7 @@ class _ComindIsLoadingState extends State<ComindIsLoading>
             builder: (context, child) {
               var textStyle = TextStyle(
                 fontSize: size,
-                fontFamily: "Bungee Pop",
-                fontWeight: FontWeight.normal,
+                fontFamily: "bunpop",
                 color: Provider.of<ComindColorsNotifier>(context)
                     .currentColors
                     .primaryColor,

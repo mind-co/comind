@@ -1,5 +1,5 @@
 name: comind
-description: A new Flutter project.
+description: think something
 
 # Prevent accidental publishing to pub.dev.
 publish_to: "none"
@@ -53,13 +53,11 @@ flutter:
   generate: true
 
   assets:
-    - assets/fonts/
+    - fonts/bunpop.ttf
+    - fonts/MaterialIcons-Regular.ttf
     - assets/intro.md
 
   fonts:
-    - family: "Bungee Shade"
+    - family: bunpop
       fonts:
-        - asset: fonts/BungeePop-3.ttf
-    - family: "Bungee"
-      fonts:
-        - asset: fonts/Bungee-Regular.ttf
+        - asset: fonts/bunpop.ttf
