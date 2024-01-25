@@ -12,10 +12,12 @@ import 'package:comind/markdown_display.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/soul_blob.dart';
+import 'package:comind/text_button.dart';
 import 'package:comind/text_button_simple.dart';
 import 'package:comind/types/thought.dart';
 import 'package:comind/welcome_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class Stream extends StatefulWidget {
@@ -112,143 +114,169 @@ class _StreamState extends State<Stream> {
     );
   }
 
+  bool _hover = false;
   Widget leftColumn(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        // Action row under the text box
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-          child: Opacity(
-            opacity: 0.5,
-            child: Wrap(direction: Axis.vertical, children: [
-              // // Color picker
-              // ColorPicker(onColorSelected: (Color color) {
-              //   Provider.of<ComindColorsNotifier>(context, listen: false)
-              //       .modifyColors(color);
-              // }),
+    return MouseRegion(
+      onEnter: (PointerEnterEvent event) {
+        setState(() {
+          _hover = true;
+        });
+      },
+      onExit: (PointerExitEvent event) {
+        setState(() {
+          _hover = false;
+        });
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          // Action row under the text box
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+            child: Opacity(
+              opacity: _hover ? 1 : .3,
+              child: Wrap(direction: Axis.vertical, children: [
+                // // Color picker
+                // ColorPicker(onColorSelected: (Color color) {
+                //   Provider.of<ComindColorsNotifier>(context, listen: false)
+                //       .modifyColors(color);
+                // }),
 
-              Text("Menu", style: getTextTheme(context).titleMedium),
+                Text("Menu", style: getTextTheme(context).titleMedium),
 
-              const SizedBox(height: 0),
+                const SizedBox(height: 0),
 
-              // Public/private button
-              TextButtonSimple(
-                  text: Provider.of<ComindColorsNotifier>(context).publicMode
-                      ? "Public"
-                      : "Private",
-                  onPressed: () {
-                    Provider.of<ComindColorsNotifier>(context, listen: false)
-                        .togglePublicMode(!Provider.of<ComindColorsNotifier>(
-                                context,
-                                listen: false)
-                            .publicMode);
-                  }),
-
-              // Clear top of mind
-              TextButtonSimple(
-                  text: "Clear",
-                  onPressed: () {
-                    Provider.of<ThoughtsProvider>(context, listen: false)
-                        .clear();
-
-                    // Remove related thoughts
-                    relatedThoughts.clear();
-                  }),
-
-              // Color picker button
-              TextButtonSimple(
-                  text: "Color",
-                  onPressed: () async {
-                    Color color = await colorDialog(context);
-                    Provider.of<ComindColorsNotifier>(context, listen: false)
-                        .modifyColors(color);
-                  }),
-
-              // Dark mode
-              TextButtonSimple(
-                  text: "Dark mode",
-                  onPressed: () {
-                    Provider.of<ComindColorsNotifier>(context, listen: false)
-                        .toggleTheme(!Provider.of<ComindColorsNotifier>(context,
-                                listen: false)
-                            .darkMode);
-                  }),
-
-              // Login button
-              Visibility(
-                visible: !Provider.of<AuthProvider>(context).isLoggedIn,
-                child: TextButtonSimple(
-                    text: "Log in",
-                    // Navigate to login page.
+                // Public/private button
+                ComindTextButton(
+                    lineLocation: LineLocation.left,
+                    text: Provider.of<ComindColorsNotifier>(context).publicMode
+                        ? "Public"
+                        : "Private",
                     onPressed: () {
-                      Navigator.pushNamed(context, "/login");
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .togglePublicMode(!Provider.of<ComindColorsNotifier>(
+                                  context,
+                                  listen: false)
+                              .publicMode);
                     }),
-              ),
 
-              // Sign up button
-              Visibility(
-                visible: !Provider.of<AuthProvider>(context).isLoggedIn,
-                child: TextButtonSimple(
-                    text: "Sign up",
-                    // Navigate to sign up page.
-                    onPressed: () {
-                      Navigator.pushNamed(context, "/signup");
-                    }),
-              ),
-
-              // Settings
-              // Visibility(
-              //   child: TextButtonSimple(
-              //       text: "Settings",
-              //       onPressed: () {
-              //         Navigator.pushNamed(
-              //             context, "/settings");
-              //       }),
-              // ),
-
-              const SizedBox(height: 20),
-              Text("Dev buttons", style: getTextTheme(context).titleMedium),
-
-              // Debug button to add a top of mind thought
-              Visibility(
-                visible: true,
-                child: TextButtonSimple(
-                    text: "TOM",
+                // Clear top of mind
+                ComindTextButton(
+                    lineLocation: LineLocation.left,
+                    text: "Clear",
                     onPressed: () {
                       Provider.of<ThoughtsProvider>(context, listen: false)
-                          .addTopOfMind(Thought.fromString(
-                              "I'm happy to have you here :smiley:", "Co", true,
-                              title: "Welcome to comind"));
+                          .clear();
+
+                      // Remove related thoughts
+                      relatedThoughts.clear();
                     }),
-              ),
 
-              const SizedBox(height: 20),
-              Text("Other stuff", style: getTextTheme(context).titleMedium),
+                // Color picker button
+                ComindTextButton(
+                    lineLocation: LineLocation.left,
+                    text: "Color",
+                    onPressed: () async {
+                      Color color = await colorDialog(context);
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .modifyColors(color);
+                    }),
 
-              // Logout button
-              Visibility(
-                visible: Provider.of<AuthProvider>(context).isLoggedIn,
-                child: TextButtonSimple(
-                    text: "Log out",
-                    onPressed: () => {
-                          // Clear all thoughts
-                          Provider.of<ThoughtsProvider>(context, listen: false)
-                              .clear(),
+                // Dark mode
+                ComindTextButton(
+                    lineLocation: LineLocation.left,
+                    text: "Dark mode",
+                    onPressed: () {
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .toggleTheme(!Provider.of<ComindColorsNotifier>(
+                                  context,
+                                  listen: false)
+                              .darkMode);
+                    }),
 
-                          // Remove related thoughts
-                          relatedThoughts.clear(),
+                // Login button
+                Visibility(
+                  visible: !Provider.of<AuthProvider>(context).isLoggedIn,
+                  child: ComindTextButton(
+                      lineLocation: LineLocation.left,
+                      text: "Log in",
+                      // Navigate to login page.
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/login");
+                      }),
+                ),
 
-                          // Logout
-                          Provider.of<AuthProvider>(context, listen: false)
-                              .logout()
-                        }),
-              ),
-            ]),
+                // Sign up button
+                Visibility(
+                  visible: !Provider.of<AuthProvider>(context).isLoggedIn,
+                  child: ComindTextButton(
+                      lineLocation: LineLocation.left,
+                      text: "Sign up",
+                      // Navigate to sign up page.
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/signup");
+                      }),
+                ),
+
+                // Settings
+                // Visibility(
+                //   child: ComindTextButton(
+                // lineLocation: LineLocation.left,
+                //       text: "Settings",
+                //       onPressed: () {
+                //         Navigator.pushNamed(
+                //             context, "/settings");
+                //       }),
+                // ),
+
+                const SizedBox(height: 20),
+                Text("Dev buttons", style: getTextTheme(context).titleMedium),
+
+                // Debug button to add a top of mind thought
+                Visibility(
+                  visible: true,
+                  child: ComindTextButton(
+                      lineLocation: LineLocation.left,
+                      text: "TOM",
+                      onPressed: () {
+                        Provider.of<ThoughtsProvider>(context, listen: false)
+                            .addTopOfMind(Thought.fromString(
+                                "I'm happy to have you here :smiley:",
+                                "Co",
+                                true,
+                                title: "Welcome to comind"));
+                      }),
+                ),
+
+                const SizedBox(height: 20),
+                Text("Other stuff", style: getTextTheme(context).titleMedium),
+
+                // Logout button
+                Visibility(
+                  visible: Provider.of<AuthProvider>(context).isLoggedIn,
+                  child: ComindTextButton(
+                      lineLocation: LineLocation.left,
+                      text: "Log out",
+                      onPressed: () => {
+                            // Clear all thoughts
+                            Provider.of<ThoughtsProvider>(context,
+                                    listen: false)
+                                .clear(),
+
+                            // Remove related thoughts
+                            relatedThoughts.clear(),
+
+                            // Logout
+                            Provider.of<AuthProvider>(context, listen: false)
+                                .logout()
+                          }),
+                ),
+              ]),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -341,9 +369,20 @@ class _StreamState extends State<Stream> {
       children: [
         Visibility(
             visible: !Provider.of<ThoughtsProvider>(context).hasTopOfMind,
-            child: const Padding(
-              padding: EdgeInsets.fromLTRB(0, 8, 0, 32),
-              child: SectionHeader(text: " THINK SOMETHING ", waves: false),
+            child: Column(
+              children: [
+                // Spacer
+                SizedBox(
+                    height: MediaQuery.of(context).size.height <= 400
+                        ? 0
+                        : MediaQuery.of(context).size.height <= 600
+                            ? 64
+                            : 128),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(0, 8, 0, 32),
+                  child: SectionHeader(text: " THINK SOMETHING ", waves: false),
+                ),
+              ],
             )),
 
         // Top of mind divider
@@ -438,54 +477,58 @@ class _StreamState extends State<Stream> {
       visible: Provider.of<AuthProvider>(context).isLoggedIn &&
           Provider.of<AuthProvider>(context).username != "",
       child: Stack(children: [
-        MainTextField(
-            primaryController: _primaryController,
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: MainTextField(
+              primaryController: _primaryController,
 
-            // Thought submission function
-            onThoughtSubmitted: (String body) {
-              // If the body is empty, do nothing
-              if (body.isEmpty) {
-                return;
-              }
-
-              // Create a new thought
-              final thought = Thought.fromString(
-                  body,
-                  Provider.of<AuthProvider>(context, listen: false).username,
-                  Provider.of<ComindColorsNotifier>(context, listen: false)
-                      .publicMode);
-
-              // Send the thought
-              saveThought(context, thought, newThought: true).then((value) {
-                // Add the thought to the providerthis
-                Provider.of<ThoughtsProvider>(context, listen: false)
-                    .addThought(thought);
-
-                // Search for related thoughts
-                searchThoughts(context, thought.body, associatedId: thought.id)
-                    .then((value) {
-                  // Add the related thoughts to the provider
-                  Provider.of<ThoughtsProvider>(context, listen: false)
-                      .addThoughts(value);
-
-                  // Update the UI
-                  setState(() {
-                    relatedThoughts = value;
-                  });
-                });
-
-                // Link the thought to the top of mind thought if it exists
-                if (getTopOfMind(context) != null) {
-                  linkToTopOfMind(context, thought.id);
+              // Thought submission function
+              onThoughtSubmitted: (String body) {
+                // If the body is empty, do nothing
+                if (body.isEmpty) {
+                  return;
                 }
 
-                // Lastly, update the UI
-                setState(() {
+                // Create a new thought
+                final thought = Thought.fromString(
+                    body,
+                    Provider.of<AuthProvider>(context, listen: false).username,
+                    Provider.of<ComindColorsNotifier>(context, listen: false)
+                        .publicMode);
+
+                // Send the thought
+                saveThought(context, thought, newThought: true).then((value) {
+                  // Add the thought to the providerthis
                   Provider.of<ThoughtsProvider>(context, listen: false)
-                      .addTopOfMind(thought);
+                      .addThought(thought);
+
+                  // Search for related thoughts
+                  searchThoughts(context, thought.body,
+                          associatedId: thought.id)
+                      .then((value) {
+                    // Add the related thoughts to the provider
+                    Provider.of<ThoughtsProvider>(context, listen: false)
+                        .addThoughts(value);
+
+                    // Update the UI
+                    setState(() {
+                      relatedThoughts = value;
+                    });
+                  });
+
+                  // Link the thought to the top of mind thought if it exists
+                  if (getTopOfMind(context) != null) {
+                    linkToTopOfMind(context, thought.id);
+                  }
+
+                  // Lastly, update the UI
+                  setState(() {
+                    Provider.of<ThoughtsProvider>(context, listen: false)
+                        .addTopOfMind(thought);
+                  });
                 });
-              });
-            }),
+              }),
+        ),
       ]),
     );
   }

@@ -130,6 +130,16 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       Opacity(
         opacity: widget.showBody ? 1.0 : 0.5,
         child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+            // side: BorderSide(
+            //   color: Provider.of<ComindColorsNotifier>(context)
+            //       .colorScheme
+            //       .onBackground
+            //       .withAlpha(64),
+            //   width: 1,
+            // ),
+          ),
           // elevation: 0.1,
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
@@ -177,7 +187,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   //         .textTheme
                   //         .bodySmall),
 
-                  titleBar(context),
+                  Visibility(
+                      visible: widget.type != MarkdownDisplayType.topOfMind,
+                      child: titleBar(context)),
 
                   // Add thought body
                   Visibility(
@@ -251,7 +263,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
               Visibility(
                 visible: !widget.noTitle,
                 child: Container(
-                  width: 10,
+                  width: 6,
                   height: 24,
                   color: Provider.of<ComindColorsNotifier>(context).primary,
                 ),
@@ -329,7 +341,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
               Visibility(
                 visible: !widget.noTitle,
                 child: Container(
-                  width: 8,
+                  width: 6,
                   height: 24,
                   // color: Provider.of<ComindColorsNotifier>(context)
                   //     .colorScheme
