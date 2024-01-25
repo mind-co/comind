@@ -56,6 +56,5 @@ jobs:
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: web # Supposedly this is the only folder to serve
-          # folder: build/web
+          folder: build/web
           ssh-key: ${{ secrets.DEPLOY_KEY }}

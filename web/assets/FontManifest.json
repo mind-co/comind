@@ -1,9 +1,17 @@
 [
   {
+    "family": "MaterialIcons",
+    "fonts": [
+      {
+        "asset": "assets/fonts/MaterialIcons-Extended.ttf"
+      }
+    ]
+  },
+  {
     "family": "Bungee Pop",
     "fonts": [
       {
-        "asset": "assets/fonts/BungeePop.tff"
+        "asset": "assets/fonts/BungeePop-3.tff"
       }
     ]
   }

@@ -53,14 +53,11 @@ flutter:
   generate: true
 
   assets:
-    # Add assets from the images directory to the application.
-    - assets/images/
     - assets/fonts/
-    - fonts/
     - assets/intro.md
 
   fonts:
-    - family: "Bungee Pop"
+    - family: "Bungee Shade"
       fonts:
         - asset: fonts/BungeePop-3.ttf
     - family: "Bungee"
