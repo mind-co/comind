@@ -1,7 +1,5 @@
 
-Welcome to Comind! Comind is a thing that does not exist yet, but will
-exist soon. This is a document that explains what Comind is, how it works,
-and why it's cool.
+Welcome to Comind, an app in development.
 
 Comind is a public square for the increasingly weird world we live in.
 It's a place to share thoughts, to think out loud, to be creative, and to
@@ -11,6 +9,9 @@ where concepts come to life.
 Most importantly, it's a place for me to build a thing that I think is cool.
 I want to make something weird and cool and different, and I think that's
 what Comind is going to be.
+
+This is a document that explains what Comind is, how it works,
+and why it's maybe worth paying attention to.
 
 ## Why Comind?
 
