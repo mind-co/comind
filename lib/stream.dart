@@ -9,6 +9,7 @@ import 'package:comind/input_field.dart';
 import 'package:comind/main.dart';
 import 'package:comind/main_layout.dart';
 import 'package:comind/markdown_display.dart';
+import 'package:comind/misc/comind_logo.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/soul_blob.dart';
@@ -18,7 +19,10 @@ import 'package:comind/types/thought.dart';
 import 'package:comind/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class Stream extends StatefulWidget {
   const Stream({Key? key}) : super(key: key);
@@ -74,44 +78,37 @@ class _StreamState extends State<Stream> {
     // topOfMind = Thought.fromString(
     //     "I'm happy to have you here :smiley:", "Co", true,
     //     title: "Welcome to comind");
-    return Scaffold(
-      // App bar
-      appBar: comindAppBar(context),
 
-      // Bottom sheet
-      bottomSheet: ComindBottomSheet(),
+    if (!Provider.of<AuthProvider>(context).isLoggedIn) {
+      return Scaffold(
+          appBar: null,
+          // Bottom sheet
+          bottomSheet: const ComindBottomSheet(),
+          body: MainLayout(middleColumn: underConstructionWidget(context)));
+    } else {
+      return Scaffold(
+        // App bar
+        appBar: comindAppBar(context),
 
-      // Body
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Consumer2<AuthProvider, ThoughtsProvider>(
-            builder: (context, authProvider, thoughtsProvider, child) {
-              // Your code here
-              // Use authProvider to access authentication related data
-              // Return the desired widget tree
+        // Bottom sheet
+        bottomSheet: const ComindBottomSheet(),
 
-              if (authProvider.isLoggedIn) {
+        // Body
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            return Consumer2<AuthProvider, ThoughtsProvider>(
+              builder: (context, authProvider, thoughtsProvider, child) {
+                // Your code here
+                // Use authProvider to access authentication related data
+                // Return the desired widget tree
+
                 return mainStream(constraints, context);
-              } else {
-                return MainLayout(
-                    middleColumn: Column(children: [
-                  coThought(
-                      context, "I see that you're not logged in!", "Howdy"),
-
-                  // Login button
-                  TextButtonSimple(
-                      text: "Log in",
-                      // Navigate to login page.
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/login");
-                      }),
-                ]));
-              }
-            },
-          );
-        },
-      ),
-    );
+              },
+            );
+          },
+        ),
+      );
+    }
   }
 
   bool _hover = true;
@@ -549,7 +546,7 @@ class SectionHeader extends StatelessWidget {
     // Render
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       if (waves)
-        Expanded(
+        const Expanded(
             child: Padding(
           padding: cineEdgeInsetsLeft,
           child: CineWave(
@@ -566,7 +563,7 @@ class SectionHeader extends StatelessWidget {
                 .titleLarge,
       ),
       if (waves)
-        Expanded(
+        const Expanded(
             child: Padding(
           padding: cineEdgeInsetsRight,
           child: CineWave(
@@ -587,7 +584,7 @@ class ActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 20.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -682,4 +679,102 @@ class ActionBar extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget underConstructionWidget(BuildContext context) {
+  // Get font size based on screen size
+  double fontSize = MediaQuery.of(context).size.width <= 400
+      ? 32
+      : MediaQuery.of(context).size.width <= 600
+          ? 48
+          : 64;
+
+  // Whether to use the short logo
+  bool shortLogo = MediaQuery.of(context).size.width <= 550;
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 64, 16, 16),
+        child:
+            Text("Howdy, welcome to", style: getTextTheme(context).bodyLarge),
+      ),
+
+      // Short logo
+      if (shortLogo)
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ComindShortLogo(
+              key: const Key("shortLogo"),
+              colors: Provider.of<ComindColorsNotifier>(context)),
+        ),
+
+      // Long logo
+      if (!shortLogo)
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ComindLogo(
+              key: const Key("longLogo"),
+              colors: Provider.of<ComindColorsNotifier>(context)),
+        ),
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text("You might want in but currently this",
+            style: getTextTheme(context).bodyLarge),
+      ),
+      Text("WHOLE",
+          style: GoogleFonts.bungeeShadeTextTheme(getTextTheme(context))
+              .displayLarge!
+              .copyWith(fontSize: fontSize)),
+      Text("THING",
+          style: GoogleFonts.bungeeShadeTextTheme(getTextTheme(context))
+              .displayLarge!
+              .copyWith(fontSize: fontSize)),
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text("is a ", style: getTextTheme(context).bodyLarge),
+      ),
+      // Text("COMPLETE",
+      //     style: getTextTheme(context)
+      //         .displayLarge!
+      //         .copyWith(fontFamily: "bunpop", fontSize: fontSize)),
+      // Text("MESS",
+      //     style: getTextTheme(context)
+      //         .displayLarge!
+      //         .copyWith(fontFamily: "bunpop", fontSize: fontSize)),
+      Text("COMPLETE",
+          style: GoogleFonts.bungeeShadeTextTheme(getTextTheme(context))
+              .displayLarge!
+              .copyWith(fontSize: fontSize)),
+      Text("MESS",
+          style: GoogleFonts.bungeeShadeTextTheme(getTextTheme(context))
+              .displayLarge!
+              .copyWith(fontSize: fontSize)),
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text("(it will work at some point I promise)",
+            style: getTextTheme(context).bodyLarge),
+      ),
+
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text("While you're waiting, check out our Patreon",
+            style: getTextTheme(context).bodyLarge),
+      ),
+
+      // Patreon link
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 128),
+        child: ComindTextButton(
+            lineLocation: LineLocation.bottom,
+            onPressed: () {
+              launchUrlString("https://www.patreon.com/comind");
+            },
+            fontSize: fontSize * 3 / 5,
+            text: "Patreon"),
+      ),
+    ],
+  );
 }

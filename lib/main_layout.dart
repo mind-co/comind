@@ -60,43 +60,9 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
-    return FocusTraversalGroup(
-      policy: IgnoreArrowKeyTraversalPolicy(),
-      child: KeyboardListener(
-        onKeyEvent: (KeyEvent event) {
-          double scale = event.logicalKey == LogicalKeyboardKey.arrowUp ||
-                  event.logicalKey == LogicalKeyboardKey.arrowDown
-              ? _arrowScrollScalar
-              : _pageScrollScalar;
-
-          if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
-              event.logicalKey == LogicalKeyboardKey.pageUp) {
-            double newOffset = _scrollController.offset -
-                MediaQuery.of(context).size.height / scale;
-            if (newOffset > _scrollController.position.minScrollExtent) {
-              _scrollController.jumpTo(newOffset);
-            } else {
-              _scrollController
-                  .jumpTo(_scrollController.position.minScrollExtent);
-            }
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown ||
-              event.logicalKey == LogicalKeyboardKey.pageDown) {
-            double newOffset = _scrollController.offset +
-                MediaQuery.of(context).size.height / scale;
-            if (newOffset < _scrollController.position.maxScrollExtent) {
-              _scrollController.jumpTo(newOffset);
-            } else {
-              _scrollController
-                  .jumpTo(_scrollController.position.maxScrollExtent);
-            }
-          }
-        },
-        focusNode: focusNode,
-        child: SingleChildScrollView(
-          controller: _scrollController, // Add this line
-          child: rowOfColumns(context),
-        ),
-      ),
+    return SingleChildScrollView(
+      controller: _scrollController, // Add this line
+      child: rowOfColumns(context),
     );
   }
 
@@ -129,21 +95,21 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   bool showSideColumns(BuildContext context) =>
-      MediaQuery.of(context).size.width > ComindColors.maxWidth &&
-      getTopOfMind(context) != null;
+      MediaQuery.of(context).size.width > ComindColors.maxWidth;
 
   //
   // Column width methods
   //
   double baseOuterWidth(BuildContext context) {
-    return (MediaQuery.of(context).size.width -
-            centerColumnWidth(context) -
-            25) /
-        2;
+    double width =
+        (MediaQuery.of(context).size.width - centerColumnWidth(context) - 25) /
+            2;
+    return max(0, width);
   }
 
   double leftColumnWidth(BuildContext context) {
-    return min(300, baseOuterWidth(context));
+    double width = min(300, baseOuterWidth(context));
+    return max(0, width);
   }
 
   double centerColumnWidth(BuildContext context) {
@@ -153,6 +119,7 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   double rightColumnWidth(BuildContext context) {
-    return min(300, baseOuterWidth(context));
+    double width = min(300, baseOuterWidth(context));
+    return max(0, width);
   }
 }

@@ -46,14 +46,14 @@ import 'package:provider/provider.dart';
 // The short comind logo
 // ignore: must_be_immutable
 class ComindShortLogo extends StatelessWidget {
+  // Add a main axis alignment property, default to center
+  static const MainAxisAlignment mainAxisAlignment = MainAxisAlignment.center;
+  final ComindColorsNotifier colors;
+
   const ComindShortLogo({
     Key? key,
     required this.colors,
   }) : super(key: key);
-
-  // Add a main axis alignment property, default to center
-  static const MainAxisAlignment mainAxisAlignment = MainAxisAlignment.center;
-  final ComindColorsNotifier colors;
 
   @override
   Widget build(BuildContext context) {
@@ -126,91 +126,6 @@ class ComindLogo extends StatelessWidget {
     return (Row(
       mainAxisAlignment: mainAxisAlignment,
       children: [
-        ////////////////////
-        // Modern take on the logo
-        ////////////////////
-        // Long version
-        // Text(
-        //   '∙',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   'co',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: Provider.of<ComindColorsNotifier>(context).secondaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   'mind',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: Provider.of<ComindColorsNotifier>(context).tertiaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   '∙',
-        //   style: TextStyle(
-        //       decoration: TextDecoration.underline,
-        //       decorationThickness: 2,
-        //       decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
-        //       fontFamily: "Bungee",
-        //       fontSize: size),
-        // ),
-
-        // Short version
-        // Text(
-        //   '∙',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   'c',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: Provider.of<ComindColorsNotifier>(context).secondaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   'o',
-        //   style: TextStyle(
-        //     decorationThickness: 2,
-        //     decoration: TextDecoration.underline,
-        //     decorationColor: Provider.of<ComindColorsNotifier>(context).tertiaryColor,
-        //     fontFamily: "Bungee",
-        //     fontSize: size,
-        //   ),
-        // ),
-        // Text(
-        //   '∙',
-        //   style: TextStyle(
-        //       decoration: TextDecoration.underline,
-        //       decorationThickness: 2,
-        //       decorationColor: Provider.of<ComindColorsNotifier>(context).primaryColor,
-        //       fontFamily: "Bungee",
-        //       fontSize: size),
-        // ),
-
         ////////////////////
         /// Original logo
         /// //////////////////
