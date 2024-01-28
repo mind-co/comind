@@ -16,14 +16,31 @@ String endpoint(String path) {
   return serverUrl + path;
 }
 
+// Function to get the base headers for a request,
+// handles auth and username if in the context
+Map<String, String> getBaseHeaders(BuildContext context) {
+  final headers = <String, String>{};
+
+  // Add the username to the headers if it exists
+  final username = Provider.of<AuthProvider>(context, listen: false).username;
+  if (username != null) {
+    headers['ComindUsername'] = username;
+  }
+
+  // Add the auth token to the headers if it exists
+  final token = Provider.of<AuthProvider>(context, listen: false).token;
+  if (token != null) {
+    headers['Authorization'] = 'Bearer $token';
+  }
+
+  return headers;
+}
+
 // Gets all user thoughts
 Future<List<Thought>> fetchThoughts(BuildContext context) async {
   final url = Uri.parse(endpoint('/api/user-thoughts/cameron/'));
-  final headers = {
-    'ComindUsername': 'cameron',
-    'ComindPageNo': '0',
-    'Authorization': 'Bearer ${getToken(context)}',
-  };
+  final headers = getBaseHeaders(context);
+  headers['ComindPageNo'] = '0';
 
   final response = await http.get(url, headers: headers);
 
@@ -41,9 +58,7 @@ Future<Thought> saveQuickThought(BuildContext context, String body,
     bool isPublic, String? parentThoughtId, String? childThoughtId) async {
   final url = Uri.parse(endpoint('/api/thoughts/'));
 
-  final headers = {
-    'ComindUsername': 'cameron',
-  };
+  final headers = getBaseHeaders(context);
 
   final bodyJson = <String, dynamic>{
     'body': body,
@@ -88,9 +103,7 @@ Future<void> saveThought(BuildContext context, Thought thought,
   // If the thought has an ID, we're updating an existing thought.
   // By default empty thoughts have and ID of length 0.
   if (newThought == true) {
-    final headers = {
-      'ComindUsername': 'cameron',
-    };
+    final headers = getBaseHeaders(context);
 
     final body = jsonEncode(<String, dynamic>{
       'body': thought.body,
@@ -114,10 +127,8 @@ Future<void> saveThought(BuildContext context, Thought thought,
   } else {
     // Otherwise, we are updating an existing thought.
     // We use the PATCH method to update the thought.
-    final headers = {
-      'ComindUsername': 'cameron',
-      'ComindThoughtId': thought.id,
-    };
+    final headers = getBaseHeaders(context);
+    headers['ComindThoughtId'] = thought.id;
 
     final body = jsonEncode(<String, dynamic>{
       'body': thought.body,
@@ -148,11 +159,8 @@ Future<void> saveThought(BuildContext context, Thought thought,
 
 Future<void> deleteThought(BuildContext context, String thoughtId) async {
   final url = Uri.parse(endpoint('/api/thoughts/'));
-  final headers = {
-    'ComindUsername': 'cameron',
-    'ComindThoughtId': thoughtId,
-    'Authorization': 'Bearer ${getToken(context)}',
-  };
+  final headers = getBaseHeaders(context);
+  headers['ComindThoughtId'] = thoughtId;
 
   final response = await http.delete(url, headers: headers);
 
@@ -162,7 +170,7 @@ Future<void> deleteThought(BuildContext context, String thoughtId) async {
   // Try to parse the response as json
   try {
     final jsonResponse = json.decode(response.body);
-    print(jsonResponse);
+    Logging.root.fine(jsonResponse);
   } catch (e) {
     throw Exception('Failed to delete thought');
   }
