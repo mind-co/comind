@@ -42,11 +42,11 @@ class Dispatch extends StatelessWidget {
           }
 
           // Handle '/thoughts'
-          if (settings.name == '/thoughts') {
-            return MaterialPageRoute(
-              builder: (context) => const ThoughtListScreen(),
-            );
-          }
+          // if (settings.name == '/thoughts') {
+          //   return MaterialPageRoute(
+          //     builder: (context) => const ThoughtListScreen(),
+          //   );
+          // }
 
           // Handle '/thoughts/:id'
           var uri = Uri.parse(settings.name!);

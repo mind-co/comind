@@ -14,7 +14,7 @@ class Section extends StatefulWidget {
   }) : super(key: key);
 
   final String text;
-  final List<Widget> children;
+  final ListView children;
   final TextStyle? style;
   final bool waves;
   bool expanded;
@@ -41,11 +41,7 @@ class _SectionState extends State<Section> {
                   waves: widget.waves))),
 
       // section body
-      Visibility(
-          visible: widget.expanded,
-          child: Column(
-            children: widget.children,
-          )),
+      Visibility(visible: widget.expanded, child: widget.children),
     ]);
   }
 }

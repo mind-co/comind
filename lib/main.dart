@@ -5,6 +5,7 @@ import 'package:comind/login.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 // Expand button
 
@@ -24,6 +25,12 @@ import 'package:comind/misc/util.dart';
 import 'package:comind/dispatch.dart';
 
 Future<void> main() async {
+  // Set up logging
+  Logger.root.level = Level.ALL; // defaults to Level.INFO
+  Logger.root.onRecord.listen((record) {
+    print('${record.level.name}: ${record.time}: ${record.message}');
+  });
+
   // await dotenv.load(fileName: ".env");
   runApp(ChangeNotifierProvider(
     create: (_) => ComindColorsNotifier(),

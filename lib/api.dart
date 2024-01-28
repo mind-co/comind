@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:comind/types/thought.dart';
 import 'package:dio/dio.dart';
+import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 // Initialize Dio
@@ -29,6 +30,7 @@ Future<List<Thought>> fetchThoughts(BuildContext context) async {
 
   if (response.statusCode == 200) {
     final List<dynamic> jsonResponse = json.decode(response.body);
+    print(response.body);
     return jsonResponse.map((thought) => Thought.fromJson(thought)).toList();
   } else {
     throw Exception('Failed to load thoughts');
@@ -83,7 +85,12 @@ Future<Thought> saveQuickThought(BuildContext context, String body,
 
 Future<void> saveThought(BuildContext context, Thought thought,
     {bool? newThought}) async {
+  // Get URI
   final url = Uri.parse(endpoint('/api/thoughts/'));
+
+  // Log that we're saving the thought
+  Logger.root.info(
+      "{'location':'saveThought','new_id: ${thought.id}','sending_to':'$url','body':'${thought.body}'}");
 
   // If the thought has an ID, we're updating an existing thought.
   // By default empty thoughts have and ID of length 0.
@@ -99,11 +106,17 @@ Future<void> saveThought(BuildContext context, Thought thought,
       'origin': "app",
     });
 
-    await http.post(
+    // Logging
+    Logger.root.info("Sending thought with POST");
+
+    var result = await http.post(
       url,
       headers: headers,
       body: body,
     );
+
+    // Log post response
+    Logger.root.info("saveThought response: ${result.body}");
 
     // Try to parse the response as json
     try {
@@ -370,6 +383,9 @@ Future<LoginResponse> login(String username, String password) async {
   });
 
   final response = await http.post(url, body: body);
+
+  print(url);
+  print(response.body);
 
   // print(response.body);
   if (response.statusCode != 200) {

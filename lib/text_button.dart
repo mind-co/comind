@@ -1,4 +1,5 @@
 import 'package:comind/colors.dart';
+import 'package:comind/misc/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -224,9 +225,7 @@ class _ComindTextButtonState extends State<ComindTextButton> {
                             : const EdgeInsets.fromLTRB(0, 0, 0, 0),
                     child: Text(
                       widget.text,
-                      style: widget.textStyle.copyWith(
-                        fontSize: widget.fontSize,
-                      ),
+                      style: getTextTheme(context).titleMedium,
                     ),
                   ),
                 )

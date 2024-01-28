@@ -125,7 +125,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     //   style: Provider.of<ComindColorsNotifier>(context).textTheme.bodyMedium,
     // );
 
-    return Column(children: [
+    return Stack(children: [
       // Main text box
       Opacity(
         opacity: widget.showBody ? 1.0 : 0.5,
@@ -254,9 +254,56 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         ),
       ),
 
-      // Add the action row on bottom
-      // actionRow(
-      //     context, edgeInsets2, edgeInsets, buttonFontSize, buttonOpacity),
+      // Colored lines on the top
+      // Positioned(
+      //   top: 0,
+      //   child: SingleChildScrollView(
+      //     scrollDirection: Axis.horizontal,
+      //     child: Row(
+      //       children: [
+      //         Expanded(
+      //           child: Padding(
+      //             padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+      //             child: Container(
+      //               height: 2,
+      //               color: Provider.of<ComindColorsNotifier>(context)
+      //                   .colorScheme
+      //                   .primary
+      //                   .withAlpha(outlineAlpha),
+      //             ),
+      //           ),
+      //         ),
+
+      //         Expanded(
+      //           child: Padding(
+      //             padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+      //             child: Container(
+      //               height: 2,
+      //               color: Provider.of<ComindColorsNotifier>(context)
+      //                   .colorScheme
+      //                   .secondary
+      //                   .withAlpha(outlineAlpha),
+      //             ),
+      //           ),
+      //         ),
+
+      //         // tertiary
+      //         Expanded(
+      //           child: Padding(
+      //             padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+      //             child: Container(
+      //               height: 2,
+      //               color: Provider.of<ComindColorsNotifier>(context)
+      //                   .colorScheme
+      //                   .tertiary
+      //                   .withAlpha(outlineAlpha),
+      //             ),
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //   ),
+      // ),
     ]);
   }
 
@@ -266,7 +313,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   bool hoveredPublic = false;
   bool hoveredLinks = false;
 
-  Padding titleBar(BuildContext context) {
+  Widget titleBar(BuildContext context) {
     var textSpan = TextSpan(
         text: " ∘ ",
         style: Provider.of<ComindColorsNotifier>(context)
@@ -282,24 +329,29 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     // Settings for the color line
     const double height = 2;
     var a = 255;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title with grey line from end of title to far right
-          Visibility(
-            visible: !widget.noTitle,
-            child: Row(
-              children: [
-                // Title
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Padding(
+    return Stack(children: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title with grey line  from end of title to far right
+            Visibility(
+              visible: !widget.noTitle,
+              child: Flex(
+                direction: Axis.horizontal,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Title
+                  Flexible(
+                    flex: 6,
+                    child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                       child: RichText(
                         overflow: TextOverflow.fade,
                         softWrap: false,
+                        maxLines: 1,
                         text: TextSpan(
                           children: [
                             TextSpan(
@@ -318,239 +370,228 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                             ),
                           ],
                         ),
-                      )
-
-                      // child: Text(thought.title, style: getTextTheme(context).labelMedium),
-                      // child: Text(thought.title, style: getTextTheme(context).titleSmall),
                       ),
-                ),
-
-                // Grey line
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                    child: Container(
-                      height: height,
-                      color: Provider.of<ComindColorsNotifier>(context)
-                          .colorScheme
-                          .primary
-                          .withAlpha(a),
                     ),
                   ),
-                ),
 
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                    child: Container(
-                      height: height,
-                      color: Provider.of<ComindColorsNotifier>(context)
-                          .colorScheme
-                          .secondary
-                          .withAlpha(a),
+                  // Gray line
+                  Flexible(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                      child: Container(
+                        height: 2,
+                        color: Provider.of<ComindColorsNotifier>(context)
+                            .colorScheme
+                            .tertiary
+                            .withAlpha(255),
+                      ),
                     ),
                   ),
-                ),
 
-                // tertiary
-                Expanded(
-                  child: Padding(
+                  // Expand/contract button
+                  Padding(
                     padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                    child: Container(
-                      height: height,
-                      color: Provider.of<ComindColorsNotifier>(context)
-                          .colorScheme
-                          .tertiary
-                          .withAlpha(a),
+                    child: newIconButton(
+                      context,
+                      () {
+                        // Toggle the body
+                        setState(() {
+                          widget.showBody = !widget.showBody;
+                        });
+                      },
+                      Icon(
+                        // Expand or contract icon
+                        widget.showBody ? Icons.close : Icons.circle_outlined,
+                        size: 24,
+                        color: Provider.of<ComindColorsNotifier>(context)
+                            .colorScheme
+                            .onPrimary
+                            .withAlpha(128),
+                      ),
                     ),
-                  ),
-                ),
+                  )
+                ],
+              ),
+            ),
 
-                // Expand/contract button
+            // Username, time, public/private, links status
+            Row(
+              children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                  child: newIconButton(
-                    context,
-                    () {
-                      // Toggle the body
-                      setState(() {
-                        widget.showBody = !widget.showBody;
-                      });
-                    },
-                    Icon(
-                      // Expand or contract icon
-                      widget.showBody ? Icons.close : Icons.circle_outlined,
-                      size: 24,
-                      color: Provider.of<ComindColorsNotifier>(context)
-                          .colorScheme
-                          .onPrimary
-                          .withAlpha(128),
+                  padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
+                  child: SelectableText.rich(
+                    TextSpan(
+                      children: [
+                        // Timestamp
+                        TextSpan(
+                          text: formatTimestamp(widget.thought.dateCreated),
+
+                          // If timestamp is hovered, make it underline
+                          style: Provider.of<ComindColorsNotifier>(context)
+                              .textTheme
+                              .bodySmall!
+                              .copyWith(
+                                  color: Provider.of<ComindColorsNotifier>(
+                                          context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(hoveredTimestamp ? 1 : 0.5),
+                                  decorationColor:
+                                      Provider.of<ComindColorsNotifier>(context,
+                                              listen: false)
+                                          .colorScheme
+                                          .onSurface,
+                                  decoration: hoveredTimestamp
+                                      ? TextDecoration.underline
+                                      : TextDecoration.none),
+                          onEnter: (event) => {
+                            setState(() {
+                              hoveredTimestamp = true;
+                            })
+                          },
+                          onExit: (event) => {
+                            setState(() {
+                              hoveredTimestamp = false;
+                            })
+                          },
+                        ),
+
+                        // spacer
+                        textSpan,
+
+                        // username
+                        TextSpan(
+                          text: widget.thought.username,
+
+                          // If timestamp is hovered, make it underline
+                          style: Provider.of<ComindColorsNotifier>(context)
+                              .textTheme
+                              .bodySmall!
+                              .copyWith(
+                                  color: Provider.of<ComindColorsNotifier>(
+                                          context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(hoveredUsername ? 1 : 0.5),
+                                  decorationColor:
+                                      Provider.of<ComindColorsNotifier>(context,
+                                              listen: false)
+                                          .colorScheme
+                                          .onSurface,
+                                  decoration: hoveredUsername
+                                      ? TextDecoration.underline
+                                      : TextDecoration.none),
+                          onEnter: (event) => {
+                            setState(() {
+                              hoveredUsername = true;
+                            })
+                          },
+                          onExit: (event) => {
+                            setState(() {
+                              hoveredUsername = false;
+                            })
+                          },
+                        ),
+
+                        textSpan,
+
+                        // Public private
+                        TextSpan(
+                          text: widget.thought.isPublic ? "public" : "private",
+
+                          // If timestamp is hovered, make it underline
+                          style: Provider.of<ComindColorsNotifier>(context)
+                              .textTheme
+                              .bodySmall!
+                              .copyWith(
+                                  color:
+                                      Provider.of<ComindColorsNotifier>(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(hoveredPublic ? 1 : 0.5),
+                                  decorationColor:
+                                      Provider.of<ComindColorsNotifier>(context,
+                                              listen: false)
+                                          .colorScheme
+                                          .onSurface,
+                                  decoration: hoveredPublic
+                                      ? TextDecoration.underline
+                                      : TextDecoration.none),
+                          onEnter: (event) => {
+                            setState(() {
+                              hoveredPublic = true;
+                            })
+                          },
+                          onExit: (event) => {
+                            setState(() {
+                              hoveredPublic = false;
+                            })
+                          },
+                        ),
+
+                        textSpan,
+
+                        // Links
+                        TextSpan(
+                          text: formatLinks(widget.thought.numLinks),
+
+                          // If timestamp is hovered, make it underline
+                          style: Provider.of<ComindColorsNotifier>(context)
+                              .textTheme
+                              .bodySmall!
+                              .copyWith(
+                                  color:
+                                      Provider.of<ComindColorsNotifier>(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(hoveredLinks ? 1 : 0.5),
+                                  decorationColor:
+                                      Provider.of<ComindColorsNotifier>(context,
+                                              listen: false)
+                                          .colorScheme
+                                          .onSurface,
+                                  decoration: hoveredLinks
+                                      ? TextDecoration.underline
+                                      : TextDecoration.none),
+                          onEnter: (event) => {
+                            setState(() {
+                              hoveredLinks = true;
+                            })
+                          },
+                          onExit: (event) => {
+                            setState(() {
+                              hoveredLinks = false;
+                            })
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                )
+                ), // Username
               ],
             ),
-          ),
-
-          // Username, time, public/private, links status
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
-                child: SelectableText.rich(
-                  TextSpan(
-                    children: [
-                      // Timestamp
-                      TextSpan(
-                        text: formatTimestamp(widget.thought.dateCreated),
-
-                        // If timestamp is hovered, make it underline
-                        style: Provider.of<ComindColorsNotifier>(context)
-                            .textTheme
-                            .bodySmall!
-                            .copyWith(
-                                color: Provider.of<ComindColorsNotifier>(
-                                        context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacity(hoveredTimestamp ? 1 : 0.5),
-                                decorationColor:
-                                    Provider.of<ComindColorsNotifier>(context,
-                                            listen: false)
-                                        .colorScheme
-                                        .onSurface,
-                                decoration: hoveredTimestamp
-                                    ? TextDecoration.underline
-                                    : TextDecoration.none),
-                        onEnter: (event) => {
-                          setState(() {
-                            hoveredTimestamp = true;
-                          })
-                        },
-                        onExit: (event) => {
-                          setState(() {
-                            hoveredTimestamp = false;
-                          })
-                        },
-                      ),
-
-                      // spacer
-                      textSpan,
-
-                      // username
-                      TextSpan(
-                        text: widget.thought.username,
-
-                        // If timestamp is hovered, make it underline
-                        style: Provider.of<ComindColorsNotifier>(context)
-                            .textTheme
-                            .bodySmall!
-                            .copyWith(
-                                color:
-                                    Provider.of<ComindColorsNotifier>(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(hoveredUsername ? 1 : 0.5),
-                                decorationColor:
-                                    Provider.of<ComindColorsNotifier>(context,
-                                            listen: false)
-                                        .colorScheme
-                                        .onSurface,
-                                decoration: hoveredUsername
-                                    ? TextDecoration.underline
-                                    : TextDecoration.none),
-                        onEnter: (event) => {
-                          setState(() {
-                            hoveredUsername = true;
-                          })
-                        },
-                        onExit: (event) => {
-                          setState(() {
-                            hoveredUsername = false;
-                          })
-                        },
-                      ),
-
-                      textSpan,
-
-                      // Public private
-                      TextSpan(
-                        text: widget.thought.isPublic ? "public" : "private",
-
-                        // If timestamp is hovered, make it underline
-                        style: Provider.of<ComindColorsNotifier>(context)
-                            .textTheme
-                            .bodySmall!
-                            .copyWith(
-                                color:
-                                    Provider.of<ComindColorsNotifier>(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(hoveredPublic ? 1 : 0.5),
-                                decorationColor:
-                                    Provider.of<ComindColorsNotifier>(context,
-                                            listen: false)
-                                        .colorScheme
-                                        .onSurface,
-                                decoration: hoveredPublic
-                                    ? TextDecoration.underline
-                                    : TextDecoration.none),
-                        onEnter: (event) => {
-                          setState(() {
-                            hoveredPublic = true;
-                          })
-                        },
-                        onExit: (event) => {
-                          setState(() {
-                            hoveredPublic = false;
-                          })
-                        },
-                      ),
-
-                      textSpan,
-
-                      // Links
-                      TextSpan(
-                        text: formatLinks(widget.thought.numLinks),
-
-                        // If timestamp is hovered, make it underline
-                        style: Provider.of<ComindColorsNotifier>(context)
-                            .textTheme
-                            .bodySmall!
-                            .copyWith(
-                                color:
-                                    Provider.of<ComindColorsNotifier>(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(hoveredLinks ? 1 : 0.5),
-                                decorationColor:
-                                    Provider.of<ComindColorsNotifier>(context,
-                                            listen: false)
-                                        .colorScheme
-                                        .onSurface,
-                                decoration: hoveredLinks
-                                    ? TextDecoration.underline
-                                    : TextDecoration.none),
-                        onEnter: (event) => {
-                          setState(() {
-                            hoveredLinks = true;
-                          })
-                        },
-                        onExit: (event) => {
-                          setState(() {
-                            hoveredLinks = false;
-                          })
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ), // Username
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
-    );
+
+      // Colored lines on the top
+      Positioned(
+          top: 0,
+          child: SizedBox(
+            width: 600,
+            child: Row(
+              children: [
+                Container(
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .primary
+                        .withAlpha(outlineAlpha),
+                    height: height),
+              ],
+            ),
+          )),
+    ]);
   }
 
   // Handles the new thought box
@@ -674,7 +715,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       visible:
           widget.linkable && widget.parentThought != null && !widget.viewOnly,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+        padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
         child: ComindTextButton(
           text: "Link",
           opacity: 0.4,
@@ -697,17 +738,17 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     var moreButton = Visibility(
       visible: !widget.viewOnly,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+        padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
         child: ComindTextButton(
           text: "More",
           opacity: 0.4,
           fontSize: 12,
           colorIndex: 3,
           onPressed: () {
-            // Toggle info mode
-            setState(() {
-              moreClicked = !moreClicked;
-            });
+            moreClicked = !moreClicked;
+
+            // Go to the viewing page for this thought
+            Navigator.pushNamed(context, '/thoughts/${widget.thought.id}');
           },
         ),
       ),
@@ -724,11 +765,11 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       },
       Icon(
         widget.thought.isPublic ? Icons.lock_open : Icons.lock,
-        size: 16,
+        size: 14,
         color: Provider.of<ComindColorsNotifier>(context)
             .colorScheme
             .onPrimary
-            .withAlpha(128),
+            .withAlpha(64),
       ),
     );
 
@@ -744,12 +785,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                 .colorScheme
                 .secondary
                 .withAlpha(64),
-            title: const Text(
+            title: Text(
               'Delete thought?',
-              style: TextStyle(
-                  fontFamily: "Bungee",
-                  fontSize: 36,
-                  fontWeight: FontWeight.w400),
+              style: getTextTheme(context).titleSmall,
             ),
             content: const Text(
                 'You sure you wanna delete this note? Cameron is really, really bad at making undo buttons. \n\nIf you delete this it will prolly be gone forever.'),
@@ -789,11 +827,11 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     },
         Icon(
           Icons.delete,
-          size: 16,
+          size: 14,
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
               .onPrimary
-              .withAlpha(128),
+              .withAlpha(64),
         ));
 
     // Edit button
@@ -810,11 +848,11 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       },
       Icon(
         Icons.edit,
-        size: 16,
+        size: 14,
         color: Provider.of<ComindColorsNotifier>(context)
             .colorScheme
             .onPrimary
-            .withAlpha(128),
+            .withAlpha(64),
       ),
     );
 
@@ -829,7 +867,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       },
       Icon(
         widget.infoMode ? Icons.close : Icons.info_outline,
-        size: 24,
+        size: 14,
         color: Provider.of<ComindColorsNotifier>(context)
             .colorScheme
             .onPrimary
@@ -881,6 +919,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           visible: widget.type == MarkdownDisplayType.searchResult &&
               !newThoughtOpen,
           child: expandButton),
+
+      // Expanded to push the buttons to the right
+      Expanded(child: Container()),
 
       // Show linked/more button
       // Visibility(visible: !newThoughtOpen, child: showLinkedButton),
@@ -952,6 +993,10 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   }
 
   SingleChildScrollView thoughtBody(BuildContext context) {
+    // Color bar vars
+    const double height = 2;
+    var a = 255;
+
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -1051,6 +1096,57 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   ],
                 ),
               ),
+
+              // // Three colored lines
+              // Positioned(
+              //   top: 1000,
+              //   child: Row(
+              //     children: [
+              //       SizedBox(
+              //         width: 8,
+              //       ),
+              //       Expanded(
+              //         child: Padding(
+              //           padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+              //           child: Container(
+              //             height: height,
+              //             color: Provider.of<ComindColorsNotifier>(context)
+              //                 .colorScheme
+              //                 .primary
+              //                 .withAlpha(a),
+              //           ),
+              //         ),
+              //       ),
+
+              //       Expanded(
+              //         child: Padding(
+              //           padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+              //           child: Container(
+              //             height: height,
+              //             color: Provider.of<ComindColorsNotifier>(context)
+              //                 .colorScheme
+              //                 .secondary
+              //                 .withAlpha(a),
+              //           ),
+              //         ),
+              //       ),
+
+              //       // tertiary
+              //       Expanded(
+              //         child: Padding(
+              //           padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+              //           child: Container(
+              //             height: height,
+              //             color: Provider.of<ComindColorsNotifier>(context)
+              //                 .colorScheme
+              //                 .tertiary
+              //                 .withAlpha(a),
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
         ],
