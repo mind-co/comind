@@ -36,7 +36,7 @@ class MainLayout extends StatefulWidget {
   final Widget rightColumn;
 
   // Constructor
-  MainLayout({
+  const MainLayout({
     Key? key,
     this.leftColumn = const SizedBox(),
     required this.middleColumn,

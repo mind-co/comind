@@ -132,7 +132,11 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
           child: Material(
+            borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+            color:
+                Provider.of<ComindColorsNotifier>(context).colorScheme.surface,
             child: InkWell(
+              onTap: () => {},
               child: Card(
                 elevation: 2,
 
@@ -148,13 +152,15 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   // ),
                 ),
                 // elevation: 0.1,
-                color: Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .surface,
+                color: Colors.transparent,
+                // color: Provider.of<ComindColorsNotifier>(context)
+                //     .colorScheme
+                //     .surface,
                 // surfaceTintColor:
                 //     Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
                 surfaceTintColor: Colors.transparent,
                 borderOnForeground: true,
+                shadowColor: Colors.transparent,
 
                 child: Padding(
                   padding: const EdgeInsets.all(6.0),
@@ -720,8 +726,10 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     );
 
     var linkButton = Visibility(
-      visible:
-          widget.linkable && widget.parentThought != null && !widget.viewOnly,
+      visible: widget.linkable &&
+          widget.parentThought != null &&
+          !widget.viewOnly &&
+          !widget.showTextBox,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
         child: ComindTextButton(
@@ -743,8 +751,29 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       ),
     );
 
+    // The save button when editing
+    var saveButton = Visibility(
+      visible: widget.showTextBox,
+      child: ComindTextButton(
+        text: "Save",
+        opacity: 0.4,
+        fontSize: 12,
+        colorIndex: 3,
+        onPressed: () {
+          // Update the thought
+          widget.thought.body = _editController.text;
+          saveThought(context, widget.thought);
+
+          // Close the text box
+          setState(() {
+            widget.showTextBox = false;
+          });
+        },
+      ),
+    );
+
     var moreButton = Visibility(
-      visible: !widget.viewOnly,
+      visible: !widget.viewOnly && !widget.showTextBox,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
         child: ComindTextButton(
@@ -935,13 +964,18 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       // Visibility(visible: !newThoughtOpen, child: showLinkedButton),
 
       // More options button
-      Visibility(visible: !newThoughtOpen, child: moreButton),
+      Visibility(
+          visible: !newThoughtOpen && !widget.showTextBox, child: moreButton),
 
       // Link button
       linkButton,
 
       // Add thought button
-      Visibility(visible: !widget.viewOnly, child: thinkButton),
+      Visibility(
+          visible: !widget.viewOnly && !widget.showTextBox, child: thinkButton),
+
+      // Save button
+      saveButton,
     ]);
   }
 
@@ -1104,57 +1138,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   ],
                 ),
               ),
-
-              // // Three colored lines
-              // Positioned(
-              //   top: 1000,
-              //   child: Row(
-              //     children: [
-              //       SizedBox(
-              //         width: 8,
-              //       ),
-              //       Expanded(
-              //         child: Padding(
-              //           padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-              //           child: Container(
-              //             height: height,
-              //             color: Provider.of<ComindColorsNotifier>(context)
-              //                 .colorScheme
-              //                 .primary
-              //                 .withAlpha(a),
-              //           ),
-              //         ),
-              //       ),
-
-              //       Expanded(
-              //         child: Padding(
-              //           padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-              //           child: Container(
-              //             height: height,
-              //             color: Provider.of<ComindColorsNotifier>(context)
-              //                 .colorScheme
-              //                 .secondary
-              //                 .withAlpha(a),
-              //           ),
-              //         ),
-              //       ),
-
-              //       // tertiary
-              //       Expanded(
-              //         child: Padding(
-              //           padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-              //           child: Container(
-              //             height: height,
-              //             color: Provider.of<ComindColorsNotifier>(context)
-              //                 .colorScheme
-              //                 .tertiary
-              //                 .withAlpha(a),
-              //           ),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
             ],
           ),
         ],

@@ -22,7 +22,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-enum Mode { stream, myThoughts }
+enum Mode { stream, myThoughts, public }
 
 class Stream extends StatefulWidget {
   const Stream({Key? key}) : super(key: key);
@@ -76,6 +76,19 @@ class _StreamState extends State<Stream> {
 
     // Replace with your API call
     List<Thought> fetchedThoughts = await fetchThoughts(context);
+
+    setState(() {
+      // Add all thoughts to the provider
+      // ignore: use_build_context_synchronously
+      Provider.of<ThoughtsProvider>(context, listen: false)
+          .addThoughts(fetchedThoughts);
+    });
+  }
+
+  // Get the public stream
+  void _fetchStream(BuildContext context) async {
+    // Replace with your API call
+    List<Thought> fetchedThoughts = await getStream(context);
 
     setState(() {
       // Add all thoughts to the provider
@@ -181,6 +194,24 @@ class _StreamState extends State<Stream> {
                                   context,
                                   listen: false)
                               .publicMode);
+                    }),
+
+                // Load public thoughts
+                TextButtonSimple(
+                    text: "Load public",
+                    onPressed: () {
+                      // Clear top of mind
+                      Provider.of<ThoughtsProvider>(context, listen: false)
+                          .clear();
+
+                      // Remove related thoughts
+                      relatedThoughts.clear();
+
+                      // Fetch related thoughts
+                      _fetchStream(context);
+
+                      // Set mode to stream
+                      mode = Mode.public;
                     }),
 
                 // My thoughts
@@ -481,17 +512,11 @@ class _StreamState extends State<Stream> {
         // padding is larger with no top of mind thought
         const ActionBar(),
 
-        // Top of mind divider
-        Visibility(
-            visible: getTopOfMind(context) != null,
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: SectionHeader(text: " STREAM ", waves: false),
-            )),
-
         // The rest of the thoughts
         Visibility(
-          visible: getTopOfMind(context) != null || mode == Mode.myThoughts,
+          visible: getTopOfMind(context) != null ||
+              mode == Mode.myThoughts ||
+              (mode == Mode.public),
           child: Section(
             text: "Stream",
             waves: false,

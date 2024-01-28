@@ -499,3 +499,28 @@ Future<void> setPublic(
     throw Exception('Failed to toggle public');
   }
 }
+
+// Fetch all public thoughts
+Future<List<Thought>> getStream(BuildContext context) async {
+  final url = Uri.parse(endpoint('/api/stream/'));
+
+  final headers = getBaseHeaders(context);
+  headers['ComindPageNo'] = '0';
+  headers['ComindLimit'] = '10';
+
+  final response = await dio.get(
+    url.toString(),
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.data);
+    return jsonResponse
+        .map<Thought>((thought) => Thought.fromJson(thought))
+        .toList();
+  } else {
+    throw Exception('Failed to load public thoughts');
+  }
+}

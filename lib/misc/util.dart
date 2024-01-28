@@ -131,7 +131,11 @@ String formatLinks(int? links) {
   if (links == null || links == 0) {
     return 'no links';
   } else if (links < 1000) {
-    return links.toString();
+    if (links == 1) {
+      return '1 link';
+    } else {
+      return '$links links';
+    }
   } else if (links < 1000000) {
     return '${(links / 1000).floor()}k';
   } else if (links < 1000000000) {
