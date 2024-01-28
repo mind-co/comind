@@ -1,8 +1,8 @@
 import 'dart:math';
 
+import 'package:logging/logging.dart';
 import 'package:comind/api.dart';
 import 'package:comind/bottom_sheet.dart';
-import 'package:comind/cine_wave.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/hover_icon_button.dart';
 import 'package:comind/input_field.dart';
@@ -17,12 +17,7 @@ import 'package:comind/soul_blob.dart';
 import 'package:comind/text_button.dart';
 import 'package:comind/text_button_simple.dart';
 import 'package:comind/types/thought.dart';
-import 'package:comind/welcome_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -494,24 +489,27 @@ class _StreamState extends State<Stream> {
               child: SectionHeader(text: " STREAM ", waves: false),
             )),
 
-        Section(
+        // The rest of the thoughts
+        Visibility(
+          visible: getTopOfMind(context) != null || mode == Mode.myThoughts,
+          child: Section(
             text: "Stream",
             waves: false,
-            children: [coThought(context, "Howdy", "partner")]),
-
-        // The rest of the thoughts
-        ListView.builder(
-          shrinkWrap: true,
-          // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
-          itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
-          itemBuilder: (context, index) {
-            return MarkdownThought(
-              thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
-              linkable: true,
-              parentThought: getTopOfMind(context)?.id,
-              // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
-            );
-          },
+            children: ListView.builder(
+              shrinkWrap: true,
+              // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+              itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+              itemBuilder: (context, index) {
+                return MarkdownThought(
+                  thought:
+                      Provider.of<ThoughtsProvider>(context).thoughts[index],
+                  linkable: true,
+                  parentThought: getTopOfMind(context)?.id,
+                  // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
+                );
+              },
+            ),
+          ),
         ),
       ],
     );
@@ -527,7 +525,10 @@ class _StreamState extends State<Stream> {
             // Thought submission function
             onThoughtSubmitted: (String body) {
               // If the body is empty, do nothing
+              Logger.root.info("Body: $body");
               if (body.isEmpty) {
+                // Log the error
+                Logger.root.warning("Empty thought submitted");
                 return;
               }
 
@@ -537,6 +538,9 @@ class _StreamState extends State<Stream> {
                   Provider.of<AuthProvider>(context, listen: false).username,
                   Provider.of<ComindColorsNotifier>(context, listen: false)
                       .publicMode);
+
+              // Log the new ID
+              Logger.root.info("{'new_id':${thought.id}}, 'body':'$body'");
 
               // Send the thought
               saveThought(context, thought, newThought: true).then((value) {
@@ -563,10 +567,8 @@ class _StreamState extends State<Stream> {
                 }
 
                 // Lastly, update the UI
-                setState(() {
-                  Provider.of<ThoughtsProvider>(context, listen: false)
-                      .addTopOfMind(thought);
-                });
+                Provider.of<ThoughtsProvider>(context, listen: false)
+                    .addTopOfMind(thought);
               });
             }),
       ),

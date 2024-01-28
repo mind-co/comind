@@ -12,7 +12,7 @@
                 // "--web-renderer",
                 // "html",
                 "--dart-define",
-                "COMIND_SERVER_URL=http://nimbus.pfiffer.org:8000"
+            "COMIND_SERVER_URL=https://nimbus.pfiffer.org"
             ]
         },
         {

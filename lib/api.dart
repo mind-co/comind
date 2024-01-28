@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:comind/types/thought.dart';
 import 'package:dio/dio.dart';
+import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
+
+// logging
+// import 'package:logging/logging.dart';
 
 // Initialize Dio
 final dio = Dio();
@@ -23,15 +27,11 @@ Map<String, String> getBaseHeaders(BuildContext context) {
 
   // Add the username to the headers if it exists
   final username = Provider.of<AuthProvider>(context, listen: false).username;
-  if (username != null) {
-    headers['ComindUsername'] = username;
-  }
+  headers['ComindUsername'] = username;
 
   // Add the auth token to the headers if it exists
   final token = Provider.of<AuthProvider>(context, listen: false).token;
-  if (token != null) {
-    headers['Authorization'] = 'Bearer $token';
-  }
+  headers['Authorization'] = 'Bearer $token';
 
   return headers;
 }
@@ -98,7 +98,12 @@ Future<Thought> saveQuickThought(BuildContext context, String body,
 
 Future<void> saveThought(BuildContext context, Thought thought,
     {bool? newThought}) async {
+  // Get URI
   final url = Uri.parse(endpoint('/api/thoughts/'));
+
+  // Log that we're saving the thought
+  Logger.root.info(
+      "{'location':'saveThought','new_id: ${thought.id}','sending_to':'$url','body':'${thought.body}'}");
 
   // If the thought has an ID, we're updating an existing thought.
   // By default empty thoughts have and ID of length 0.
@@ -112,11 +117,17 @@ Future<void> saveThought(BuildContext context, Thought thought,
       'origin': "app",
     });
 
-    await http.post(
+    // Logging
+    Logger.root.info("Sending thought with POST");
+
+    var result = await http.post(
       url,
       headers: headers,
       body: body,
     );
+
+    // Log post response
+    Logger.root.info("saveThought response: ${result.body}");
 
     // Try to parse the response as json
     try {
@@ -169,8 +180,7 @@ Future<void> deleteThought(BuildContext context, String thoughtId) async {
   }
   // Try to parse the response as json
   try {
-    final jsonResponse = json.decode(response.body);
-    Logging.root.fine(jsonResponse);
+    // final jsonResponse = json.decode(response.body);
   } catch (e) {
     throw Exception('Failed to delete thought');
   }
@@ -379,10 +389,7 @@ Future<LoginResponse> login(String username, String password) async {
 
   final response = await http.post(url, body: body);
 
-  // print(response.body);
   if (response.statusCode != 200) {
-    print(url);
-    print(response.body);
     throw Exception('Failed to login');
   }
 
@@ -393,14 +400,9 @@ Future<LoginResponse> login(String username, String password) async {
 Future<bool> linkThoughts(context, String fromId, String toId) async {
   final url = Uri.parse(endpoint('/api/link/'));
 
-  String token = getToken(context);
-  final headers = {
-    'ComindUsername':
-        Provider.of<AuthProvider>(context, listen: false).username,
-    'Authorization': 'Bearer $token',
-    'ComindFromId': fromId,
-    'ComindToId': toId,
-  };
+  final headers = getBaseHeaders(context);
+  headers['ComindFromId'] = fromId;
+  headers['ComindToId'] = toId;
 
   final response = await dio.post(
     url.toString(),
@@ -420,11 +422,10 @@ Future<bool> linkThoughts(context, String fromId, String toId) async {
 Future<List<Thought>> fetchChildren(
     BuildContext context, String thoughtId) async {
   final url = Uri.parse(endpoint('/api/children/'));
-  final headers = {
-    'ComindUsername':
-        Provider.of<AuthProvider>(context, listen: false).username,
-    'ComindThoughtId': thoughtId,
-  };
+
+  // Headers
+  final headers = getBaseHeaders(context);
+  headers['ComindThoughtId'] = thoughtId;
 
   final response = await dio.get(
     url.toString(),
@@ -447,11 +448,9 @@ Future<List<Thought>> fetchChildren(
 Future<List<Thought>> fetchParents(
     BuildContext context, String thoughtId) async {
   final url = Uri.parse(endpoint('/api/parents/'));
-  final headers = {
-    'ComindUsername':
-        Provider.of<AuthProvider>(context, listen: false).username,
-    'ComindThoughtId': thoughtId,
-  };
+
+  final headers = getBaseHeaders(context);
+  headers['ComindThoughtId'] = thoughtId;
 
   final response = await dio.get(
     url.toString(),
@@ -480,11 +479,9 @@ Future<List<Thought>> fetchParents(
 Future<void> setPublic(
     BuildContext context, String thoughtId, bool isPublic) async {
   final url = Uri.parse(endpoint('/api/thoughts/'));
-  final headers = {
-    'ComindUsername':
-        Provider.of<AuthProvider>(context, listen: false).username,
-    'ComindThoughtId': thoughtId,
-  };
+
+  final headers = getBaseHeaders(context);
+  headers['ComindThoughtId'] = thoughtId;
 
   final body = jsonEncode(<String, dynamic>{
     'public': isPublic,

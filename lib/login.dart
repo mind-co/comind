@@ -45,7 +45,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordConfirmationController = TextEditingController();
-  static const double fontSize = 18;
   bool signUpMode = false;
   bool usernameAvailable = false;
   bool emailAvailable = false;
