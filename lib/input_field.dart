@@ -115,7 +115,7 @@ class _MainTextFieldState extends State<MainTextField> {
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
               .onPrimary
-              .withAlpha(64),
+              .withAlpha(16),
         ),
       ),
       focusedBorder: OutlineInputBorder(
@@ -125,7 +125,7 @@ class _MainTextFieldState extends State<MainTextField> {
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
               .onPrimary
-              .withAlpha(128),
+              .withAlpha(32),
         ),
       ),
     );
@@ -198,9 +198,8 @@ class _MainTextFieldState extends State<MainTextField> {
             children: [
               // Text box
               Material(
-                // elevation: 2,
+                elevation: 2,
                 borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-                color: Colors.transparent,
                 child: Container(
                   // Bordered
                   decoration: BoxDecoration(
@@ -210,8 +209,7 @@ class _MainTextFieldState extends State<MainTextField> {
                     // Fill color
                     color: Provider.of<ComindColorsNotifier>(context)
                         .colorScheme
-                        .onBackground
-                        .withAlpha(8),
+                        .surface,
                   ),
 
                   // decoration: BoxDecoration(

@@ -664,6 +664,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 });
 
             if (mounted) {
+              // Make the auth provider update
+              Provider.of<AuthProvider>(context, listen: false).login();
+
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   showCloseIcon: true,

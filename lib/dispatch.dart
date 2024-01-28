@@ -71,10 +71,10 @@ class Dispatch extends StatelessWidget {
         },
         pages: [
           // Load the login screen if the user is not logged in
-          // if (!authProvider.isLoggedIn)
-          //   const MaterialPage(
-          //     child: LoginScreen(),
-          //   ),
+          if (!authProvider.isLoggedIn)
+            const MaterialPage(
+              child: LoginScreen(),
+            ),
 
           // // Load the thought list screen
           // if (authProvider.isLoggedIn)
@@ -94,8 +94,8 @@ class Dispatch extends StatelessWidget {
       return Navigator(
         pages: const [
           MaterialPage(
-            child: Stream(),
-            // child: LoginScreen(),
+            // child: Stream(),
+            child: LoginScreen(),
           ),
         ],
         onPopPage: (route, result) => route.didPop(result),

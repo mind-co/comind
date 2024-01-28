@@ -16,6 +16,7 @@ String endpoint(String path) {
   return serverUrl + path;
 }
 
+// Gets all user thoughts
 Future<List<Thought>> fetchThoughts(BuildContext context) async {
   final url = Uri.parse(endpoint('/api/user-thoughts/cameron/'));
   final headers = {
@@ -150,6 +151,7 @@ Future<void> deleteThought(BuildContext context, String thoughtId) async {
   final headers = {
     'ComindUsername': 'cameron',
     'ComindThoughtId': thoughtId,
+    'Authorization': 'Bearer ${getToken(context)}',
   };
 
   final response = await http.delete(url, headers: headers);
@@ -159,7 +161,8 @@ Future<void> deleteThought(BuildContext context, String thoughtId) async {
   }
   // Try to parse the response as json
   try {
-    // final jsonResponse = json.decode(response.body);
+    final jsonResponse = json.decode(response.body);
+    print(jsonResponse);
   } catch (e) {
     throw Exception('Failed to delete thought');
   }
@@ -370,6 +373,8 @@ Future<LoginResponse> login(String username, String password) async {
 
   // print(response.body);
   if (response.statusCode != 200) {
+    print(url);
+    print(response.body);
     throw Exception('Failed to login');
   }
 

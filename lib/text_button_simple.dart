@@ -14,8 +14,23 @@ class TextButtonSimple extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       style: ButtonStyle(
-        textStyle: MaterialStateProperty.all(
-          Theme.of(context).textTheme.titleMedium,
+        animationDuration: const Duration(milliseconds: 10),
+        // Title when hovered
+        textStyle: MaterialStateProperty.resolveWith<TextStyle>(
+          (Set<MaterialState> states) {
+            if (states.contains(MaterialState.hovered)) {
+              return Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onBackground
+                        .withAlpha(255),
+                  );
+            }
+            return Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color:
+                      Theme.of(context).colorScheme.onBackground.withAlpha(200),
+                );
+          },
         ),
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (Set<MaterialState> states) {
@@ -26,7 +41,7 @@ class TextButtonSimple extends StatelessWidget {
             } else if (states.contains(MaterialState.disabled)) {
               return Theme.of(context).colorScheme.onBackground.withAlpha(64);
             } else {
-              return Theme.of(context).colorScheme.onBackground.withAlpha(164);
+              return Theme.of(context).colorScheme.onBackground.withAlpha(200);
             }
             return Theme.of(context).colorScheme.onBackground;
           },
@@ -51,9 +66,7 @@ class TextButtonSimple extends StatelessWidget {
         ),
       ),
       onPressed: onPressed,
-      child: Text(text,
-          style:
-              Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall),
+      child: Text(text),
     );
   }
 }

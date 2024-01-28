@@ -121,3 +121,25 @@ Color getTertiaryColor(BuildContext context) {
 TextTheme getTextTheme(BuildContext context) {
   return Provider.of<ComindColorsNotifier>(context, listen: false).textTheme;
 }
+
+// Format links to a string.
+// null means no links. Otherwise it is an integer. Format based on scale
+// 0/null: no links
+// 1: 1 link
+// 2-999: 2-999 links
+// 1000-999999: 1k-999k links
+// 1000000-999999999: 1m-999m links
+// 1000000000-999999999999: 1b-999b links
+String formatLinks(int? links) {
+  if (links == null || links == 0) {
+    return 'no links';
+  } else if (links < 1000) {
+    return links.toString();
+  } else if (links < 1000000) {
+    return '${(links / 1000).floor()}k';
+  } else if (links < 1000000000) {
+    return '${(links / 1000000).floor()}m';
+  } else {
+    return '${(links / 1000000000).floor()}b';
+  }
+}

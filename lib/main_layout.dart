@@ -95,7 +95,7 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   bool showSideColumns(BuildContext context) =>
-      MediaQuery.of(context).size.width > ComindColors.maxWidth;
+      MediaQuery.of(context).size.width > 1000;
 
   //
   // Column width methods

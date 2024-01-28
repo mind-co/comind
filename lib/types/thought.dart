@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:comind/api.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -29,8 +27,8 @@ class Thought {
   final int? numLinks;
   final double? cosineSimilarity;
   final String? associatedId;
-  final bool linkedFrom;
-  final bool linkedTo;
+  final bool? linkedFrom;
+  final bool? linkedTo;
 
   Thought({
     required this.title,

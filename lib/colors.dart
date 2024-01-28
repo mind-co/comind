@@ -39,8 +39,8 @@ class ComindColors {
     primary: primaryColorDefault,
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
-    surface: tertiaryColorDefault,
-    background: Colors.white,
+    surface: Colors.white,
+    background: Color.fromARGB(255, 239, 239, 239),
     error: secondaryColorDefault,
     onPrimary: Colors.black,
     onSecondary: Colors.black,
@@ -55,7 +55,7 @@ class ComindColors {
     primary: primaryColorDefault,
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
-    surface: tertiaryColorDefault,
+    surface: Color.fromRGBO(48, 48, 48, 1),
     background: Color.fromRGBO(34, 34, 34, 1),
     error: secondaryColorDefault,
     onPrimary: Colors.white,
@@ -64,7 +64,7 @@ class ComindColors {
     onBackground: Colors.white,
     onError: Colors.white,
     brightness: Brightness.dark,
-    surfaceVariant: Color.fromRGBO(52, 52, 52, 1),
+    surfaceVariant: Color.fromRGBO(136, 136, 136, 1),
   );
 
   // get _colorScheme => darkMode ? _darkScheme : _lightScheme;
@@ -92,12 +92,11 @@ class ComindColors {
   }
 
   // Text themes
-  // static final bodyStyle = GoogleFonts.hankenGrotesk(
   static final bodyStyle = GoogleFonts.ibmPlexSans(
     fontWeight: FontWeight.w400,
     height: 1.2,
   );
-  // Ignore formatted
+
   // static final bodyStyle = GoogleFonts.nunito(
   //   fontWeight: FontWeight.w400,
   //   height: 1.2,

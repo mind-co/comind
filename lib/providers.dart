@@ -44,6 +44,18 @@ class AuthProvider extends ChangeNotifier {
 
   void login() {
     _isLoggedIn = true;
+
+    // Grab the token, set the username
+    SharedPreferences.getInstance().then((prefs) {
+      token = prefs.getString('token')!;
+      try {
+        final jwt = JWT.decode(token);
+        username = jwt.payload['username'] as String;
+      } catch (e) {
+        throw ('Error parsing JWT: $e');
+      }
+    });
+
     notifyListeners();
   }
 
@@ -65,7 +77,13 @@ class ThoughtsProvider extends ChangeNotifier {
 
   final List<Thought> _thoughts = [];
 
-  List<Thought> get thoughts => _thoughts;
+  // Only get thoughts not in the top of mind
+  List<Thought> get thoughts {
+    return _thoughts.where((element) {
+      return !brainBuffer.any((brainElement) => brainElement.id == element.id);
+    }).toList();
+  }
+
   bool get hasThoughts => _thoughts.isNotEmpty;
   bool get hasTopOfMind => brainBuffer.isNotEmpty;
 
