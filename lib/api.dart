@@ -95,8 +95,11 @@ Future<void> saveThought(BuildContext context, Thought thought,
   // If the thought has an ID, we're updating an existing thought.
   // By default empty thoughts have and ID of length 0.
   if (newThought == true) {
+    // TODO: This can probably be removed since we always generate a new ID on
+    // the client side.
     final headers = {
       'ComindUsername': 'cameron',
+      'Authorization': 'Bearer ${getToken(context)}',
     };
 
     final body = jsonEncode(<String, dynamic>{
@@ -130,6 +133,7 @@ Future<void> saveThought(BuildContext context, Thought thought,
     final headers = {
       'ComindUsername': 'cameron',
       'ComindThoughtId': thought.id,
+      'Authorization': 'Bearer ${getToken(context)}',
     };
 
     final body = jsonEncode(<String, dynamic>{
