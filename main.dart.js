@@ -9487,32 +9487,33 @@ s=1
 break}else throw A.c(A.by("Failed to load thoughts"))
 case 1:return A.L(q,r)}})
 return A.M($async$a05,r)},
-rO(a,b,c){var s=0,r=A.N(t.H),q,p,o,n,m,l,k,j,i
+rO(a,b,c){var s=0,r=A.N(t.H),q,p,o,n,m,l,k,j,i,h
 var $async$rO=A.O(function(d,e){if(d===1)return A.K(e,r)
-while(true)switch(s){case 0:k=A.cY(u.p,0,null)
-j=$.xw()
-i=b.r
-j.qy(B.dj,"{'location':'saveThought','new_id: "+i+"','sending_to':'"+k.j(0)+"','body':'"+b.b+"'}",null,null)
-q=t.N
-p=t.z
+while(true)switch(s){case 0:j=A.cY(u.p,0,null)
+i=$.xw()
+h=b.r
+i.qy(B.dj,"{'location':'saveThought','new_id: "+h+"','sending_to':'"+j.j(0)+"','body':'"+b.b+"'}",null,null)
+q=t.d
+p=t.N
+o=t.z
 s=c===!0?2:4
 break
-case 2:o=A.as(["ComindUsername","cameron"],q,q)
-n=B.a7.mm(A.as(["body",b.b,"public",b.w,"synthetic",!1,"origin","app"],q,p),null)
-j.qy(B.dj,"Sending thought with POST",null,null)
+case 2:n=A.as(["ComindUsername","cameron","Authorization","Bearer "+A.y(a,!1,q).d],p,p)
+m=B.a7.mm(A.as(["body",b.b,"public",b.w,"synthetic",!1,"origin","app"],p,o),null)
+i.qy(B.dj,"Sending thought with POST",null,null)
 s=5
-return A.S(A.aBq(k,n,o),$async$rO)
-case 5:m=e
-j.qy(B.dj,"saveThought response: "+A.oJ(A.oE(m.e).c.a.h(0,"charset")).cv(0,m.w),null,null)
-try{}catch(h){j=A.by("Failed to parse new thought as JSON")
-throw A.c(j)}s=3
+return A.S(A.aBq(j,m,n),$async$rO)
+case 5:l=e
+i.qy(B.dj,"saveThought response: "+A.oJ(A.oE(l.e).c.a.h(0,"charset")).cv(0,l.w),null,null)
+try{}catch(g){i=A.by("Failed to parse new thought as JSON")
+throw A.c(i)}s=3
 break
-case 4:o=A.as(["ComindUsername","cameron","ComindThoughtId",i],q,q)
+case 4:n=A.as(["ComindUsername","cameron","ComindThoughtId",h,"Authorization","Bearer "+A.y(a,!1,q).d],p,p)
 s=6
-return A.S(A.aYY(k,B.a7.mm(A.as(["body",b.b,"public",b.w,"synthetic",!1,"origin","app"],q,p),null),o),$async$rO)
+return A.S(A.aYY(j,B.a7.mm(A.as(["body",b.b,"public",b.w,"synthetic",!1,"origin","app"],p,o),null),n),$async$rO)
 case 6:if(e.b!==200)throw A.c(A.by("Failed to save thought"))
-try{}catch(h){j=A.by("Failed to parse new thought as JSON")
-throw A.c(j)}case 3:return A.L(null,r)}})
+try{}catch(g){i=A.by("Failed to parse new thought as JSON")
+throw A.c(i)}case 3:return A.L(null,r)}})
 return A.M($async$rO,r)},
 awc(a,b){var s=0,r=A.N(t.H),q,p,o,n
 var $async$awc=A.O(function(c,d){if(c===1)return A.K(d,r)
