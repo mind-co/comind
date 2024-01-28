@@ -131,122 +131,130 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         opacity: widget.showBody ? 1.0 : 0.5,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-          child: Card(
-            elevation: 2,
+          child: Material(
+            child: InkWell(
+              child: Card(
+                elevation: 2,
 
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-              // side: BorderSide(
-              //   color: Provider.of<ComindColorsNotifier>(context)
-              //       .colorScheme
-              //       .onBackground
-              //       .withAlpha(64),
-              //   width: 1,
-              // ),
-            ),
-            // elevation: 0.1,
-            color:
-                Provider.of<ComindColorsNotifier>(context).colorScheme.surface,
-            // surfaceTintColor:
-            //     Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
-            surfaceTintColor: Colors.transparent,
-            borderOnForeground: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(ComindColors.bubbleRadius),
+                  // side: BorderSide(
+                  //   color: Provider.of<ComindColorsNotifier>(context)
+                  //       .colorScheme
+                  //       .onBackground
+                  //       .withAlpha(64),
+                  //   width: 1,
+                  // ),
+                ),
+                // elevation: 0.1,
+                color: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .surface,
+                // surfaceTintColor:
+                //     Provider.of<ComindColorsNotifier>(context).colorScheme.primary,
+                surfaceTintColor: Colors.transparent,
+                borderOnForeground: true,
 
-            child: Padding(
-              padding: const EdgeInsets.all(6.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Cinewave username
-                    Row(
+                child: Padding(
+                  padding: const EdgeInsets.all(6.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Link button for child thoughts
-                        Visibility(
-                          visible:
-                              widget.type == MarkdownDisplayType.searchResult,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-                            child: HoverIconButton(
-                              icon: Icons.add_link,
-                              onPressed: () async {
-                                // If there is a parent thought
-                                if (widget.parentThought != null) {
-                                  // Link the thoughts
-                                  if (widget.thought.id !=
-                                          widget.parentThought &&
-                                      widget.parentThought != null) {
-                                    await linkThoughts(
-                                        context,
-                                        widget.thought.id,
-                                        widget.parentThought!);
-                                  }
-                                }
-                              },
+                        // Cinewave username
+                        Row(
+                          children: [
+                            // Link button for child thoughts
+                            Visibility(
+                              visible: widget.type ==
+                                  MarkdownDisplayType.searchResult,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                                child: HoverIconButton(
+                                  icon: Icons.add_link,
+                                  onPressed: () async {
+                                    // If there is a parent thought
+                                    if (widget.parentThought != null) {
+                                      // Link the thoughts
+                                      if (widget.thought.id !=
+                                              widget.parentThought &&
+                                          widget.parentThought != null) {
+                                        await linkThoughts(
+                                            context,
+                                            widget.thought.id,
+                                            widget.parentThought!);
+                                      }
+                                    }
+                                  },
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
+
+                        // // Show cosine similarity
+                        // Text(widget.thought.cosineSimilarity.toString(),
+                        //     style: Provider.of<ComindColorsNotifier>(context)
+                        //         .textTheme
+                        //         .bodySmall),
+
+                        Visibility(
+                            visible:
+                                widget.type != MarkdownDisplayType.topOfMind,
+                            child: titleBar(context)),
+
+                        // Add thought body
+                        Visibility(
+                            visible: widget.showBody && !widget.showTextBox,
+                            child: thoughtBody(context)),
+
+                        expandableEditBox(context),
+
+                        // Alternative action row
+                        Visibility(
+                            visible:
+                                widget.type != MarkdownDisplayType.topOfMind &&
+                                    widget.showBody,
+                            child: alternativeActionRow(context, onBackground)),
+
+                        // Show new thought box
+                        // Padding(
+                        //   padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                        //   child: Row(
+                        //     children: [
+                        //       Visibility(
+                        //         visible: newThoughtOpen,
+                        //         child: IconButton(
+                        //           padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                        //           enableFeedback: true,
+                        //           splashRadius: 16,
+                        //           onPressed: () {
+                        //             // Toggle the body
+                        //             setState(() {
+                        //               newThoughtOpen = !newThoughtOpen;
+                        //             });
+                        //           },
+                        //           icon: Icon(
+                        //             Icons.subdirectory_arrow_right,
+                        //             size: 16,
+                        //             color: Provider.of<ComindColorsNotifier>(context)
+                        //                 .colorScheme
+                        //                 .onBackground
+                        //                 .withAlpha(200),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+
+                        // New thought box
+                        newThoughtBox(context),
                       ],
                     ),
-
-                    // // Show cosine similarity
-                    // Text(widget.thought.cosineSimilarity.toString(),
-                    //     style: Provider.of<ComindColorsNotifier>(context)
-                    //         .textTheme
-                    //         .bodySmall),
-
-                    Visibility(
-                        visible: widget.type != MarkdownDisplayType.topOfMind,
-                        child: titleBar(context)),
-
-                    // Add thought body
-                    Visibility(
-                        visible: widget.showBody && !widget.showTextBox,
-                        child: thoughtBody(context)),
-
-                    expandableEditBox(context),
-
-                    // Alternative action row
-                    Visibility(
-                        visible: widget.type != MarkdownDisplayType.topOfMind &&
-                            widget.showBody,
-                        child: alternativeActionRow(context, onBackground)),
-
-                    // Show new thought box
-                    // Padding(
-                    //   padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-                    //   child: Row(
-                    //     children: [
-                    //       Visibility(
-                    //         visible: newThoughtOpen,
-                    //         child: IconButton(
-                    //           padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                    //           enableFeedback: true,
-                    //           splashRadius: 16,
-                    //           onPressed: () {
-                    //             // Toggle the body
-                    //             setState(() {
-                    //               newThoughtOpen = !newThoughtOpen;
-                    //             });
-                    //           },
-                    //           icon: Icon(
-                    //             Icons.subdirectory_arrow_right,
-                    //             size: 16,
-                    //             color: Provider.of<ComindColorsNotifier>(context)
-                    //                 .colorScheme
-                    //                 .onBackground
-                    //                 .withAlpha(200),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-
-                    // New thought box
-                    newThoughtBox(context),
-                  ],
+                  ),
                 ),
               ),
             ),
