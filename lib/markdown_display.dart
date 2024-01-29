@@ -7,6 +7,7 @@ import 'package:comind/input_field.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/text_button.dart';
+import 'package:comind/thought_editor_basic.dart';
 import 'package:comind/thought_table.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -132,11 +133,26 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
           child: Material(
+            elevation: 2,
             borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
             color:
                 Provider.of<ComindColorsNotifier>(context).colorScheme.surface,
             child: InkWell(
-              onTap: () => {},
+              borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+              onTap: () => {
+                // Navigate to the full screen thought page
+                // Navigator.pushNamed(context, '/thoughts/${widget.thought.id}')
+
+                // Create a new ThoughtEditorScreen with the thought
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ThoughtEditorScreen(
+                      thought: widget.thought,
+                    ),
+                  ),
+                )
+              },
               child: Card(
                 elevation: 2,
 
@@ -345,87 +361,87 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     var a = 255;
     return Stack(children: [
       Padding(
-        padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+        padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title with grey line  from end of title to far right
             Visibility(
               visible: !widget.noTitle,
-              child: Flex(
-                direction: Axis.horizontal,
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Title
-                  Flexible(
-                    flex: 6,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child: RichText(
-                        overflow: TextOverflow.fade,
-                        softWrap: false,
-                        maxLines: 1,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: widget.thought.title,
-                              style: Provider.of<ComindColorsNotifier>(context,
-                                      listen: false)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                      color: Provider.of<ComindColorsNotifier>(
-                                              context,
-                                              listen: false)
-                                          .colorScheme
-                                          .onBackground
-                                          .withOpacity(0.7)),
+              child: SizedBox(
+                width: 600,
+                child: Flex(
+                  direction: Axis.horizontal,
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 4,
+                          height: 14,
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .colorScheme
+                              .primary
+                              .withAlpha(255),
+                        ),
+
+                        // Title
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                          child: RichText(
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            maxLines: 1,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: widget.thought.title,
+                                  style: Provider.of<ComindColorsNotifier>(
+                                          context,
+                                          listen: false)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                          color:
+                                              Provider.of<ComindColorsNotifier>(
+                                                      context,
+                                                      listen: false)
+                                                  .colorScheme
+                                                  .onBackground
+                                                  .withOpacity(0.7)),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Expand/contract button
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                      child: newIconButton(
+                        context,
+                        () {
+                          // Toggle the body
+                          setState(() {
+                            widget.showBody = !widget.showBody;
+                          });
+                        },
+                        Icon(
+                          // Expand or contract icon
+                          widget.showBody ? Icons.close : Icons.circle_outlined,
+                          size: 24,
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .colorScheme
+                              .onPrimary
+                              .withAlpha(128),
                         ),
                       ),
-                    ),
-                  ),
-
-                  // Gray line
-                  Flexible(
-                    flex: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child: Container(
-                        height: 2,
-                        color: Provider.of<ComindColorsNotifier>(context)
-                            .colorScheme
-                            .tertiary
-                            .withAlpha(255),
-                      ),
-                    ),
-                  ),
-
-                  // Expand/contract button
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                    child: newIconButton(
-                      context,
-                      () {
-                        // Toggle the body
-                        setState(() {
-                          widget.showBody = !widget.showBody;
-                        });
-                      },
-                      Icon(
-                        // Expand or contract icon
-                        widget.showBody ? Icons.close : Icons.circle_outlined,
-                        size: 24,
-                        color: Provider.of<ComindColorsNotifier>(context)
-                            .colorScheme
-                            .onPrimary
-                            .withAlpha(128),
-                      ),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
 
@@ -433,7 +449,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
+                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                   child: SelectableText.rich(
                     TextSpan(
                       children: [
@@ -444,7 +460,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                           // If timestamp is hovered, make it underline
                           style: Provider.of<ComindColorsNotifier>(context)
                               .textTheme
-                              .bodySmall!
+                              .labelSmall!
                               .copyWith(
                                   color: Provider.of<ComindColorsNotifier>(
                                           context)
@@ -481,7 +497,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                           // If timestamp is hovered, make it underline
                           style: Provider.of<ComindColorsNotifier>(context)
                               .textTheme
-                              .bodySmall!
+                              .labelSmall!
                               .copyWith(
                                   color: Provider.of<ComindColorsNotifier>(
                                           context)
@@ -517,7 +533,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                           // If timestamp is hovered, make it underline
                           style: Provider.of<ComindColorsNotifier>(context)
                               .textTheme
-                              .bodySmall!
+                              .labelSmall!
                               .copyWith(
                                   color:
                                       Provider.of<ComindColorsNotifier>(context)
@@ -553,7 +569,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                           // If timestamp is hovered, make it underline
                           style: Provider.of<ComindColorsNotifier>(context)
                               .textTheme
-                              .bodySmall!
+                              .labelSmall!
                               .copyWith(
                                   color:
                                       Provider.of<ComindColorsNotifier>(context)

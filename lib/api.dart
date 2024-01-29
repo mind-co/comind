@@ -48,7 +48,8 @@ Future<List<Thought>> fetchThoughts(BuildContext context) async {
     final List<dynamic> jsonResponse = json.decode(response.body);
     return jsonResponse.map((thought) => Thought.fromJson(thought)).toList();
   } else {
-    throw Exception('Failed to load thoughts');
+    throw Exception(
+        'Failed to load thoughts, status code: ${response.statusCode} and body: ${response.body}');
   }
 }
 
@@ -337,11 +338,9 @@ Future<List<Thought>> searchThoughts(BuildContext context, String query,
 // Asks the database for a specific thought by ID
 Future<Thought> fetchThought(BuildContext context, String id) async {
   final url = Uri.parse(endpoint('/api/thoughts/'));
-  final headers = {
-    'ComindUsername': 'cameron',
-    'ComindThoughtId': id,
-    "Content-Type": "application/json",
-  };
+  final headers = getBaseHeaders(context);
+  headers['ComindThoughtId'] = id;
+  headers['Content-Type'] = 'application/json';
 
   final response = await dio.get(
     url.toString(),

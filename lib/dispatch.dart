@@ -6,7 +6,6 @@ import 'package:comind/main.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/stream.dart';
 import 'package:comind/thought_editor_basic.dart';
-import 'package:comind/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -66,7 +65,7 @@ class Dispatch extends StatelessWidget {
 
           // Handle '/'
           return MaterialPageRoute(
-            builder: (context) => const ThoughtListScreen(),
+            builder: (context) => const Stream(),
           );
         },
         pages: [
@@ -121,11 +120,11 @@ class Dispatch extends StatelessWidget {
           }
 
           // Handle '/thoughts'
-          if (settings.name == '/thoughts') {
-            return MaterialPageRoute(
-              builder: (context) => const ThoughtListScreen(),
-            );
-          }
+          // if (settings.name == '/thoughts') {
+          //   return MaterialPageRoute(
+          //     builder: (context) => const ThoughtListScreen(),
+          //   );
+          // }
 
           // Handle '/thoughts/:id'
           var uri = Uri.parse(settings.name!);
@@ -141,7 +140,7 @@ class Dispatch extends StatelessWidget {
 
           // Handle '/'
           return MaterialPageRoute(
-            builder: (context) => const ThoughtListScreen(),
+            builder: (context) => const Stream(),
           );
         },
       );

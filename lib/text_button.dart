@@ -225,7 +225,7 @@ class _ComindTextButtonState extends State<ComindTextButton> {
                             : const EdgeInsets.fromLTRB(0, 0, 0, 0),
                     child: Text(
                       widget.text,
-                      style: getTextTheme(context).titleMedium,
+                      style: getTextTheme(context).titleSmall,
                     ),
                   ),
                 )

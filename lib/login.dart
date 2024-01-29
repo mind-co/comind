@@ -17,6 +17,7 @@ import 'package:comind/bottom_sheet.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:comind/misc/comind_logo.dart';
+import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/sign_up.dart';
 import 'package:comind/text_button.dart';
@@ -69,19 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       // ignore: library_private_types_in_public_api
-      appBar: AppBar(
-        backgroundColor: colors.background,
-        // backgroundColor: Colors.white,
-
-        // If the width of the screen is less than 550 pixels, use the
-        // ComindLogo class, otherwise use the original definition
-        title: ComindLogo(
-          key: UniqueKey(),
-          colors: Provider.of<ComindColorsNotifier>(context),
-        ),
-        centerTitle: true,
-        scrolledUnderElevation: 0,
-      ),
+      appBar: comindAppBar(context),
 
       body: signUpMode ? signUpPage(context) : loginPage(context),
       bottomSheet: ComindBottomSheet(),

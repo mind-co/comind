@@ -55,12 +55,10 @@ class ComindApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           // home: const LoginScreen(),
-          // home: ThoughtEditorScreen(
-          //   thought: Thought.basic(),
-          // ),
+          // home: ThoughtEditorScreen(id: "835df201-0552-52d4-ac3e-6c6b968a283f"),
           // home: const ThoughtListScreen(),
 
-          // Set up the routes
+          // // Set up the routes
           routes: {
             // '/': (context) =>
             //     ThoughtEditorScreen(id: "881750f4-cb3d-521a-92ce-70024e6fb3fe"),

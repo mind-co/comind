@@ -4,6 +4,7 @@
 // Path: lib/misc/loading.dart
 
 import 'package:comind/colors.dart';
+import 'package:comind/misc/bouncing_dots.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,22 +46,30 @@ class _LoadingState extends State<Loading> with TickerProviderStateMixin {
     return AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Hey there. We're still loading that\n",
-                  style: Provider.of<ComindColorsNotifier>(context)
-                      .textTheme
-                      .bodyLarge),
-              Text('${widget.text}',
-                  style: Provider.of<ComindColorsNotifier>(context)
-                      .textTheme
-                      .displaySmall),
-              Text("\nfor you.",
-                  style: Provider.of<ComindColorsNotifier>(context)
-                      .textTheme
-                      .bodyLarge),
-            ],
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Text("Hey there. We're still loading that\n",
+                //     style: Provider.of<ComindColorsNotifier>(context)
+                //         .textTheme
+                //         .bodyLarge),
+                // Text('${widget.text}',
+                //     style: Provider.of<ComindColorsNotifier>(context)
+                //         .textTheme
+                //         .displaySmall),
+                // Text("\nfor you.",
+                //     style: Provider.of<ComindColorsNotifier>(context)
+                //         .textTheme
+                //         .bodyLarge),
+
+                // Box to separate the text from the dots
+                SizedBox(height: 80),
+
+                // The dots
+                BouncingDotsWidget()
+              ],
+            ),
           );
         });
   }
