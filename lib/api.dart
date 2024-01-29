@@ -17,6 +17,14 @@ final dio = Dio();
 String endpoint(String path) {
   // String serverUrl = dotenv.env['COMIND_SERVER_URL'] ?? 'http://localhost:8000';
   String serverUrl = const String.fromEnvironment('COMIND_SERVER_URL');
+
+  // If the server url is not set, fallback to https://nimbus.pfiffer.org and warn
+  if (serverUrl == "") {
+    serverUrl = 'https://nimbus.pfiffer.org';
+    Logger.root.warning(
+        'COMIND_SERVER_URL is not set, falling back to https://nimbus.pfiffer.org');
+  }
+
   return serverUrl + path;
 }
 

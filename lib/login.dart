@@ -127,147 +127,143 @@ class _LoginScreenState extends State<LoginScreen> {
         width: ComindColors.maxWidth,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // coThought(context, "Welcome to Comind!"),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // coThought(context, "Welcome to Comind!"),
 
-              // ALERT DO NOT ENTER SENSITIVE PASSWORDS
-              coThought(
-                  context,
-                  "This is a **test version** of Comind. Do not enter any sensitive passwords. HTTPs does not work yet, so your password will be sent in plain text.",
-                  "Warning"),
-
-              // Email field
-              Padding(
-                padding: edgeInsets,
-                child: TextFormField(
-                  cursorWidth: cursorWidth,
-                  controller: _emailController,
-                  onChanged: (value) => setState(() {
-                    // signUpMode = value.contains('@');
-                  }),
-                  // ignore: library_private_types_in_public_api
-                  validator: (val) =>
-                      !val!.contains('@') ? 'Invalid Email' : null,
-                  // ignore: library_private_types_in_public_api
-                  onSaved: (val) => _emailController.text = val!,
-                  decoration: InputDecoration(
-                    labelStyle: textStyle,
+                // Email field
+                Padding(
+                  padding: edgeInsets,
+                  child: TextFormField(
+                    cursorWidth: cursorWidth,
+                    controller: _emailController,
+                    onChanged: (value) => setState(() {
+                      // signUpMode = value.contains('@');
+                    }),
                     // ignore: library_private_types_in_public_api
-                    border: const OutlineInputBorder(),
-                    labelText: 'Email or Username',
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(150),
-                          width: 1.0,
-                          style: BorderStyle.solid),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(50),
-                          width: 1.0,
-                          style: BorderStyle.solid),
-                    ),
-                    // icon: Icon(
-                    //   Icons.mail,
-                    //   color: Colors.grey,
-                    // ),
-                  ),
-                ),
-              ),
-
-              // Password field
-              Padding(
-                padding: edgeInsets,
-                child: TextFormField(
-                  cursorWidth: cursorWidth,
-                  controller: _passwordController,
-                  // ignore: library_private_types_in_public_api
-                  validator: (val) =>
-                      val!.length < 6 ? 'Password too short' : null,
-                  // ignore: library_private_types_in_public_api
-                  onSaved: (val) => _passwordController.text = val!,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelStyle: textStyle,
+                    validator: (val) =>
+                        !val!.contains('@') ? 'Invalid Email' : null,
                     // ignore: library_private_types_in_public_api
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(150),
-                          width: 1.0,
-                          style: BorderStyle.solid),
+                    onSaved: (val) => _emailController.text = val!,
+                    decoration: InputDecoration(
+                      labelStyle: textStyle,
+                      // ignore: library_private_types_in_public_api
+                      border: const OutlineInputBorder(),
+                      labelText: 'Email or Username',
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(150),
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(50),
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                      ),
+                      // icon: Icon(
+                      //   Icons.mail,
+                      //   color: Colors.grey,
+                      // ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(50),
-                          width: 1.0,
-                          style: BorderStyle.solid),
-                    ),
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                    // icon: Icon(
-                    //   Icons.lock,
-                    //   color: Colors.grey,
-                    // ),
                   ),
                 ),
-              ),
 
-              SizedBox(
-                width: double.infinity,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  // padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Login button
-                      loginButton(1),
-
-                      // Divider line
-                      // horizontalSpacerLine(context),
-
-                      //////////////
-                      // orTextLoginRow(context),
-
-                      // Vertical spacer
-                      Container(
-                          height: 16,
-                          width: 1,
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(150)),
-
-                      // Divider line
-                      // horizontalSpacerLine(context),
-
-                      //////////////
-                      /// Sign up  button
-                      ///
-                      signupButton(0.5),
-                    ],
+                // Password field
+                Padding(
+                  padding: edgeInsets,
+                  child: TextFormField(
+                    cursorWidth: cursorWidth,
+                    controller: _passwordController,
+                    // ignore: library_private_types_in_public_api
+                    validator: (val) =>
+                        val!.length < 6 ? 'Password too short' : null,
+                    // ignore: library_private_types_in_public_api
+                    onSaved: (val) => _passwordController.text = val!,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelStyle: textStyle,
+                      // ignore: library_private_types_in_public_api
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(150),
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(50),
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                      ),
+                      border: OutlineInputBorder(),
+                      labelText: 'Password',
+                      // icon: Icon(
+                      //   Icons.lock,
+                      //   color: Colors.grey,
+                      // ),
+                    ),
                   ),
                 ),
-              ),
 
-              // sorry(),
-            ],
+                SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    // padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Login button
+                        loginButton(1),
+
+                        // Divider line
+                        // horizontalSpacerLine(context),
+
+                        //////////////
+                        // orTextLoginRow(context),
+
+                        // Vertical spacer
+                        Container(
+                            height: 16,
+                            width: 1,
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(150)),
+
+                        // Divider line
+                        // horizontalSpacerLine(context),
+
+                        //////////////
+                        /// Sign up  button
+                        ///
+                        signupButton(0.5),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // sorry(),
+              ],
+            ),
           ),
         ),
       ),

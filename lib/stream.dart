@@ -514,9 +514,7 @@ class _StreamState extends State<Stream> {
 
         // The rest of the thoughts
         Visibility(
-          visible: getTopOfMind(context) != null ||
-              mode == Mode.myThoughts ||
-              (mode == Mode.public),
+          visible: getTopOfMind(context) != null,
           child: Section(
             text: "Stream",
             waves: false,
