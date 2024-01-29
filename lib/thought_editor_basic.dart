@@ -9,13 +9,32 @@ import 'package:comind/types/thought.dart';
 import 'package:comind/api.dart';
 import 'package:provider/provider.dart';
 
-// FIXME remove this ignore
-// ignore: must_be_immutable
-class ThoughtEditorScreen extends StatefulWidget {
-  Thought? thought;
-  final String? id;
+// Pre-loads a thought. This is used when we don't have a thought yet --
+// we need to fetch it from the API. If a thought is passed in, it will
+// return that directly to the editor screen.
+class ThoughtLoader {
+  static Future<ThoughtEditorScreen> loadThought(BuildContext context,
+      {String? id, Thought? thought}) async {
+    // If we have a thought, return it directly
+    if (thought != null) {
+      return ThoughtEditorScreen(thought: thought);
+    }
 
-  ThoughtEditorScreen({this.thought, this.id, Key? key}) : super(key: key);
+    // If we don't have a thought, fetch it from the API
+    if (id != null) {
+      Thought? thought = await fetchThought(context, id);
+      return ThoughtEditorScreen(thought: thought);
+    }
+
+    // If we don't have a thought or an ID, throw an exception
+    throw Exception("ThoughtLoader must have a thought or an ID");
+  }
+}
+
+class ThoughtEditorScreen extends StatefulWidget {
+  Thought thought;
+
+  ThoughtEditorScreen({required this.thought, Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -32,22 +51,15 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
   @override
   void initState() {
     super.initState();
+    // Get child and parent thoughts
+    fetchChildren(context, widget.thought.id)
+        .then((children) => {childThoughts.addAll(children)});
 
-    if (widget.thought == null) {
-      if (widget.id == null) {
-        throw Exception("ThoughtEditorScreen must have a thought or an ID");
-      }
-      // Fetch the thought from the API
-      fetchThought(context, widget.id!).then((thought) {
-        setState(() {
-          print("Loaded shit");
-          widget.thought = thought;
-        });
-      });
+    fetchParents(context, widget.thought.id)
+        .then((parents) => {parentThoughts.addAll(parents)});
 
-      // Get child and parent thoughts
-      fetchChildren(context, widget.id!).then((value) => {});
-    }
+    print(childThoughts);
+    print(parentThoughts);
   }
 
   @override
@@ -67,6 +79,70 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
           children: [
             // Put the thought at the top
             MarkdownThought(thought: widget.thought!),
+
+            //
+            Text("Children", style: getTextTheme(context).titleSmall),
+
+            // ListView for children
+            ListView.builder(
+                shrinkWrap: true,
+                itemCount: childThoughts.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    title: Text(childThoughts[index].title),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              FutureBuilder<ThoughtEditorScreen>(
+                                future: ThoughtLoader.loadThought(context,
+                                    id: childThoughts[index].id,
+                                    thought: childThoughts[index]),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  } else if (snapshot.hasError) {
+                                    return Text('Error loading thought');
+                                  } else {
+                                    return snapshot.data!;
+                                  }
+                                },
+                              )));
+                    },
+                  );
+                }),
+
+            //
+            Text("Parents", style: getTextTheme(context).titleSmall),
+
+            // ListView for parents
+            ListView.builder(
+                shrinkWrap: true,
+                itemCount: parentThoughts.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    title: Text(parentThoughts[index].title),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              FutureBuilder<ThoughtEditorScreen>(
+                                future: ThoughtLoader.loadThought(context,
+                                    id: parentThoughts[index].id,
+                                    thought: parentThoughts[index]),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  } else if (snapshot.hasError) {
+                                    return Text('Error loading thought');
+                                  } else {
+                                    return snapshot.data!;
+                                  }
+                                },
+                              )));
+                    },
+                  );
+                }),
           ],
         )));
   }

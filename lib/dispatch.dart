@@ -54,7 +54,20 @@ class Dispatch extends StatelessWidget {
             var id = uri.pathSegments[1];
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => ThoughtEditorScreen(id: id),
+                builder: (context) => FutureBuilder<ThoughtEditorScreen>(
+                  future:
+                      ThoughtLoader.loadThought(context, id: id, thought: null),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error loading thought');
+                    } else {
+                      return snapshot.data!;
+                    }
+                  },
+                ),
+                // builder: (context) => ThoughtEditorScreen(id: id),
               ),
             );
 
@@ -133,7 +146,20 @@ class Dispatch extends StatelessWidget {
             var id = uri.pathSegments[1];
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => ThoughtEditorScreen(id: id),
+                builder: (context) => FutureBuilder<ThoughtEditorScreen>(
+                  future:
+                      ThoughtLoader.loadThought(context, id: id, thought: null),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error loading thought');
+                    } else {
+                      return snapshot.data!;
+                    }
+                  },
+                ),
+                // builder: (context) => ThoughtEditorScreen(id: id),
               ),
             );
           }
