@@ -129,11 +129,15 @@ Future<void> saveThought(BuildContext context, Thought thought,
     // Logging
     Logger.root.info("Sending thought with POST");
 
-    var result = await http.post(
-      url,
-      headers: headers,
-      body: body,
+    final dio = Dio();
+
+    final response = await dio.post(
+      url.toString(),
+      options: Options(headers: headers),
+      data: body,
     );
+
+    final result = response.data;
 
     // Log post response
     Logger.root.info("saveThought response: ${result.body}");

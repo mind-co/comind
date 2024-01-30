@@ -436,26 +436,26 @@ class _StreamState extends State<Stream> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Visibility(
-            visible: !Provider.of<ThoughtsProvider>(context).hasTopOfMind,
-            child: Column(
-              children: [
-                // Spacer
-                // SizedBox(
-                //     height: MediaQuery.of(context).size.height <= 400
-                //         ? 0
-                //         : MediaQuery.of(context).size.height <= 600
-                //             ? 64
-                //             : 128),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                  child: SectionHeader(
-                      text:
-                          " HI ${Provider.of<AuthProvider>(context).username} ",
-                      waves: false),
-                ),
-              ],
-            )),
+        // Visibility(
+        //     visible: !Provider.of<ThoughtsProvider>(context).hasTopOfMind,
+        //     child: Column(
+        //       children: [
+        //         // Spacer
+        //         // SizedBox(
+        //         //     height: MediaQuery.of(context).size.height <= 400
+        //         //         ? 0
+        //         //         : MediaQuery.of(context).size.height <= 600
+        //         //             ? 64
+        //         //             : 128),
+        //         Padding(
+        //           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+        //           child: SectionHeader(
+        //               text:
+        //                   " HI ${Provider.of<AuthProvider>(context).username} ",
+        //               waves: false),
+        //         ),
+        //       ],
+        //     )),
 
         // Top of mind divider
         Visibility(
