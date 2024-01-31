@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Authentication provider
 class AuthProvider extends ChangeNotifier {
   String username = '';
+  String userId = '';
   bool _isLoggedIn = false;
   bool publicMode = true;
   String token = '';
@@ -34,6 +35,7 @@ class AuthProvider extends ChangeNotifier {
       try {
         final jwt = JWT.decode(token);
         username = jwt.payload['username'] as String;
+        userId = jwt.payload['id'] as String;
 
         notifyListeners();
       } catch (e) {

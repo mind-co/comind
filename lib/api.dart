@@ -120,7 +120,7 @@ Future<void> saveThought(BuildContext context, Thought thought,
     final headers = getBaseHeaders(context);
 
     final body = jsonEncode(<String, dynamic>{
-      'body': thought.body,
+      'body': thought.body.trim(), // Trim leading and trailing whitespace
       'public': thought.isPublic,
       'synthetic': false,
       'origin': "app",
@@ -128,19 +128,36 @@ Future<void> saveThought(BuildContext context, Thought thought,
 
     // Logging
     Logger.root.info("Sending thought with POST");
+    Logger.root.info("Body: $body");
 
-    final dio = Dio();
+    // Dio version
+    // final dio = Dio();
 
-    final response = await dio.post(
-      url.toString(),
-      options: Options(headers: headers),
-      data: body,
-    );
+    // final response = await dio.post(
+    //   url.toString(),
+    //   options: Options(headers: headers),
+    //   data: body,
+    // );
 
-    final result = response.data;
+    // final result = response.data;
 
     // Log post response
-    Logger.root.info("saveThought response: ${result.body}");
+    // Logger.root.info("saveThought response: ${result}");
+
+    // HTTP version
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: body,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to save thought');
+    }
+
+    final jsonResponse = json.decode(response.body);
+
+    Logger.root.info("saveThought response: ${jsonResponse}");
 
     // Try to parse the response as json
     try {
