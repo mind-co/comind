@@ -237,14 +237,14 @@ class _MainTextFieldState extends State<MainTextField> {
                           widget.type == TextFieldType.newThought,
                       controller: widget._primaryController,
 
-                      textInputAction: TextInputAction.newline,
+                      textInputAction: TextInputAction.send,
 
-                      // onSubmitted: (value) => {
-                      //   _submit(context)(),
-                      //   // Clear the text field because sometimes random newline chars
-                      //   // get added
-                      //   widget._primaryController.clear(),
-                      // },
+                      onSubmitted: (value) => {
+                        _submit(context)(),
+                        // Clear the text field because sometimes random newline chars
+                        // get added
+                        widget._primaryController.clear(),
+                      },
 
                       // TODO #12 add the command processing stuff back in.
                       // Can't turn it on because enabling the onChange function

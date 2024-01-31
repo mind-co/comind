@@ -6,9 +6,15 @@ class TextButtonSimple extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
 
-  const TextButtonSimple(
-      {Key? key, required this.text, required this.onPressed})
+  TextButtonSimple(
+      {Key? key,
+      required this.text,
+      required this.onPressed,
+      bool? isHighlighted})
       : super(key: key);
+
+  // Tracks whether this is highlighted or not
+  bool _isHighlighted = false;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +24,7 @@ class TextButtonSimple extends StatelessWidget {
         // Title when hovered
         textStyle: MaterialStateProperty.resolveWith<TextStyle>(
           (Set<MaterialState> states) {
-            if (states.contains(MaterialState.hovered)) {
+            if (states.contains(MaterialState.hovered) || _isHighlighted) {
               return Theme.of(context).textTheme.titleLarge!.copyWith(
                     color: Theme.of(context)
                         .colorScheme

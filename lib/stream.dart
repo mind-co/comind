@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:comind/api.dart';
 import 'package:comind/bottom_sheet.dart';
@@ -22,7 +24,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-enum Mode { stream, myThoughts, public }
+enum Mode { stream, myThoughts, public, consciousness }
 
 class Stream extends StatefulWidget {
   const Stream({Key? key}) : super(key: key);
@@ -472,38 +474,69 @@ class _StreamState extends State<Stream> {
           itemCount: Provider.of<ThoughtsProvider>(context).brainBuffer.length,
           // itemCount: relatedThoughts.length,
           itemBuilder: (context, index) {
-            return MarkdownThought(
-              // type: MarkdownDisplayType,
-              thought:
-                  Provider.of<ThoughtsProvider>(context).brainBuffer[index],
-              type: MarkdownDisplayType.topOfMind,
-              // TODO this should maybe link to all thoughts in the brain buffer
-              parentThought:
-                  getTopOfMind(context)?.id, // Link to most recent thought
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+              child: MarkdownThought(
+                // type: MarkdownDisplayType,
+                thought:
+                    Provider.of<ThoughtsProvider>(context).brainBuffer[index],
+                type: MarkdownDisplayType.topOfMind,
+
+                parentThought:
+                    getTopOfMind(context)?.id, // Link to most recent thought
+              ),
             );
           },
         ),
 
-        // // The top of mind thought
-        // Visibility(
-        //   visible: Provider.of<ThoughtsProvider>(context).hasTopOfMind,
-        //   child: Stack(
-        //       // Stack settings
-        //       alignment: Alignment.topLeft,
-        //       clipBehavior: Clip.none,
+        // The rest of the thoughts
+        Visibility(
+          visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text("Top of mind 👆",
+                    style: getTextTheme(context).titleMedium),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius:
+                          BorderRadius.circular(ComindColors.bubbleRadius),
+                      onTap: () async {
+                        mode = Mode.consciousness;
+                        // Empty the top of mind
+                        Provider.of<ThoughtsProvider>(context, listen: false)
+                            .clear();
 
-        //       // Stack children
-        //       children: [
-        //         MarkdownThought(
-        //           // type: MarkdownDisplayType,
-        //           thought: getTopOfMind(context) ??
-        //               Thought.fromString(
-        //                   "testing", "this is a testing thought", true),
-        //           viewOnly: true,
-        //           noTitle: true,
-        //         ),
-        //       ]),
-        // ),
+                        // Remove related thoughts
+                        relatedThoughts.clear();
+
+                        // Fetch related thoughts
+                      },
+                      child: // Soul blob
+                          Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ComindTextButton(
+                          lineLocation: LineLocation.bottom,
+                          onPressed: () {
+                            mode = Mode.consciousness;
+                          },
+                          text: 'clear',
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
 
         // The main text box
         thinkBox(context),
@@ -514,26 +547,76 @@ class _StreamState extends State<Stream> {
 
         // The rest of the thoughts
         Visibility(
-          visible: getTopOfMind(context) != null,
-          child: Section(
-            text: "Stream",
-            waves: false,
-            children: ListView.builder(
-              shrinkWrap: true,
-              // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
-              itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
-              itemBuilder: (context, index) {
-                return MarkdownThought(
-                  thought:
-                      Provider.of<ThoughtsProvider>(context).thoughts[index],
-                  linkable: true,
-                  parentThought: getTopOfMind(context)?.id,
-                  // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
-                );
-              },
-            ),
+          visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(" Stream of thought 👇",
+                    style: getTextTheme(context).titleMedium),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () async {
+                        mode = Mode.consciousness;
+                        // Provider.of<ComindColorsNotifier>(context, listen: false)
+                        //     .modifyColors(color);
+                      },
+                      child: // Soul blob
+                          ComindTextButton(
+                        lineLocation: LineLocation.bottom,
+                        onPressed: () {
+                          mode = Mode.consciousness;
+                        },
+                        text: '',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
+
+        ListView.builder(
+          shrinkWrap: true,
+          // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+          itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+          itemBuilder: (context, index) {
+            return MarkdownThought(
+              thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
+              linkable: true,
+              parentThought: getTopOfMind(context)?.id,
+              // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
+            );
+          },
+        ),
+        // Visibility(
+        //   visible: getTopOfMind(context) != null,
+        //   child: Section(
+        //     text: "Stream of consciousness",
+        //     waves: false,
+        //     children: ListView.builder(
+        //       shrinkWrap: true,
+        //       // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+        //       itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+        //       itemBuilder: (context, index) {
+        //         return MarkdownThought(
+        //           thought:
+        //               Provider.of<ThoughtsProvider>(context).thoughts[index],
+        //           linkable: true,
+        //           parentThought: getTopOfMind(context)?.id,
+        //           // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
+        //         );
+        //       },
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

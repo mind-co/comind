@@ -2,6 +2,7 @@ import 'package:comind/api.dart';
 import 'package:comind/types/thought.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -74,7 +75,7 @@ class AuthProvider extends ChangeNotifier {
 // Thought provider
 class ThoughtsProvider extends ChangeNotifier {
   // Brain buffer
-  static const maxBufferSize = 3;
+  static const maxBufferSize = 30;
   List<Thought> brainBuffer = [];
 
   final List<Thought> _thoughts = [];
@@ -121,7 +122,7 @@ class ThoughtsProvider extends ChangeNotifier {
   void removeThought(Thought thought) {
     _thoughts.removeWhere((element) => element.id == thought.id);
 
-    print("Removing ${thought.id}");
+    Logger.root.info('Removed thought ${thought.id} from TOM');
     notifyListeners();
   }
 
