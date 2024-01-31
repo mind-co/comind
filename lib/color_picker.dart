@@ -16,7 +16,9 @@ class ColorPicker extends StatefulWidget {
 
 class _ColorPickerState extends State<ColorPicker> {
   HSVColor color = HSVColor.fromColor(Colors.blue);
-  void onChanged(HSVColor value) => color = value;
+  void onChanged(HSVColor value) => {
+        setState(() => color = value),
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +48,10 @@ class _ColorPickerState extends State<ColorPicker> {
                 WheelPicker(
                     color: HSVColor.fromColor(
                         Provider.of<ComindColorsNotifier>(context).primary),
-                    onChanged: (value) =>
-                        widget.onColorSelected(value.toColor()))
+                    onChanged: (value) => {
+                          onChanged(value),
+                          widget.onColorSelected(value.toColor()),
+                        }),
 
                 ///---------------------------------
               ],

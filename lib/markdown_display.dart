@@ -118,12 +118,12 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   }
 
   // Initialization
+  bool _isHovering = false;
+
   @override
   Widget build(BuildContext context) {
     var onBackground =
         Provider.of<ComindColorsNotifier>(context).colorScheme.onBackground;
-
-    bool _isHovering = false;
 
     // // Return just a textbox for debug
     // return Text(
@@ -142,7 +142,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
             child: Material(
-              elevation: _isHovering ? 19 : 0,
+              elevation: _isHovering ? 6 : 4,
               borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
               color: Provider.of<ComindColorsNotifier>(context)
                   .colorScheme
@@ -420,7 +420,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
                           child: SizedBox(
-                            width: 500,
+                            width: MediaQuery.of(context).size.width * 0.9,
                             child: RichText(
                               maxLines: 1,
                               overflow: TextOverflow.fade,

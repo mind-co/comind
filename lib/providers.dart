@@ -79,6 +79,7 @@ class ThoughtsProvider extends ChangeNotifier {
   List<Thought> brainBuffer = [];
 
   final List<Thought> _thoughts = [];
+  final List<Thought> _relatedThoughts = [];
 
   // Only get thoughts not in the top of mind
   List<Thought> get thoughts {
@@ -100,6 +101,29 @@ class ThoughtsProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  // Method to fetch thoughts related to the top of mind thought.
+  // These are stored in the ThoughtsProvider. the context is
+  // required to access the API.
+  void fetchRelatedThoughts(BuildContext context) async {
+    // If there is no top of mind thought, do nothing
+    if (!hasTopOfMind) {
+      return;
+    }
+
+    // Get the top of mind thought
+    final topOfMind = brainBuffer.last;
+
+    // Search for related thoughts
+    final relatedThoughts = await searchThoughts(context, topOfMind.body);
+
+    // Clear the related thoughts
+    _relatedThoughts.clear();
+
+    // Add the related thoughts to the provider
+    Provider.of<ThoughtsProvider>(context, listen: false)
+        .addThoughts(relatedThoughts);
   }
 
   // Add a list of thoughts but only if they don't already exist

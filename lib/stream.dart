@@ -44,31 +44,6 @@ class _StreamState extends State<Stream> {
   // Mode of the stream
   Mode mode = Mode.myThoughts;
 
-  // Method to fetch thoughts related to the top of mind thought.
-  // These are stored in the ThoughtsProvider.
-  void fetchRelatedThoughts() async {
-    // Get the top of mind thought
-    final topOfMind = getTopOfMind(context);
-
-    // If the top of mind thought is null, do nothing
-    if (topOfMind == null) {
-      return;
-    }
-
-    // Search for related thoughts
-    final relatedThoughts = await searchThoughts(context, topOfMind.body);
-
-    // Add the related thoughts to the provider
-    setState(() {
-      // Add the thought to the provider
-      Provider.of<ThoughtsProvider>(context, listen: false)
-          .addThoughts(relatedThoughts);
-
-      // Set the top of mind
-      addTopOfMind(context, topOfMind);
-    });
-  }
-
   // Fetch user thoughts
   void fetchUserThoughts() async {
     while (mounted &&
@@ -103,9 +78,6 @@ class _StreamState extends State<Stream> {
   @override
   void initState() {
     super.initState();
-
-    // Fetch related thoughts
-    fetchRelatedThoughts();
   }
 
   @override
@@ -725,8 +697,8 @@ class ActionBar extends StatelessWidget {
           // Public / private button
           TextButtonSimple(
             text: Provider.of<ComindColorsNotifier>(context).publicMode
-                ? "Public"
-                : "Private",
+                ? "public"
+                : "private",
             // icon: Provider.of<ComindColorsNotifier>(context).publicMode
             //     ? Icons.public
             //     : Icons.lock,
@@ -735,6 +707,15 @@ class ActionBar extends StatelessWidget {
                   .togglePublicMode(
                       !Provider.of<ComindColorsNotifier>(context, listen: false)
                           .publicMode);
+            },
+          ),
+
+          // Clear button
+          TextButtonSimple(
+            text: "clear",
+            // icon: Icons.clear,
+            onPressed: () {
+              Provider.of<ThoughtsProvider>(context, listen: false).clear();
             },
           ),
 
