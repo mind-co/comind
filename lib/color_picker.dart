@@ -38,17 +38,12 @@ class _ColorPickerState extends State<ColorPicker> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                FloatingActionButton(
-                  onPressed: () {},
-                  backgroundColor: color.toColor(),
-                ),
-                const Divider(),
-
                 ///---------------------------------
                 WheelPicker(
                     color: HSVColor.fromColor(
                         Provider.of<ComindColorsNotifier>(context).primary),
                     onChanged: (value) => {
+                          setState(() => color = value),
                           onChanged(value),
                           widget.onColorSelected(value.toColor()),
                         }),

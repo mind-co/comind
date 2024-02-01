@@ -11,10 +11,12 @@ class AuthProvider extends ChangeNotifier {
   String username = '';
   String userId = '';
   bool _isLoggedIn = false;
+  bool _loginFailed = false;
   bool publicMode = true;
   String token = '';
 
   bool get isLoggedIn => _isLoggedIn;
+  bool get loginFailed => _loginFailed;
 
   // Init method
   AuthProvider() {
@@ -29,8 +31,8 @@ class AuthProvider extends ChangeNotifier {
     String? maybeToken = prefs.getString('token');
 
     if (maybeToken != null) {
-      _isLoggedIn = true;
       token = maybeToken;
+      _isLoggedIn = true;
 
       // Get the username from the token
       try {
@@ -55,6 +57,7 @@ class AuthProvider extends ChangeNotifier {
         final jwt = JWT.decode(token);
         username = jwt.payload['username'] as String;
       } catch (e) {
+        _loginFailed = true;
         throw ('Error parsing JWT: $e');
       }
     });

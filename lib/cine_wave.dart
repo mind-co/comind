@@ -79,10 +79,10 @@ class CineWavePainter extends CustomPainter {
 
       // Alternate convergence parameter. This is 1 at the outside edge
       // and 0 at the inside edge.
-      // var convergence = 1 - (x / size.width - (goLeft ? 0 : 1)).abs();
+      var convergence = 1 - (x / size.width - (goLeft ? 0 : 1)).abs();
 
       // No convergence parameter. This is 1 everywhere.
-      var convergence = 1;
+      // var convergence = 1;
 
       // The base opacity
       var a = 1;
@@ -105,7 +105,7 @@ class CineWavePainter extends CustomPainter {
         ..color = primaryColor.withOpacity(opacity)
         ..strokeWidth = stroke;
 
-      const double baseAmp = 0;
+      const double baseAmp = 4;
       const double baseFreq = 0.01 * pi; // Debug
       // const double baseFreq = 18;
 

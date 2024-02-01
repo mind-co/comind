@@ -419,31 +419,28 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                         // Title
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            child: RichText(
-                              maxLines: 1,
-                              overflow: TextOverflow.fade,
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: widget.thought.title,
-                                    style: Provider.of<ComindColorsNotifier>(
-                                            context,
-                                            listen: false)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(
-                                            color: Provider.of<
-                                                        ComindColorsNotifier>(
-                                                    context,
-                                                    listen: false)
-                                                .colorScheme
-                                                .onBackground
-                                                .withOpacity(0.7)),
-                                  ),
-                                ],
-                              ),
+                          child: RichText(
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: widget.thought.title,
+                                  style: Provider.of<ComindColorsNotifier>(
+                                          context,
+                                          listen: false)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                          color:
+                                              Provider.of<ComindColorsNotifier>(
+                                                      context,
+                                                      listen: false)
+                                                  .colorScheme
+                                                  .onBackground
+                                                  .withOpacity(0.7)),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -989,15 +986,15 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       // Visibility(visible: !newThoughtOpen, child: showLinkedButton),
 
       // More options button
-      Visibility(
-          visible: !newThoughtOpen && !widget.showTextBox, child: moreButton),
+      // Visibility(
+      //     visible: !newThoughtOpen && !widget.showTextBox, child: moreButton),
 
       // Link button
-      linkButton,
+      // linkButton,
 
       // Add thought button
-      Visibility(
-          visible: !widget.viewOnly && !widget.showTextBox, child: thinkButton),
+      // Visibility(
+      //     visible: !widget.viewOnly && !widget.showTextBox, child: thinkButton),
 
       // Save button
       saveButton,

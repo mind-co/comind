@@ -60,7 +60,7 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const outsidePadding = 8.0;
+    const outsidePadding = 0.0;
     const insidePadding = 0.0;
     const cineEdgeInsetsLeft =
         EdgeInsets.fromLTRB(outsidePadding, 0, insidePadding, 0);
@@ -73,15 +73,31 @@ class SectionHeader extends StatelessWidget {
 
     // Render
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      if (waves)
-        const Expanded(
-            child: Padding(
-          padding: cineEdgeInsetsLeft,
-          child: CineWave(
-            amplitude: waveAmplitude,
-            frequency: waveFrequency,
+      // if (waves)
+      //   const Expanded(
+      //       child: Padding(
+      //     padding: cineEdgeInsetsLeft,
+      //     child: CineWave(
+      //       amplitude: waveAmplitude,
+      //       frequency: waveFrequency,
+      //     ),
+      //   )),
+
+      // Expanded gray line
+      Expanded(
+        child: Padding(
+          padding: cineEdgeInsetsRight,
+          child: Container(
+            height: 1,
+            color: Provider.of<ComindColorsNotifier>(context)
+                .currentColors
+                .colorScheme
+                .onBackground
+                .withAlpha(64),
           ),
-        )),
+        ),
+      ),
+
       Flexible(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -95,16 +111,32 @@ class SectionHeader extends StatelessWidget {
           ),
         ),
       ),
-      if (waves)
-        const Expanded(
-            child: Padding(
+
+      // Expanded gray line
+      Expanded(
+        child: Padding(
           padding: cineEdgeInsetsRight,
-          child: CineWave(
-            amplitude: waveAmplitude,
-            frequency: waveFrequency,
-            goLeft: true,
+          child: Container(
+            height: 1,
+            color: Provider.of<ComindColorsNotifier>(context)
+                .currentColors
+                .colorScheme
+                .onBackground
+                .withAlpha(64),
           ),
-        )),
+        ),
+      )
+
+      // if (waves)
+      //   const Expanded(
+      //       child: Padding(
+      //     padding: cineEdgeInsetsRight,
+      //     child: CineWave(
+      //       amplitude: waveAmplitude,
+      //       frequency: waveFrequency,
+      //       goLeft: true,
+      //     ),
+      //   )),
     ]);
   }
 }

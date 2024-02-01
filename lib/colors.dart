@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+enum ColorChoice {
+  primary,
+  secondary,
+  tertiary,
+}
+
 // Color method type
 enum ColorMethod {
   splitComplementary,
@@ -117,7 +123,7 @@ class ComindColors {
 
   static const fontScalar = 1.3;
   static const double maxWidth = 600;
-  static const double bubbleRadius = 10;
+  static const double bubbleRadius = 5;
 
   TextTheme textTheme = TextTheme(
     // Nunito is good
@@ -424,6 +430,10 @@ class ComindColorsNotifier extends ChangeNotifier {
 
   void setColorMethod(ColorMethod method) {
     _currentColors.colorMethod = method;
+
+    // Modify the colors based on the new method
+    _currentColors.modifyColors(_currentColors.primary);
+
     notifyListeners();
   }
 }

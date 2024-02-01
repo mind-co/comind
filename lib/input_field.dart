@@ -271,14 +271,14 @@ class _MainTextFieldState extends State<MainTextField> {
 
               // ThinkButton only, send button
               Positioned(
-                bottom: widget.type == TextFieldType.newThought ? 5 : 0,
-                right: widget.type == TextFieldType.newThought ? 5 : 0,
+                bottom: 0,
+                right: 0,
                 child: Visibility(
                   visible: widget.type == TextFieldType.main ||
                       widget.type == TextFieldType.newThought ||
                       widget.type == TextFieldType.inline,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                    padding: const EdgeInsets.all(4),
                     child: ThinkButton(
                       onPressed: () {
                         _submit(context)();

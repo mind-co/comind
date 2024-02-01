@@ -42,27 +42,15 @@ AppBar comindAppBar(BuildContext context) {
   ComindColorsNotifier colors = Provider.of<ComindColorsNotifier>(context);
 
   // Determine whether to use the long or short logo
-  var title = Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      MediaQuery.of(context).size.width > 550
-          ? ComindLogo(
-              key: UniqueKey(),
-              colors: colors,
-            )
-          : ComindShortLogo(
-              key: UniqueKey(),
-              colors: colors,
-            ),
-      // Text(
-      //   isPublic,
-      //   style: colors.textTheme.titleSmall,
-      // ),
-      // MSmall grey divider
-      //
-    ],
-  );
+  var title = MediaQuery.of(context).size.width > 550
+      ? ComindLogo(
+          key: UniqueKey(),
+          colors: colors,
+        )
+      : ComindShortLogo(
+          key: UniqueKey(),
+          colors: colors,
+        );
 
   // Determine when to use
   return AppBar(
@@ -71,7 +59,12 @@ AppBar comindAppBar(BuildContext context) {
 
     // If the width of the screen is less than 550 pixels, use the
     // ComindLogo class, otherwise use the original definition
-    title: title,
+    title: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        title,
+      ],
+    ),
     centerTitle: true,
     scrolledUnderElevation: 0,
     elevation: 0,
