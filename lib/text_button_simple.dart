@@ -29,7 +29,7 @@ class TextButtonSimple extends StatelessWidget {
     return TextButton(
         style: ButtonStyle(
           minimumSize: MaterialStateProperty.all<Size>(Size.zero),
-          visualDensity: VisualDensity(horizontal: -4, vertical: 0),
+          visualDensity: VisualDensity(horizontal: 1, vertical: -4),
           padding:
               MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero),
           animationDuration: const Duration(milliseconds: 10),
@@ -73,7 +73,8 @@ class TextButtonSimple extends StatelessWidget {
               } else if (states.contains(MaterialState.disabled)) {
                 return Theme.of(context).colorScheme.onBackground.withAlpha(0);
               }
-              return Theme.of(context).colorScheme.surface;
+              return Colors.transparent;
+              // return Theme.of(context).colorScheme.background;
             },
           ),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
