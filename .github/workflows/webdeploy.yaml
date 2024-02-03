@@ -33,6 +33,9 @@ jobs:
           architecture: x64 # optional, x64 or arm64
       - run: flutter --version
 
+      # Now we have to go to the font_awesome_flutter directory,
+      # call flutter pub get,
+
       - name: Cache pub dependencies
         uses: actions/cache@v2
         with:

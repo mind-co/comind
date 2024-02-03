@@ -199,11 +199,6 @@ Thought? getTopOfMind(BuildContext context) {
   }
 }
 
-void addTopOfMind(BuildContext context, Thought thought) {
-  return Provider.of<ThoughtsProvider>(context, listen: false)
-      .addTopOfMind(context, thought);
-}
-
 void linkToTopOfMind(BuildContext context, String id) {
   // iterate through all top of mind thoughts and link them to the thought
   // with the given id

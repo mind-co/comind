@@ -52,6 +52,13 @@ For other stuff:
 I don't know google it
 ```
 
+## Making fonts work
+
+The icons use [Font Awesome](https://fontawesome.com/). Unfortunately these are not included in the repository for 
+licensing reasons. Please see
+[this issue](https://github.com/fluttercommunity/font_awesome_flutter/issues/257) for
+more information.
+
 ## Assets
 
 The `assets` directory houses images, fonts, and any other files you want to
