@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:comind/cine_wave.dart';
+import 'package:comind/clock.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:comind/menu_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
@@ -40,9 +43,6 @@ class _StreamState extends State<Stream> {
   // the text controller
   final _primaryController = TextEditingController();
 
-  // List of related thoughts
-  List<Thought> relatedThoughts = [];
-
   // Mode of the stream
   Mode mode = Mode.myThoughts;
 
@@ -55,7 +55,6 @@ class _StreamState extends State<Stream> {
 
     // Replace with your API call
     List<Thought> fetchedThoughts = await fetchThoughts(context);
-
     setState(() {
       // Add all thoughts to the provider
       // ignore: use_build_context_synchronously
@@ -89,8 +88,8 @@ class _StreamState extends State<Stream> {
     //     "I'm happy to have you here :smiley:", "Co", true,
     //     title: "Welcome to comind");
 
-    if (false) {
-      // if (!Provider.of<AuthProvider>(context).isLoggedIn) {
+    // if (false) {
+    if (!Provider.of<AuthProvider>(context).isLoggedIn) {
       return Scaffold(
           appBar: null,
           // Bottom sheet
@@ -164,6 +163,7 @@ class _StreamState extends State<Stream> {
 
                 // Public/private button
                 TextButtonSimple(
+                    noBackground: true,
                     text: Provider.of<ComindColorsNotifier>(context).publicMode
                         ? "Public"
                         : "Private",
@@ -177,14 +177,12 @@ class _StreamState extends State<Stream> {
 
                 // Load public thoughts
                 TextButtonSimple(
+                    noBackground: true,
                     text: "Load public",
                     onPressed: () {
                       // Clear top of mind
                       Provider.of<ThoughtsProvider>(context, listen: false)
                           .clear();
-
-                      // Remove related thoughts
-                      relatedThoughts.clear();
 
                       // Fetch related thoughts
                       _fetchStream(context);
@@ -195,14 +193,12 @@ class _StreamState extends State<Stream> {
 
                 // My thoughts
                 TextButtonSimple(
+                    noBackground: true,
                     text: "My thoughts",
                     onPressed: () {
                       // Clear top of mind
                       Provider.of<ThoughtsProvider>(context, listen: false)
                           .clear();
-
-                      // Remove related thoughts
-                      relatedThoughts.clear();
 
                       // Fetch related thoughts
                       fetchUserThoughts();
@@ -213,17 +209,16 @@ class _StreamState extends State<Stream> {
 
                 // Clear top of mind
                 TextButtonSimple(
+                    noBackground: true,
                     text: "Clear",
                     onPressed: () {
                       Provider.of<ThoughtsProvider>(context, listen: false)
                           .clear();
-
-                      // Remove related thoughts
-                      relatedThoughts.clear();
                     }),
 
                 // Color picker button
                 TextButtonSimple(
+                    noBackground: true,
                     text: "Color",
                     onPressed: () async {
                       Color color = await colorDialog(context);
@@ -233,6 +228,7 @@ class _StreamState extends State<Stream> {
 
                 // Dark mode
                 TextButtonSimple(
+                    noBackground: true,
                     text: "Dark mode",
                     onPressed: () {
                       Provider.of<ComindColorsNotifier>(context, listen: false)
@@ -246,6 +242,7 @@ class _StreamState extends State<Stream> {
                 Visibility(
                   visible: !Provider.of<AuthProvider>(context).isLoggedIn,
                   child: TextButtonSimple(
+                      noBackground: true,
                       text: "Log in",
                       // Navigate to login page.
                       onPressed: () {
@@ -257,6 +254,7 @@ class _StreamState extends State<Stream> {
                 Visibility(
                   visible: !Provider.of<AuthProvider>(context).isLoggedIn,
                   child: TextButtonSimple(
+                      noBackground: true,
                       text: "Sign up",
                       // Navigate to sign up page.
                       onPressed: () {
@@ -286,13 +284,16 @@ class _StreamState extends State<Stream> {
                   visible: true,
                   child: TextButtonSimple(
                       text: "TOM",
+                      noBackground: true,
                       onPressed: () {
                         Provider.of<ThoughtsProvider>(context, listen: false)
-                            .addTopOfMind(Thought.fromString(
-                                "I'm happy to have you here :smiley:",
-                                "Co",
-                                true,
-                                title: "Welcome to comind"));
+                            .addTopOfMind(
+                                context,
+                                Thought.fromString(
+                                    "I'm happy to have you here :smiley:",
+                                    "Co",
+                                    true,
+                                    title: "Welcome to comind"));
                       }),
                 ),
 
@@ -307,14 +308,12 @@ class _StreamState extends State<Stream> {
                   visible: Provider.of<AuthProvider>(context).isLoggedIn,
                   child: TextButtonSimple(
                       text: "Log out",
+                      noBackground: true,
                       onPressed: () => {
                             // Clear all thoughts
                             Provider.of<ThoughtsProvider>(context,
                                     listen: false)
                                 .clear(),
-
-                            // Remove related thoughts
-                            relatedThoughts.clear(),
 
                             // Logout
                             Provider.of<AuthProvider>(context, listen: false)
@@ -457,38 +456,15 @@ class _StreamState extends State<Stream> {
           },
         ),
 
-        // // Top of mind header
-        // Visibility(
-        //   visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: [
-        //       Padding(
-        //         padding: const EdgeInsets.all(16.0),
-        //         child: Text("Top of mind",
-        //             style: getTextTheme(context).titleMedium),
-        //       ),
-        //     ],
-        //   ),
-        // ),
+        // three colored lines
+        soulBlobRow(context),
 
         // The main text box
         thinkBox(context),
 
-        // ColorPicker(
-        //   color: Provider.of<ComindColorsNotifier>(context).primary,
-        //   onChanged: (value) {
-        //     Provider.of<ComindColorsNotifier>(context, listen: false)
-        //         .modifyColors(value);
-        //   },
-        //   initialPicker: Picker.paletteHue,
-        //   paletteHeight: 20,
-        // ),
-
         // Widget for the action bar.
         const ActionBar(),
 
-        // The rest of the thoughts
         Visibility(
           visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
           child: Row(
@@ -522,20 +498,7 @@ class _StreamState extends State<Stream> {
           ),
         ),
 
-        // ListView.builder(
-        //   physics: const NeverScrollableScrollPhysics(),
-        //   shrinkWrap: true,
-        //   // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
-        //   itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
-        //   itemBuilder: (context, index) {
-        //     return MarkdownThought(
-        //       thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
-        //       linkable: true,
-        //       parentThought: getTopOfMind(context)?.id,
-        //       // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
-        //     );
-        //   },
-        // ),
+        // The rest of the thoughts, stream
         Visibility(
           visible: getTopOfMind(context) != null,
           child: Section(
@@ -556,6 +519,75 @@ class _StreamState extends State<Stream> {
               },
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Row soulBlobRow(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Seconday bar. flex 2 to take up 1/3
+        Expanded(
+          flex: 2,
+          child: ColorBar(
+              colorChoice: ColorChoice.secondary,
+              comindColors:
+                  Provider.of<ComindColorsNotifier>(context).currentColors),
+        ),
+
+        // Color picker
+        Material(
+          borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () async {
+              await colorDialog(context);
+            },
+            borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+            child: // Soul blob
+                Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SoulBlob(
+                comindColors:
+                    Provider.of<ComindColorsNotifier>(context).currentColors,
+              ),
+            ),
+          ),
+        ),
+
+        // Primary bar
+        Expanded(
+          child: ColorBar(
+              colorChoice: ColorChoice.primary,
+              comindColors:
+                  Provider.of<ComindColorsNotifier>(context).currentColors),
+        ),
+
+        // Primary bar, part 2
+        Expanded(
+          child: ColorBar(
+              comindColors:
+                  Provider.of<ComindColorsNotifier>(context).currentColors,
+              colorChoice: ColorChoice.primary),
+        ),
+
+        // Clear button
+        HoverIconButton(
+          icon: FontAwesomeIcons.lightBroomWide,
+          onPressed: () {
+            Provider.of<ThoughtsProvider>(context, listen: false).clear();
+          },
+        ),
+
+        // Tertiary bar
+        Expanded(
+          flex: 2,
+          child: ColorBar(
+              comindColors:
+                  Provider.of<ComindColorsNotifier>(context).currentColors,
+              colorChoice: ColorChoice.tertiary),
         ),
       ],
     );
@@ -607,15 +639,15 @@ class _StreamState extends State<Stream> {
                   // });
                 });
 
-                // Link the thought to the top of mind thought if it exists
+                // Link the most recent top of mind thought to the new thought
                 if (getTopOfMind(context) != null) {
-                  linkToTopOfMind(context, thought.id);
+                  linkToMostRecentTopOfMind(context, thought.id);
                 }
 
                 // Lastly, update the UI
                 setState(() {
                   Provider.of<ThoughtsProvider>(context, listen: false)
-                      .addTopOfMind(thought);
+                      .addTopOfMind(context, thought);
                 });
               });
             }),
@@ -631,120 +663,29 @@ class ActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 20.0),
-      child: Wrap(
-        // mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        alignment: WrapAlignment.start,
+    var container = Container(
+      padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 6.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         verticalDirection: VerticalDirection.down,
         children: [
-          // Color picker
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () async {
-                await colorDialog(context);
-                // Provider.of<ComindColorsNotifier>(context, listen: false)
-                //     .modifyColors(color);
-              },
-              child: // Soul blob
-                  Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SoulBlob(
-                  comindColors:
-                      Provider.of<ComindColorsNotifier>(context).currentColors,
-                  // primaryColor:
-                  //     Provider.of<ComindColorsNotifier>(context).primary,
-                  // secondaryColor:
-                  //     Provider.of<ComindColorsNotifier>(context).secondary,
-                  // tertiaryColor:
-                  //     Provider.of<ComindColorsNotifier>(context).tertiary,
-                  // backgroundColor:
-                  //     Provider.of<ComindColorsNotifier>(context).background,
-                ),
-              ),
-            ),
-          ),
-
-          Text(" You are in "),
-
-          // Public / private button
-          TextButtonSimple(
-            colorChoice: Provider.of<ComindColorsNotifier>(context).publicMode
-                ? ColorChoice.secondary
-                : ColorChoice.primary,
-            text: Provider.of<ComindColorsNotifier>(context).publicMode
-                ? "public"
-                : "private",
-            // icon: Provider.of<ComindColorsNotifier>(context).publicMode
-            //     ? Icons.public
-            //     : Icons.lock,
-            onPressed: () {
-              Provider.of<ComindColorsNotifier>(context, listen: false)
-                  .togglePublicMode(
-                      !Provider.of<ComindColorsNotifier>(context, listen: false)
-                          .publicMode);
-            },
-          ),
-
-          Text(" mode. "),
-
-          // See button
-          TextButtonSimple(
-            text: "see",
-            // icon: Icons.clear,
-            onPressed: () {
-              Provider.of<ThoughtsProvider>(context, listen: false).clear();
-            },
-          ),
-
-          // the stream.
-          Text("the stream. "),
-
-          // Clear button
-          Visibility(
-            visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
-            child: TextButtonSimple(
-              colorChoice: ColorChoice.tertiary,
-              text: "clear",
-              // icon: Icons.clear,
-              onPressed: () {
-                Provider.of<ThoughtsProvider>(context, listen: false).clear();
-              },
-            ),
-          ),
-
-          // your mind.
-          Visibility(
-            visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
-            child: Text(" your mind."),
-          ),
-
-          // Divider
-          // Expanded(
-          //   child: Container(
-          //       height: 1,
-          //       color: Provider.of<ComindColorsNotifier>(context)
-          //           .onBackground
-          //           .withAlpha(100)),
+          // Padding(
+          //   padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+          //   child: Opacity(opacity: .5, child: ClockWidget()),
           // ),
 
-          // // Settings button
-          // HoverIconButton(
-          //   size: 18,
-          //   icon: Icons.settings,
-          //   onPressed: () {
-          //     // TODO: Implement back button functionality
-          //   },
-          // ),
+          // Text(" You are in "),
 
-          // // Public / private button
-          // HoverIconButton(
-          //   size: 18,
-          //   icon: Provider.of<ComindColorsNotifier>(context).publicMode
-          //       ? Icons.public
-          //       : Icons.lock,
+          // TextButtonSimple(
+          //   colorChoice: Provider.of<ComindColorsNotifier>(context).publicMode
+          //       ? ColorChoice.secondary
+          //       : ColorChoice.primary,
+          //   text: Provider.of<ComindColorsNotifier>(context).publicMode
+          //       ? "public"
+          //       : "private",
+          //   // icon: Provider.of<ComindColorsNotifier>(context).publicMode
+          //   //     ? Icons.public
+          //   //     : Icons.lock,
           //   onPressed: () {
           //     Provider.of<ComindColorsNotifier>(context, listen: false)
           //         .togglePublicMode(
@@ -752,6 +693,95 @@ class ActionBar extends StatelessWidget {
           //                 .publicMode);
           //   },
           // ),
+
+          // Text(" mode. "),
+
+          // // See button
+          // TextButtonSimple(
+          //   text: "See",
+          //   // icon: Icons.clear,
+          //   onPressed: () {
+          //     Provider.of<ThoughtsProvider>(context, listen: false).clear();
+          //   },
+          // ),
+
+          // // the stream.
+          // Text(" the stream. "),
+
+          // // Clear button
+          // Visibility(
+          //   visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
+          //   child: TextButtonSimple(
+          //     colorChoice: ColorChoice.tertiary,
+          //     text: "clear",
+          //     // icon: Icons.clear,
+          // onPressed: () {
+          //   Provider.of<ThoughtsProvider>(context, listen: false).clear();
+          // },
+          //   ),
+          // ),
+
+          // // your mind.
+          // Visibility(
+          //   visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
+          //   child: Text(" your mind."),
+          // ),
+
+          // Divider
+          Expanded(
+            child: Container(
+              height: 0,
+            ),
+          ),
+
+          // Settings button
+          HoverIconButton(
+            size: 18,
+            icon: FontAwesomeIcons.lightGear,
+            onPressed: () {
+              // TODO: #18 Implement settings and user preferences
+            },
+          ),
+
+          // Concept button
+          HoverIconButton(
+            size: 18,
+            icon: FontAwesomeIcons.lightHashtag,
+            onPressed: () {
+              // TODO: Implement concept navigation
+            },
+          ),
+
+          // Dark mode button
+          HoverIconButton(
+            size: 18,
+            icon: Provider.of<ComindColorsNotifier>(context).darkMode
+                ? FontAwesomeIcons.lightSunHaze
+                : FontAwesomeIcons.lightMoonCloud,
+            onPressed: () {
+              Provider.of<ComindColorsNotifier>(context, listen: false)
+                  .toggleTheme(
+                      !Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .darkMode);
+            },
+          ),
+
+          // Public / private button
+          HoverIconButton(
+            // hoverText: Provider.of<ComindColorsNotifier>(context).publicMode
+            //     ? "Public mode"
+            //     : "Private mode",
+            size: 18,
+            icon: Provider.of<ComindColorsNotifier>(context).publicMode
+                ? FontAwesomeIcons.lightGlobe
+                : FontAwesomeIcons.lightLock,
+            onPressed: () {
+              Provider.of<ComindColorsNotifier>(context, listen: false)
+                  .togglePublicMode(
+                      !Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .publicMode);
+            },
+          ),
 
           // // Color picker button
           // HoverIconButton(
@@ -767,6 +797,7 @@ class ActionBar extends StatelessWidget {
         ],
       ),
     );
+    return container;
   }
 }
 

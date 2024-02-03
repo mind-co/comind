@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:comind/colors.dart';
 import 'package:comind/markdown_display.dart';
-import 'package:comind/text_button.dart';
 import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -100,6 +99,7 @@ class ThoughtTable extends StatelessWidget {
                               thought: thoughts[index],
                               parentThought: parentThought?.id);
                         }
+                        return null;
                       }),
                 ),
         ),

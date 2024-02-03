@@ -1,6 +1,5 @@
 import 'package:comind/main_layout.dart';
 import 'package:comind/markdown_display.dart';
-import 'package:comind/misc/loading.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/section.dart';
@@ -13,28 +12,44 @@ import 'package:provider/provider.dart';
 // we need to fetch it from the API. If a thought is passed in, it will
 // return that directly to the editor screen.
 class ThoughtLoader {
-  static Future<ThoughtEditorScreen> loadThought(BuildContext context,
-      {String? id, Thought? thought}) async {
-    // If we have a thought, return it directly
-    if (thought != null) {
-      return ThoughtEditorScreen(thought: thought);
+  static void loadThought(BuildContext context,
+      {String? id, Thought? thought}) {
+    // We must have a thought or an ID by this point.
+    // Just put the thought up.
+    if (thought != null && id == null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ThoughtEditorScreen(thought: thought)),
+      );
+      return;
     }
 
     // If we don't have a thought, fetch it from the API
-    if (id != null) {
-      Thought? thought = await fetchThought(context, id);
-      return ThoughtEditorScreen(thought: thought);
+    if (id != null && thought == null) {
+      fetchThought(context, id).then((thought) {
+        // After the operation is complete, navigate to the ThoughtEditorScreen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ThoughtEditorScreen(thought: thought)),
+        );
+      });
+
+      return;
     }
 
     // If we don't have a thought or an ID, throw an exception
-    throw Exception("ThoughtLoader must have a thought or an ID");
+    throw Exception(
+        "ThoughtLoader failed because it didn't have a thought or an ID");
   }
 }
 
 class ThoughtEditorScreen extends StatefulWidget {
-  Thought thought;
+  final Thought thought;
 
-  ThoughtEditorScreen({required this.thought, Key? key}) : super(key: key);
+  const ThoughtEditorScreen({required this.thought, Key? key})
+      : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -57,9 +72,6 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
 
     fetchParents(context, widget.thought.id)
         .then((parents) => {parentThoughts.addAll(parents)});
-
-    print(childThoughts);
-    print(parentThoughts);
   }
 
   @override
@@ -67,82 +79,55 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
     // Print whether we're logged in
     print(Provider.of<AuthProvider>(context).isLoggedIn);
 
-    // If we don't have a thought yet, show a loading screen
-    if (widget.thought == null) {
-      return const Scaffold(appBar: null, body: Loading(text: "Thought"));
-    }
-
     return Scaffold(
         appBar: comindAppBar(context),
         body: MainLayout(
             middleColumn: Column(
           children: [
             // Put the thought at the top
-            MarkdownThought(thought: widget.thought!),
-
-            //
-            Text("Children", style: getTextTheme(context).titleSmall),
+            MarkdownThought(thought: widget.thought),
 
             // ListView for children
-            ListView.builder(
+            Section(
+              text: "Children",
+              waves: false,
+              children: ListView.builder(
                 shrinkWrap: true,
-                itemCount: childThoughts.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text(childThoughts[index].title),
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              FutureBuilder<ThoughtEditorScreen>(
-                                future: ThoughtLoader.loadThought(context,
-                                    id: childThoughts[index].id,
-                                    thought: childThoughts[index]),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return CircularProgressIndicator();
-                                  } else if (snapshot.hasError) {
-                                    return Text('Error loading thought');
-                                  } else {
-                                    return snapshot.data!;
-                                  }
-                                },
-                              )));
-                    },
+                // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+                itemCount: childThoughts
+                    .length, // Provider.of<ThoughtsProvider>(context).thoughts.length,
+                itemBuilder: (context, index) {
+                  return MarkdownThought(
+                    thought: childThoughts[
+                        index], // Provider.of<ThoughtsProvider>(context).thoughts[index],
+                    linkable: true,
+                    parentThought: getTopOfMind(context)?.id,
+                    // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
                   );
-                }),
-
-            //
-            Text("Parents", style: getTextTheme(context).titleSmall),
+                },
+              ),
+            ),
 
             // ListView for parents
-            ListView.builder(
+            Section(
+              text: "Parents",
+              waves: false,
+              children: ListView.builder(
                 shrinkWrap: true,
-                itemCount: parentThoughts.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text(parentThoughts[index].title),
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              FutureBuilder<ThoughtEditorScreen>(
-                                future: ThoughtLoader.loadThought(context,
-                                    id: parentThoughts[index].id,
-                                    thought: parentThoughts[index]),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return CircularProgressIndicator();
-                                  } else if (snapshot.hasError) {
-                                    return Text('Error loading thought');
-                                  } else {
-                                    return snapshot.data!;
-                                  }
-                                },
-                              )));
-                    },
+                // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+                itemCount: parentThoughts
+                    .length, // Provider.of<ThoughtsProvider>(context).thoughts.length,
+                itemBuilder: (context, index) {
+                  return MarkdownThought(
+                    thought: parentThoughts[
+                        index], // Provider.of<ThoughtsProvider>(context).thoughts[index],
+                    linkable: true,
+                    parentThought: getTopOfMind(context)?.id,
+                    // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
                   );
-                }),
+                },
+              ),
+            ),
           ],
         )));
   }

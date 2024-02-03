@@ -88,9 +88,9 @@ class ComindColors {
     }
   }
 
-  get primary => null;
-  get secondary => null;
-  get tertiary => null;
+  get primary => colorScheme.primary;
+  get secondary => colorScheme.secondary;
+  get tertiary => colorScheme.tertiary;
 
   // Init method and set the color scheme
   void init(prim, seco, tert) {
@@ -121,7 +121,7 @@ class ComindColors {
     fontSize: 20,
   );
 
-  static const fontScalar = 1.3;
+  static const fontScalar = 1.2;
   static const double maxWidth = 600;
   static const double bubbleRadius = 10;
 
@@ -382,11 +382,7 @@ class ComindColorsNotifier extends ChangeNotifier {
   Color get tertiary => colorScheme.tertiary;
   Color get surface => colorScheme.surface;
   Color get error => colorScheme.error;
-  Color get onPrimary => colorScheme.onPrimary;
-  Color get onSecondary => colorScheme.onSecondary;
-  Color get onSurface => colorScheme.onSurface;
   Color get onBackground => colorScheme.onBackground;
-  Color get onError => colorScheme.onError;
   bool get darkMode => currentColors.darkMode;
   TextTheme get textTheme => currentColors.textTheme;
 
@@ -432,8 +428,26 @@ class ComindColorsNotifier extends ChangeNotifier {
     _currentColors.colorMethod = method;
 
     // Modify the colors based on the new method
-    _currentColors.modifyColors(_currentColors.primary);
+    modifyColors(_currentColors.primary);
 
     notifyListeners();
   }
+
+  // Calculate onPrimary, onSecondary, onSurface, onBackground, onError based on
+  // primary, secondary, tertiary, and background.
+  //
+  // If the luminance of the color is greater than 0.5,
+  // return dark text color, otherwise return light text color
+
+  // Get onPrimary color.
+  Color get onPrimary =>
+      this.primary.computeLuminance() < 0.5 ? Colors.white : Colors.black;
+
+  // Get onSecondary color.
+  Color get onSecondary =>
+      this.secondary.computeLuminance() < 0.5 ? Colors.white : Colors.black;
+
+  // Get onTertiary color.
+  Color get onTertiary =>
+      this.tertiary.computeLuminance() < 0.5 ? Colors.white : Colors.black;
 }

@@ -49,6 +49,7 @@ Future<List<Thought>> fetchThoughts(BuildContext context) async {
   final url = Uri.parse(endpoint('/api/user-thoughts/cameron/'));
   final headers = getBaseHeaders(context);
   headers['ComindPageNo'] = '0';
+  headers['ComindLimit'] = '10';
 
   final response = await http.get(url, headers: headers);
 
@@ -185,7 +186,8 @@ Future<void> saveThought(BuildContext context, Thought thought,
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to save thought');
+      throw Exception(
+          'Failed to save thought. Status code: ${response.statusCode} and body: ${response.body}');
     }
 
     // Try to parse the response as json
@@ -550,5 +552,29 @@ Future<List<Thought>> getStream(BuildContext context) async {
         .toList();
   } else {
     throw Exception('Failed to load public thoughts');
+  }
+}
+
+// Update the server with the current top of mind.
+Future<void> updateTopOfMind(BuildContext context, List<String> ids) async {
+  final url = Uri.parse(endpoint('/api/top-of-mind/'));
+
+  final headers = getBaseHeaders(context);
+
+  final body = jsonEncode(<String, dynamic>{
+    'thought_ids': ids,
+    'date_updated': DateTime.now().toIso8601String(),
+  });
+
+  final response = await dio.post(
+    url.toString(),
+    data: body,
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to update top of mind');
   }
 }

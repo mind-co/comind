@@ -1,10 +1,13 @@
 import 'dart:math';
 
 import 'package:comind/colors.dart';
+import 'package:comind/providers.dart';
 import 'package:comind/think_button.dart';
 import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/types/thought.dart';
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 // Enums for type of text field
@@ -74,6 +77,9 @@ class _MainTextFieldState extends State<MainTextField> {
 
   // Things to track textfield keys
   final FocusNode focusNode = FocusNode();
+
+  // Bool for whether control is pressed
+  bool controlPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -221,6 +227,25 @@ class _MainTextFieldState extends State<MainTextField> {
                   //     .withAlpha(30)),
                   child: KeyboardListener(
                     focusNode: focusNode,
+                    onKeyEvent: (KeyEvent event) {
+                      if (focusNode.hasFocus) {
+                        if (event.logicalKey ==
+                                LogicalKeyboardKey.controlLeft &&
+                            event is KeyDownEvent) {
+                          controlPressed = true;
+                        } else if (event.logicalKey ==
+                                LogicalKeyboardKey.controlLeft &&
+                            event is KeyUpEvent) {
+                          controlPressed = false;
+                        }
+
+                        if (event.logicalKey == LogicalKeyboardKey.enter &&
+                            controlPressed) {
+                          _submit(context)();
+                          widget._primaryController.clear();
+                        }
+                      }
+                    },
                     child: TextField(
                       scrollController: _scrollController,
                       // keyboardType: TextInputType.multiline,
@@ -236,8 +261,7 @@ class _MainTextFieldState extends State<MainTextField> {
                       autofocus: widget.type == TextFieldType.main ||
                           widget.type == TextFieldType.newThought,
                       controller: widget._primaryController,
-
-                      textInputAction: TextInputAction.send,
+                      textInputAction: TextInputAction.newline,
 
                       onSubmitted: (value) => {
                         _submit(context)(),
@@ -278,8 +302,12 @@ class _MainTextFieldState extends State<MainTextField> {
                       widget.type == TextFieldType.newThought ||
                       widget.type == TextFieldType.inline,
                   child: Padding(
-                    padding: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(3),
                     child: ThinkButton(
+                      icon:
+                          Provider.of<ComindColorsNotifier>(context).publicMode
+                              ? FontAwesomeIcons.lightLightbulbOn
+                              : FontAwesomeIcons.lightLightbulb,
                       onPressed: () {
                         _submit(context)();
 
@@ -309,7 +337,13 @@ class _MainTextFieldState extends State<MainTextField> {
     return widget.type == TextFieldType.main ||
             widget.type == TextFieldType.inline
         ? () {
-            widget.onThoughtSubmitted!(widget._primaryController.text);
+            // Check if the thought is just whitespace,
+            // if so, don't submit it.
+            final trimmed = widget._primaryController.text.trim();
+            if (trimmed.isEmpty) {
+              return;
+            }
+            widget.onThoughtSubmitted!(trimmed);
           }
         : widget.type == TextFieldType.edit
             ? () {

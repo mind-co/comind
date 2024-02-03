@@ -12,7 +12,6 @@ class AuthProvider extends ChangeNotifier {
   String userId = '';
   bool _isLoggedIn = false;
   bool _loginFailed = false;
-  bool publicMode = true;
   String token = '';
 
   bool get isLoggedIn => _isLoggedIn;
@@ -37,8 +36,9 @@ class AuthProvider extends ChangeNotifier {
       // Get the username from the token
       try {
         final jwt = JWT.decode(token);
+        print(jwt.payload);
         username = jwt.payload['username'] as String;
-        userId = jwt.payload['id'] as String;
+        userId = jwt.payload['user_id'] as String;
 
         notifyListeners();
       } catch (e) {
@@ -78,7 +78,7 @@ class AuthProvider extends ChangeNotifier {
 // Thought provider
 class ThoughtsProvider extends ChangeNotifier {
   // Brain buffer
-  static const maxBufferSize = 30;
+  static const maxBufferSize = 3;
   List<Thought> brainBuffer = [];
 
   final List<Thought> _thoughts = [];
@@ -93,9 +93,15 @@ class ThoughtsProvider extends ChangeNotifier {
 
   bool get hasThoughts => _thoughts.isNotEmpty;
   bool get hasTopOfMind => brainBuffer.isNotEmpty;
+  bool get hasRelatedThoughts => _relatedThoughts.isNotEmpty;
 
   // Add a thought to the top of mind
-  void addTopOfMind(Thought thought) {
+  void addTopOfMind(BuildContext context, Thought thought) {
+    // First, check that it is not already in the buffer
+    if (brainBuffer.any((element) => element.id == thought.id)) {
+      return;
+    }
+
     brainBuffer.add(thought);
 
     // Remove the oldest thought if the buffer is too big
@@ -103,7 +109,28 @@ class ThoughtsProvider extends ChangeNotifier {
       brainBuffer.removeAt(0);
     }
 
+    // Any time the top of mind changes, we want to fetch related thoughts.
+    _relatedThoughts.clear();
+    fetchRelatedThoughts(context);
+
+    // Similarly, we want to send our current top of mind to the server.
+    sendTopOfMind(context);
+
     notifyListeners();
+  }
+
+  // Method to send the top of mind thought to the server
+  void sendTopOfMind(BuildContext context) async {
+    // If there is no top of mind thought, do nothing
+    if (!hasTopOfMind) {
+      return;
+    }
+
+    // Get a list of IDs of the top of mind thoughts
+    final ids = brainBuffer.map((e) => e.id).toList();
+
+    // Send the top of mind thought to the server
+    await updateTopOfMind(context, ids);
   }
 
   // Method to fetch thoughts related to the top of mind thought.
@@ -174,7 +201,7 @@ Thought? getTopOfMind(BuildContext context) {
 
 void addTopOfMind(BuildContext context, Thought thought) {
   return Provider.of<ThoughtsProvider>(context, listen: false)
-      .addTopOfMind(thought);
+      .addTopOfMind(context, thought);
 }
 
 void linkToTopOfMind(BuildContext context, String id) {
@@ -185,4 +212,13 @@ void linkToTopOfMind(BuildContext context, String id) {
       .forEach((element) {
     linkThoughts(context, element.id, id);
   });
+}
+
+// Link the most recent top of mind thought to the thought with the given id
+void linkToMostRecentTopOfMind(BuildContext context, String id) {
+  // Get the most recent top of mind thought
+  final topOfMind =
+      Provider.of<ThoughtsProvider>(context, listen: false).brainBuffer.last;
+
+  linkThoughts(context, topOfMind.id, id);
 }

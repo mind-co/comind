@@ -34,7 +34,7 @@ class SoulBlobPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
 
     // Outer radius of the circle
-    final outerRadius = size.width * 0.6;
+    final outerRadius = size.width * 0.7;
 
     // Inner radius of the circle
     final innerRadius = outerRadius * 0.5;
@@ -135,6 +135,30 @@ class SoulBlob extends StatelessWidget {
           secondaryColor: comindColors.secondaryColor,
           tertiaryColor: comindColors.tertiaryColor,
           backgroundColor: comindColors.colorScheme.background),
+    );
+  }
+}
+
+// A color bar, 2 px tall and 200 px wide. Primary color.
+class ColorBar extends StatelessWidget {
+  final ComindColors comindColors;
+  final ColorChoice colorChoice;
+
+  ColorBar({
+    Key? key,
+    required this.comindColors,
+    this.colorChoice = ColorChoice.primary,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 3,
+      color: colorChoice == ColorChoice.primary
+          ? comindColors.primaryColor
+          : colorChoice == ColorChoice.secondary
+              ? comindColors.secondaryColor
+              : comindColors.tertiaryColor,
     );
   }
 }
