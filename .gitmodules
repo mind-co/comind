@@ -1,0 +1,3 @@
+[submodule "font_awesome_flutter"]
+	path = font_awesome_flutter
+	url = https://github.com/fluttercommunity/font_awesome_flutter.git
