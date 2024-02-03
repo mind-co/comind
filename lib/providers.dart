@@ -102,6 +102,11 @@ class ThoughtsProvider extends ChangeNotifier {
       return;
     }
 
+    // Link the most recent top of mind thought to the new thought
+    if (getTopOfMind(context) != null) {
+      linkToMostRecentTopOfMind(context, thought.id);
+    }
+
     brainBuffer.add(thought);
 
     // Remove the oldest thought if the buffer is too big

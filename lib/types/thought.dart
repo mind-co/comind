@@ -53,7 +53,6 @@ class Thought {
   });
 
   factory Thought.fromJson(Map<String, dynamic> json) {
-    print(json);
     return Thought(
         title: json['title'],
         body: json['body'],

@@ -639,11 +639,6 @@ class _StreamState extends State<Stream> {
                   // });
                 });
 
-                // Link the most recent top of mind thought to the new thought
-                if (getTopOfMind(context) != null) {
-                  linkToMostRecentTopOfMind(context, thought.id);
-                }
-
                 // Lastly, update the UI
                 setState(() {
                   Provider.of<ThoughtsProvider>(context, listen: false)
