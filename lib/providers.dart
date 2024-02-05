@@ -77,8 +77,13 @@ class AuthProvider extends ChangeNotifier {
 
 // Thought provider
 class ThoughtsProvider extends ChangeNotifier {
-  // Brain buffer
-  static const maxBufferSize = 3;
+  // Brain buffer list size
+  static const maxBufferSize = 20;
+
+  // How many thoughts to display in the top of mind.
+  // A chain can be as long as maxBufferSize, but only the
+  // first maxBufferDisplaySize thoughts will be displayed.
+  static const maxBufferDisplaySize = 3;
   List<Thought> brainBuffer = [];
 
   final List<Thought> _thoughts = [];

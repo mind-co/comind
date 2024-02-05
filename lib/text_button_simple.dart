@@ -28,10 +28,10 @@ class TextButtonSimple extends StatelessWidget {
         ),
         padding: MaterialStateProperty.resolveWith<EdgeInsetsGeometry>(
           (Set<MaterialState> states) {
-            if (states.contains(MaterialState.hovered) || isHighlighted) {
-              return const EdgeInsets.fromLTRB(8, 8, 8, 8);
-            }
-            return const EdgeInsets.fromLTRB(4, 8, 4, 0);
+            // if (states.contains(MaterialState.hovered) || isHighlighted) {
+            //   return const EdgeInsets.fromLTRB(8, 8, 8, 8);
+            // }
+            return const EdgeInsets.fromLTRB(4, 12, 4, 12);
           },
         ),
         // Title when hovered
@@ -46,7 +46,6 @@ class TextButtonSimple extends StatelessWidget {
             return Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color:
                       Theme.of(context).colorScheme.onBackground.withAlpha(200),
-                  decoration: TextDecoration.underline,
                 );
           },
         ),

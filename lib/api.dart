@@ -121,6 +121,7 @@ Future<void> saveThought(BuildContext context, Thought thought,
     final headers = getBaseHeaders(context);
 
     final body = jsonEncode(<String, dynamic>{
+      'id': thought.id,
       'body': thought.body.trim(), // Trim leading and trailing whitespace
       'public': thought.isPublic,
       'synthetic': false,
@@ -464,6 +465,8 @@ Future<List<Thought>> fetchChildren(
     ),
   );
 
+  print("Children response: ${response.data}");
+
   if (response.statusCode == 200) {
     final jsonResponse = json.decode(response.data);
     return jsonResponse
@@ -488,6 +491,8 @@ Future<List<Thought>> fetchParents(
       headers: headers,
     ),
   );
+
+  print("Parents response: ${response.data}");
 
   if (response.statusCode == 200) {
     final jsonResponse = json.decode(response.data);

@@ -72,71 +72,73 @@ class SectionHeader extends StatelessWidget {
     const double waveFrequency = 10;
 
     // Render
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      // if (waves)
-      //   const Expanded(
-      //       child: Padding(
-      //     padding: cineEdgeInsetsLeft,
-      //     child: CineWave(
-      //       amplitude: waveAmplitude,
-      //       frequency: waveFrequency,
-      //     ),
-      //   )),
+    return Row(
+        mainAxisSize: MainAxisSize.max,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // if (waves)
+          //   const Expanded(
+          //       child: Padding(
+          //     padding: cineEdgeInsetsLeft,
+          //     child: CineWave(
+          //       amplitude: waveAmplitude,
+          //       frequency: waveFrequency,
+          //     ),
+          //   )),
 
-      // Expanded gray line
-      Expanded(
-        child: Padding(
-          padding: cineEdgeInsetsRight,
-          child: Container(
-            height: 1,
-            color: Provider.of<ComindColorsNotifier>(context)
-                .currentColors
-                .colorScheme
-                .onBackground
-                .withAlpha(64),
-          ),
-        ),
-      ),
-
-      Flexible(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            text,
-            style: style ??
-                Provider.of<ComindColorsNotifier>(context)
+          // Expanded gray line
+          Expanded(
+            child: Padding(
+              padding: cineEdgeInsetsRight,
+              child: Container(
+                height: 1,
+                color: Provider.of<ComindColorsNotifier>(context)
                     .currentColors
-                    .textTheme
-                    .titleLarge,
+                    .colorScheme
+                    .onBackground
+                    .withAlpha(64),
+              ),
+            ),
           ),
-        ),
-      ),
 
-      // Expanded gray line
-      Expanded(
-        child: Padding(
-          padding: cineEdgeInsetsRight,
-          child: Container(
-            height: 1,
-            color: Provider.of<ComindColorsNotifier>(context)
-                .currentColors
-                .colorScheme
-                .onBackground
-                .withAlpha(64),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              text,
+              style: style ??
+                  Provider.of<ComindColorsNotifier>(context)
+                      .currentColors
+                      .textTheme
+                      .titleLarge,
+            ),
           ),
-        ),
-      )
 
-      // if (waves)
-      //   const Expanded(
-      //       child: Padding(
-      //     padding: cineEdgeInsetsRight,
-      //     child: CineWave(
-      //       amplitude: waveAmplitude,
-      //       frequency: waveFrequency,
-      //       goLeft: true,
-      //     ),
-      //   )),
-    ]);
+          // Expanded gray line
+          Expanded(
+            flex: 1,
+            child: Padding(
+              padding: cineEdgeInsetsRight,
+              child: Container(
+                height: 1,
+                color: Provider.of<ComindColorsNotifier>(context)
+                    .currentColors
+                    .colorScheme
+                    .onBackground
+                    .withAlpha(64),
+              ),
+            ),
+          )
+
+          // if (waves)
+          //   const Expanded(
+          //       child: Padding(
+          //     padding: cineEdgeInsetsRight,
+          //     child: CineWave(
+          //       amplitude: waveAmplitude,
+          //       frequency: waveFrequency,
+          //       goLeft: true,
+          //     ),
+          //   )),
+        ]);
   }
 }

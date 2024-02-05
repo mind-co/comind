@@ -143,22 +143,55 @@ class SoulBlob extends StatelessWidget {
 class ColorBar extends StatelessWidget {
   final ComindColors comindColors;
   final ColorChoice colorChoice;
+  final double height;
 
   ColorBar({
     Key? key,
     required this.comindColors,
     this.colorChoice = ColorChoice.primary,
+    this.height = 2,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 3,
+      height: height,
       color: colorChoice == ColorChoice.primary
           ? comindColors.primaryColor
           : colorChoice == ColorChoice.secondary
               ? comindColors.secondaryColor
               : comindColors.tertiaryColor,
+    );
+  }
+}
+
+// A color block, 200 px wide and 200 px tall. Primary color.
+class ColorBlock extends StatelessWidget {
+  final ComindColors comindColors;
+  final ColorChoice colorChoice;
+  final double radius;
+
+  ColorBlock({
+    Key? key,
+    required this.comindColors,
+    this.radius = 200,
+    this.colorChoice = ColorChoice.primary,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Make a circle
+    return Container(
+      height: radius,
+      width: radius,
+      decoration: BoxDecoration(
+        color: colorChoice == ColorChoice.primary
+            ? comindColors.primaryColor
+            : colorChoice == ColorChoice.secondary
+                ? comindColors.secondaryColor
+                : comindColors.tertiaryColor,
+        shape: BoxShape.circle,
+      ),
     );
   }
 }

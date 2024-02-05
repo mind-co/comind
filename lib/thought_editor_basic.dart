@@ -60,24 +60,33 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
   // Child thought and parent thought vectors
   List<Thought> childThoughts = [];
   List<Thought> parentThoughts = [];
+  List<Thought> superThoughts = [];
 
   // When this widget initializes, we need to check if we have a thought.
   // If it's null, we need to fetch it from the API.
   @override
   void initState() {
     super.initState();
-    // Get child and parent thoughts
-    fetchChildren(context, widget.thought.id)
-        .then((children) => {childThoughts.addAll(children)});
 
-    fetchParents(context, widget.thought.id)
-        .then((parents) => {parentThoughts.addAll(parents)});
+    // Get children and parents
+    fetchChildren(context, widget.thought.id).then((ts) {
+      setState(() {
+        childThoughts = ts;
+      });
+    });
+
+    fetchParents(context, widget.thought.id).then((thoughts) {
+      setState(() {
+        parentThoughts = thoughts;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     // Print whether we're logged in
-    print(Provider.of<AuthProvider>(context).isLoggedIn);
+    print("Parent thoughts: $parentThoughts");
+    print("Child thoughts: $childThoughts");
 
     return Scaffold(
         appBar: comindAppBar(context),

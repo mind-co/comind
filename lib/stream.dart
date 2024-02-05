@@ -68,11 +68,14 @@ class _StreamState extends State<Stream> {
     // Replace with your API call
     List<Thought> fetchedThoughts = await getStream(context);
 
+    // Add all thoughts to the provider
+    // ignore: use_build_context_synchronously
+    Provider.of<ThoughtsProvider>(context, listen: false)
+        .addThoughts(fetchedThoughts);
+
     setState(() {
-      // Add all thoughts to the provider
-      // ignore: use_build_context_synchronously
-      Provider.of<ThoughtsProvider>(context, listen: false)
-          .addThoughts(fetchedThoughts);
+      // Set mode to public
+      mode = Mode.public;
     });
   }
 
@@ -299,7 +302,7 @@ class _StreamState extends State<Stream> {
 
                 const SizedBox(height: 20),
                 Opacity(
-                    opacity: .5,
+                    opacity: .7,
                     child: Text("Other stuff",
                         style: getTextTheme(context).titleMedium)),
 
@@ -438,15 +441,32 @@ class _StreamState extends State<Stream> {
         // Top of mind builder (use brainbuffer)
         ListView.builder(
           shrinkWrap: true,
-          itemCount: Provider.of<ThoughtsProvider>(context).brainBuffer.length,
+          // itemCount: Provider.of<ThoughtsProvider>(context).brainBuffer.length,
+          itemCount: min(ThoughtsProvider.maxBufferDisplaySize,
+              Provider.of<ThoughtsProvider>(context).brainBuffer.length),
           // itemCount: relatedThoughts.length,
           itemBuilder: (context, index) {
             return Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
               child: MarkdownThought(
-                // type: MarkdownDisplayType,
-                thought:
-                    Provider.of<ThoughtsProvider>(context).brainBuffer[index],
+                // If the top of mind has more than the max buffer display size,
+                // then display only the most recent max buffer display size thoughts.
+                //
+                // The most recent thought is the last in the buffer.
+                // Example:
+                //
+                // Buffer cap is 3, have 5 thoughts. We want to display the last 3,
+                // thoughts 3, 4, and 5.
+                //
+                // Indices are 0-based, so the last thought is at index 4.
+                //
+                // The first thought to display is at index 5 - 3 = 2.
+                // The last thought to display is at index 5 - 1 = 4.
+                thought: Provider.of<ThoughtsProvider>(context).brainBuffer[
+                    Provider.of<ThoughtsProvider>(context).brainBuffer.length -
+                        1 -
+                        index],
+
                 type: MarkdownDisplayType.topOfMind,
 
                 parentThought:
@@ -456,14 +476,17 @@ class _StreamState extends State<Stream> {
           },
         ),
 
-        // three colored lines
-        soulBlobRow(context),
-
         // The main text box
         thinkBox(context),
 
         // Widget for the action bar.
         const ActionBar(),
+
+        // three colored lines
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: soulBlobRow(context),
+        ),
 
         Visibility(
           visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
@@ -500,7 +523,11 @@ class _StreamState extends State<Stream> {
 
         // The rest of the thoughts, stream
         Visibility(
-          visible: getTopOfMind(context) != null,
+          visible: getTopOfMind(context) != null ||
+              (mode == Mode.public &&
+                  Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty) ||
+              (mode == Mode.myThoughts &&
+                  Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty),
           child: Section(
             text: "Stream",
             waves: false,
@@ -537,6 +564,14 @@ class _StreamState extends State<Stream> {
                   Provider.of<ComindColorsNotifier>(context).currentColors),
         ),
 
+        // Primary bar
+        Expanded(
+          child: ColorBar(
+              colorChoice: ColorChoice.primary,
+              comindColors:
+                  Provider.of<ComindColorsNotifier>(context).currentColors),
+        ),
+
         // Color picker
         Material(
           borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
@@ -557,28 +592,12 @@ class _StreamState extends State<Stream> {
           ),
         ),
 
-        // Primary bar
-        Expanded(
-          child: ColorBar(
-              colorChoice: ColorChoice.primary,
-              comindColors:
-                  Provider.of<ComindColorsNotifier>(context).currentColors),
-        ),
-
         // Primary bar, part 2
         Expanded(
           child: ColorBar(
               comindColors:
                   Provider.of<ComindColorsNotifier>(context).currentColors,
               colorChoice: ColorChoice.primary),
-        ),
-
-        // Clear button
-        HoverIconButton(
-          icon: FontAwesomeIcons.lightBroomWide,
-          onPressed: () {
-            Provider.of<ThoughtsProvider>(context, listen: false).clear();
-          },
         ),
 
         // Tertiary bar
@@ -661,73 +680,16 @@ class ActionBar extends StatelessWidget {
     var container = Container(
       padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 6.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        verticalDirection: VerticalDirection.down,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisSize: MainAxisSize.max,
+        // verticalDirection: VerticalDirection.down,
         children: [
-          // Padding(
-          //   padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-          //   child: Opacity(opacity: .5, child: ClockWidget()),
-          // ),
-
-          // Text(" You are in "),
-
-          // TextButtonSimple(
-          //   colorChoice: Provider.of<ComindColorsNotifier>(context).publicMode
-          //       ? ColorChoice.secondary
-          //       : ColorChoice.primary,
-          //   text: Provider.of<ComindColorsNotifier>(context).publicMode
-          //       ? "public"
-          //       : "private",
-          //   // icon: Provider.of<ComindColorsNotifier>(context).publicMode
-          //   //     ? Icons.public
-          //   //     : Icons.lock,
-          //   onPressed: () {
-          //     Provider.of<ComindColorsNotifier>(context, listen: false)
-          //         .togglePublicMode(
-          //             !Provider.of<ComindColorsNotifier>(context, listen: false)
-          //                 .publicMode);
-          //   },
-          // ),
-
-          // Text(" mode. "),
-
-          // // See button
-          // TextButtonSimple(
-          //   text: "See",
-          //   // icon: Icons.clear,
-          //   onPressed: () {
-          //     Provider.of<ThoughtsProvider>(context, listen: false).clear();
-          //   },
-          // ),
-
-          // // the stream.
-          // Text(" the stream. "),
-
-          // // Clear button
-          // Visibility(
-          //   visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
-          //   child: TextButtonSimple(
-          //     colorChoice: ColorChoice.tertiary,
-          //     text: "clear",
-          //     // icon: Icons.clear,
-          // onPressed: () {
-          //   Provider.of<ThoughtsProvider>(context, listen: false).clear();
-          // },
+          // // Divider
+          // Expanded(
+          //   child: Container(
+          //     height: 0,
           //   ),
           // ),
-
-          // // your mind.
-          // Visibility(
-          //   visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
-          //   child: Text(" your mind."),
-          // ),
-
-          // Divider
-          Expanded(
-            child: Container(
-              height: 0,
-            ),
-          ),
 
           // Settings button
           HoverIconButton(
@@ -746,6 +708,10 @@ class ActionBar extends StatelessWidget {
               // TODO: Implement concept navigation
             },
           ),
+
+          // Most recent button
+          HoverIconButton(
+              size: 18, icon: FontAwesomeIcons.lightClock, onPressed: () {}),
 
           // Dark mode button
           HoverIconButton(
@@ -775,6 +741,14 @@ class ActionBar extends StatelessWidget {
                   .togglePublicMode(
                       !Provider.of<ComindColorsNotifier>(context, listen: false)
                           .publicMode);
+            },
+          ),
+
+          // Clear button
+          HoverIconButton(
+            icon: FontAwesomeIcons.lightBroomWide,
+            onPressed: () {
+              Provider.of<ThoughtsProvider>(context, listen: false).clear();
             },
           ),
 

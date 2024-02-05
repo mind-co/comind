@@ -8,7 +8,7 @@ import 'package:markdown/markdown.dart' as md;
 
 // Matches {[comind_name]}
 class ComindSyntax extends md.InlineSyntax {
-  static final String AST_SYMBOL = 'comindName';
+  static const String AST_SYMBOL = 'comindName';
   ComindSyntax() : super(_pattern);
 
   static const String _pattern = r'{([a-zA-Z0-9_]+)}';
@@ -59,7 +59,16 @@ class ComindText extends StatelessWidget {
     return Tooltip(
       message:
           'At some point this tooltip will be helpful. It is not helpful right now.',
-      child: Text(text, style: Theme.of(context).textTheme.titleMedium),
+
+      // Textspan is a widget that allows for rich text
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontFamily: "Bungee",
+          color: Colors.blue,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 }
