@@ -1,6 +1,5 @@
 import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class HoverIconButton extends StatefulWidget {
@@ -12,7 +11,7 @@ class HoverIconButton extends StatefulWidget {
       {super.key,
       required this.icon,
       required this.onPressed,
-      this.size = 16.0});
+      this.size = 18.0});
 
   @override
   HoverIconButtonState createState() => HoverIconButtonState();
@@ -31,10 +30,10 @@ class HoverIconButtonState extends State<HoverIconButton> {
             Provider.of<ComindColorsNotifier>(context).primary.withAlpha(255),
         padding: EdgeInsets.zero,
         onPressed: widget.onPressed,
-        visualDensity: VisualDensity.compact,
+        visualDensity: VisualDensity.standard,
         icon: Opacity(
             opacity: _isHovering ? 1.0 : 0.5, // Change opacity on hover
-            child: FaIcon(
+            child: Icon(
               widget.icon,
               color: _isHovering
                   ? Provider.of<ComindColorsNotifier>(context).onPrimary

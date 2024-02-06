@@ -1,6 +1,5 @@
 import 'package:comind/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class TextButtonSimple extends StatelessWidget {
   final String text;
@@ -38,7 +37,7 @@ class TextButtonSimple extends StatelessWidget {
         textStyle: MaterialStateProperty.resolveWith<TextStyle>(
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.hovered) || isHighlighted) {
-              return Theme.of(context).textTheme.titleLarge!.copyWith(
+              return Theme.of(context).textTheme.titleSmall!.copyWith(
                     color:
                         Theme.of(context).colorScheme.onPrimary.withAlpha(255),
                   );
@@ -58,7 +57,7 @@ class TextButtonSimple extends StatelessWidget {
             } else if (states.contains(MaterialState.disabled)) {
               return Theme.of(context).colorScheme.onBackground.withAlpha(64);
             } else {
-              return Theme.of(context).colorScheme.onBackground.withAlpha(255);
+              return Theme.of(context).colorScheme.onBackground.withAlpha(164);
             }
           },
         ),

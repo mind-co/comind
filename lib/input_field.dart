@@ -7,8 +7,8 @@ import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/types/thought.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:line_icons/line_icons.dart';
 
 // Enums for type of text field
 enum TextFieldType { main, edit, fullscreen, inline, newThought }
@@ -304,10 +304,7 @@ class _MainTextFieldState extends State<MainTextField> {
                   child: Padding(
                     padding: const EdgeInsets.all(3),
                     child: ThinkButton(
-                      icon:
-                          Provider.of<ComindColorsNotifier>(context).publicMode
-                              ? FontAwesomeIcons.lightLightbulbOn
-                              : FontAwesomeIcons.lightLightbulb,
+                      icon: LineIcons.lightbulb,
                       onPressed: () {
                         _submit(context)();
 

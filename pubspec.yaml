@@ -40,12 +40,8 @@ dependencies:
   url_launcher: ^6.2.4
   updown_arrow_scroller: ^0.0.3
   logging: ^1.2.0
-  font_awesome_flutter: ^10.7.0
-
-dependency_overrides:
-  # Needed for the pro version of font_awesome_flutter
-  font_awesome_flutter:
-    path: font_awesome_flutter
+  # unicons: any
+  line_icons: ^2.0.2
 
 dev_dependencies:
   flutter_test:

@@ -20,13 +20,13 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:comind/types/thought.dart';
 import 'package:comind/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:comind/cine_wave.dart';
+import 'package:unicons/unicons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 enum MarkdownDisplayType {
@@ -227,7 +227,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 0, 4, 0),
                                         child: HoverIconButton(
-                                          icon: FontAwesomeIcons.link,
+                                          icon: UniconsLine.link,
                                           onPressed: () async {
                                             // If there is a parent thought
                                             if (widget.parentThought != null) {
@@ -810,7 +810,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             widget.showTextBox = false;
           });
         },
-        icon: FontAwesomeIcons.lightSave,
+        icon: UniconsLine.save,
       ),
     );
 
@@ -841,70 +841,67 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           // thought.isPublic = !thought.isPublic;
         });
       },
-      icon: widget.thought.isPublic
-          ? FontAwesomeIcons.lightGlobe
-          : FontAwesomeIcons.lightLock,
+      icon: widget.thought.isPublic ? UniconsLine.globe : UniconsLine.lock,
     );
 
     var deleteButton = HoverIconButton(
-      onPressed: () async {
-        bool? shouldDelete = await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              backgroundColor: Provider.of<ComindColorsNotifier>(context)
-                  .colorScheme
-                  .background,
-              surfaceTintColor: Provider.of<ComindColorsNotifier>(context)
-                  .colorScheme
-                  .secondary
-                  .withAlpha(64),
-              title: Text(
-                'Delete thought?',
-                style: getTextTheme(context).titleSmall,
-              ),
-              content: const Text(
-                  'You sure you wanna delete this note? Cameron is really, really bad at making undo buttons. \n\nIf you delete this it will prolly be gone forever.'),
-              actions: <Widget>[
-                ComindTextButton(
-                  text: "Cancel",
-                  opacity: 1,
-                  fontSize: 18,
-                  colorIndex: 1,
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
+        onPressed: () async {
+          bool? shouldDelete = await showDialog<bool>(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .background,
+                surfaceTintColor: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .secondary
+                    .withAlpha(64),
+                title: Text(
+                  'Delete thought?',
+                  style: getTextTheme(context).titleSmall,
                 ),
-                ComindTextButton(
-                  text: "Delete",
-                  opacity: 1,
-                  fontSize: 18,
-                  colorIndex: 3,
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                ),
-              ],
-              actionsAlignment: MainAxisAlignment.spaceBetween,
-            );
-          },
-        );
+                content: const Text(
+                    'You sure you wanna delete this note? Cameron is really, really bad at making undo buttons. \n\nIf you delete this it will prolly be gone forever.'),
+                actions: <Widget>[
+                  ComindTextButton(
+                    text: "Cancel",
+                    opacity: 1,
+                    fontSize: 18,
+                    colorIndex: 1,
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                  ),
+                  ComindTextButton(
+                    text: "Delete",
+                    opacity: 1,
+                    fontSize: 18,
+                    colorIndex: 3,
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                  ),
+                ],
+                actionsAlignment: MainAxisAlignment.spaceBetween,
+              );
+            },
+          );
 
-        if (shouldDelete == true) {
-          // ignore: use_build_context_synchronously
-          deleteThought(context, widget.thought.id);
+          if (shouldDelete == true) {
+            // ignore: use_build_context_synchronously
+            deleteThought(context, widget.thought.id);
 
-          // Remove the thought from the list
-          Provider.of<ThoughtsProvider>(context, listen: false)
-              .removeThought(widget.thought);
-        }
-      },
-      icon: FontAwesomeIcons.lightTrash,
-    );
+            // Remove the thought from the list
+            Provider.of<ThoughtsProvider>(context, listen: false)
+                .removeThought(widget.thought);
+          }
+        },
+        icon: UniconsLine.trash);
 
     // Edit button
     var editThoughtButton = HoverIconButton(
-      icon: FontAwesomeIcons.lightPen,
+      icon: UniconsLine.pen,
       onPressed: () {
         // Update the edit box with the thought
         _editController.text = widget.thought.body;
@@ -930,9 +927,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     // );
 
     var infoButton = HoverIconButton(
-      icon: widget.infoMode
-          ? FontAwesomeIcons.xmark
-          : FontAwesomeIcons.lightCircleInfo,
+      icon: widget.infoMode ? UniconsLine.x : UniconsLine.info_circle,
       onPressed: () {
         // Toggle info mode
         setState(() {
@@ -1001,7 +996,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
       // Add thought button
       HoverIconButton(
-          icon: FontAwesomeIcons.lightLink,
+          icon: UniconsLine.link,
           onPressed: () {
             // Link to parent
             if (widget.parentThought != null) {
@@ -1124,7 +1119,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
                             child: HoverIconButton(
-                              icon: FontAwesomeIcons.link,
+                              icon: UniconsLine.link,
                               onPressed: () async {
                                 // If there is a parent thought
                                 if (widget.parentThought != null) {

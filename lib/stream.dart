@@ -1,12 +1,7 @@
 import 'dart:math';
 
-import 'package:comind/cine_wave.dart';
-import 'package:comind/clock.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:comind/menu_bar.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_hsvcolor_picker/flutter_hsvcolor_picker.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:logging/logging.dart';
 import 'package:comind/api.dart';
 import 'package:comind/bottom_sheet.dart';
@@ -27,6 +22,7 @@ import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:unicons/unicons.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 enum Mode { stream, myThoughts, public, consciousness }
@@ -476,17 +472,17 @@ class _StreamState extends State<Stream> {
           },
         ),
 
-        // The main text box
-        thinkBox(context),
-
-        // Widget for the action bar.
-        const ActionBar(),
-
         // three colored lines
         Padding(
           padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
           child: soulBlobRow(context),
         ),
+
+        // The main text box
+        thinkBox(context),
+
+        // Widget for the action bar.
+        const ActionBar(),
 
         Visibility(
           visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
@@ -677,6 +673,7 @@ class ActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const double actionIconSize = 30;
     var container = Container(
       padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 6.0),
       child: Row(
@@ -684,17 +681,10 @@ class ActionBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         // verticalDirection: VerticalDirection.down,
         children: [
-          // // Divider
-          // Expanded(
-          //   child: Container(
-          //     height: 0,
-          //   ),
-          // ),
-
           // Settings button
           HoverIconButton(
-            size: 18,
-            icon: FontAwesomeIcons.lightGear,
+            size: actionIconSize,
+            icon: LineIcons.cog,
             onPressed: () {
               // TODO: #18 Implement settings and user preferences
             },
@@ -702,8 +692,8 @@ class ActionBar extends StatelessWidget {
 
           // Concept button
           HoverIconButton(
-            size: 18,
-            icon: FontAwesomeIcons.lightHashtag,
+            size: actionIconSize,
+            icon: LineIcons.hashtag,
             onPressed: () {
               // TODO: Implement concept navigation
             },
@@ -711,14 +701,14 @@ class ActionBar extends StatelessWidget {
 
           // Most recent button
           HoverIconButton(
-              size: 18, icon: FontAwesomeIcons.lightClock, onPressed: () {}),
+              size: actionIconSize, icon: LineIcons.clock, onPressed: () {}),
 
           // Dark mode button
           HoverIconButton(
-            size: 18,
+            size: actionIconSize,
             icon: Provider.of<ComindColorsNotifier>(context).darkMode
-                ? FontAwesomeIcons.lightSunHaze
-                : FontAwesomeIcons.lightMoonCloud,
+                ? LineIcons.moon
+                : LineIcons.sun,
             onPressed: () {
               Provider.of<ComindColorsNotifier>(context, listen: false)
                   .toggleTheme(
@@ -732,10 +722,10 @@ class ActionBar extends StatelessWidget {
             // hoverText: Provider.of<ComindColorsNotifier>(context).publicMode
             //     ? "Public mode"
             //     : "Private mode",
-            size: 18,
+            size: actionIconSize,
             icon: Provider.of<ComindColorsNotifier>(context).publicMode
-                ? FontAwesomeIcons.lightGlobe
-                : FontAwesomeIcons.lightLock,
+                ? LineIcons.globe
+                : LineIcons.lock,
             onPressed: () {
               Provider.of<ComindColorsNotifier>(context, listen: false)
                   .togglePublicMode(
@@ -746,7 +736,8 @@ class ActionBar extends StatelessWidget {
 
           // Clear button
           HoverIconButton(
-            icon: FontAwesomeIcons.lightBroomWide,
+            size: actionIconSize,
+            icon: LineIcons.broom,
             onPressed: () {
               Provider.of<ThoughtsProvider>(context, listen: false).clear();
             },
@@ -754,7 +745,7 @@ class ActionBar extends StatelessWidget {
 
           // // Color picker button
           // HoverIconButton(
-          //   size: 18,
+          //   size: actionIconSize,
           //   icon: Icons.color_lens,
           //   onPressed: () async {
           //     colorDialog(context).then((value) {
