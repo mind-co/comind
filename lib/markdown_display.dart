@@ -20,13 +20,14 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:line_icons/line_icon.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:comind/types/thought.dart';
 import 'package:comind/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:comind/cine_wave.dart';
-import 'package:unicons/unicons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 enum MarkdownDisplayType {
@@ -227,7 +228,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 0, 4, 0),
                                         child: HoverIconButton(
-                                          icon: UniconsLine.link,
+                                          icon: LineIcons.link,
                                           onPressed: () async {
                                             // If there is a parent thought
                                             if (widget.parentThought != null) {
@@ -810,7 +811,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             widget.showTextBox = false;
           });
         },
-        icon: UniconsLine.save,
+        icon: LineIcons.save,
       ),
     );
 
@@ -841,7 +842,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           // thought.isPublic = !thought.isPublic;
         });
       },
-      icon: widget.thought.isPublic ? UniconsLine.globe : UniconsLine.lock,
+      icon: widget.thought.isPublic ? LineIcons.globe : LineIcons.lock,
     );
 
     var deleteButton = HoverIconButton(
@@ -897,11 +898,11 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                 .removeThought(widget.thought);
           }
         },
-        icon: UniconsLine.trash);
+        icon: LineIcons.trash);
 
     // Edit button
     var editThoughtButton = HoverIconButton(
-      icon: UniconsLine.pen,
+      icon: LineIcons.pen,
       onPressed: () {
         // Update the edit box with the thought
         _editController.text = widget.thought.body;
@@ -927,7 +928,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     // );
 
     var infoButton = HoverIconButton(
-      icon: widget.infoMode ? UniconsLine.x : UniconsLine.info_circle,
+      icon: widget.infoMode ? LineIcons.xing : LineIcons.infoCircle,
       onPressed: () {
         // Toggle info mode
         setState(() {
@@ -996,7 +997,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
       // Add thought button
       HoverIconButton(
-          icon: UniconsLine.link,
+          icon: LineIcons.link,
           onPressed: () {
             // Link to parent
             if (widget.parentThought != null) {
@@ -1119,7 +1120,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
                             child: HoverIconButton(
-                              icon: UniconsLine.link,
+                              icon: LineIcons.link,
                               onPressed: () async {
                                 // If there is a parent thought
                                 if (widget.parentThought != null) {

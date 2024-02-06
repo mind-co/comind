@@ -5,7 +5,6 @@ import 'package:comind/providers.dart';
 import 'package:comind/text_button_simple.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:unicons/unicons.dart';
 
 import 'colors.dart';
 

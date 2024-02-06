@@ -22,7 +22,6 @@ import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:unicons/unicons.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 enum Mode { stream, myThoughts, public, consciousness }
