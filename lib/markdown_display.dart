@@ -156,18 +156,11 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                 },
                 child: SizedBox(
                   width: 600,
-                  child: Flex(
-                    direction: Axis.horizontal,
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: titleBar(context),
-                          ),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: titleBar(context),
                       ),
                     ],
                   ),
@@ -441,65 +434,128 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     var a = 255;
     return Stack(clipBehavior: Clip.none, children: [
       Padding(
-        padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title with grey line  from end of title to far right
-            Row(
-              children: [
-                // Container(
-                //   width: 4,
-                //   height: 14,
-                //   color: Provider.of<ComindColorsNotifier>(context)
-                //       .colorScheme
-                //       .primary
-                //       .withAlpha(255),
-                // ),
+            Visibility(
+              visible: widget.thought.title.length > 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Container(
+                  //   width: 4,
+                  //   height: 14,
+                  //   color: Provider.of<ComindColorsNotifier>(context)
+                  //       .colorScheme
+                  //       .primary
+                  //       .withAlpha(255),
+                  // ),
 
-                Opacity(
-                  opacity: 0.7,
-                  child: ColorBlock(
-                      comindColors: Provider.of<ComindColorsNotifier>(context)
-                          .currentColors,
-                      colorChoice: ColorChoice.primary,
-                      radius: 10),
-                ),
-
-                // Title
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                  child: RichText(
-                    maxLines: 1,
-                    overflow: TextOverflow.fade,
-                    text: TextSpan(
+                  Flexible(
+                    child: Row(
                       children: [
-                        TextSpan(
-                          text: widget.thought.title,
-                          style: Provider.of<ComindColorsNotifier>(context,
-                                  listen: false)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                  height: 1,
-                                  color: Provider.of<ComindColorsNotifier>(
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: Opacity(
+                            opacity: 0.7,
+                            child: ColorBlock(
+                                comindColors:
+                                    Provider.of<ComindColorsNotifier>(context)
+                                        .currentColors,
+                                colorChoice: ColorChoice.primary,
+                                radius: 10),
+                          ),
+                        ),
+
+                        // Title
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: widget.thought.title,
+                                  style: Provider.of<ComindColorsNotifier>(
                                           context,
                                           listen: false)
-                                      .colorScheme
-                                      .onBackground
-                                      .withOpacity(0.7)),
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                          height: 1,
+                                          color:
+                                              Provider.of<ComindColorsNotifier>(
+                                                      context,
+                                                      listen: false)
+                                                  .colorScheme
+                                                  .onBackground
+                                                  .withOpacity(0.7)),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
+
+                  // TODO #21 add minimize and dismiss buttons
+                  //   // Minimize button
+                  // HoverIconButton(
+                  //       size: 16,
+                  //       icon: LineIcons.windowMinimize,
+                  //       onPressed: () => {
+                  //             // Toggle the body
+                  //             setState(() {
+                  //               widget.showBody = !widget.showBody;
+
+                  //               // Make disappear in 3 seconds
+                  //               Future.delayed(const Duration(seconds: 3), () {
+                  //                 // Kill the thought
+                  //                 setState(() {
+                  //                   widget.toBeDismissed = true;
+
+                  //                   // Remove the thought from the list
+                  //                   Provider.of<ThoughtsProvider>(context,
+                  //                           listen: false)
+                  //                       .removeThought(widget.thought);
+                  //                 });
+                  //               });
+                  //             }),
+                  //           }),
+
+                  //   // Dismiss button
+                  //   // Container(width: 20, height: 20, color: Colors.red)
+                  //   HoverIconButton(
+                  //       icon: LineIcons.times,
+                  //       onPressed: () => {
+                  //             // Toggle the body
+                  //             setState(() {
+                  //               widget.showBody = !widget.showBody;
+
+                  //               // Make disappear in 3 seconds
+                  //               Future.delayed(const Duration(seconds: 3), () {
+                  //                 // Kill the thought
+                  //                 setState(() {
+                  //                   widget.toBeDismissed = true;
+
+                  //                   // Remove the thought from the list
+                  //                   Provider.of<ThoughtsProvider>(context,
+                  //                           listen: false)
+                  //                       .removeThought(widget.thought);
+                  //                 });
+                  //               });
+                  //             }),
+                  //           }),
+                ],
+              ),
             ),
             // Username, time, public/private, links status
             Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: SelectableText.rich(
                     TextSpan(
                       // style: ,
@@ -938,7 +994,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     );
 
     // the action row
-    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
       // // Gray line
       // Expanded(
       //   child: Container(
@@ -981,6 +1037,8 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           visible: widget.type == MarkdownDisplayType.searchResult &&
               !newThoughtOpen,
           child: expandButton),
+
+      // Comind button {}
 
       // Expanded to push the buttons to the right
       Expanded(child: Container()),

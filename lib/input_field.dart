@@ -204,7 +204,7 @@ class _MainTextFieldState extends State<MainTextField> {
             children: [
               // Text box
               Material(
-                elevation: 2,
+                elevation: 6,
                 borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
                 child: Container(
                   // Bordered

@@ -126,14 +126,10 @@ class _StreamState extends State<Stream> {
   Widget leftColumn(BuildContext context) {
     return MouseRegion(
       onEnter: (_) {
-        setState(() {
-          _hover = true;
-        });
+        _hover = true;
       },
       onExit: (_) {
-        setState(() {
-          _hover = false;
-        });
+        _hover = false;
       },
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 90),
@@ -407,6 +403,13 @@ class _StreamState extends State<Stream> {
   }
 
   Widget columnOfThings(BuildContext context) {
+    var brainBufferLength =
+        Provider.of<ThoughtsProvider>(context).brainBuffer.length;
+    var displaySize = ThoughtsProvider.maxBufferDisplaySize;
+
+    var min2 = min(displaySize, brainBufferLength);
+    var overflow =
+        brainBufferLength > displaySize ? brainBufferLength - displaySize : 0;
     return Flex(
       direction: Axis.vertical,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -437,8 +440,7 @@ class _StreamState extends State<Stream> {
         ListView.builder(
           shrinkWrap: true,
           // itemCount: Provider.of<ThoughtsProvider>(context).brainBuffer.length,
-          itemCount: min(ThoughtsProvider.maxBufferDisplaySize,
-              Provider.of<ThoughtsProvider>(context).brainBuffer.length),
+          itemCount: min2,
           // itemCount: relatedThoughts.length,
           itemBuilder: (context, index) {
             return Padding(
@@ -455,12 +457,11 @@ class _StreamState extends State<Stream> {
                 //
                 // Indices are 0-based, so the last thought is at index 4.
                 //
-                // The first thought to display is at index 5 - 3 = 2.
-                // The last thought to display is at index 5 - 1 = 4.
-                thought: Provider.of<ThoughtsProvider>(context).brainBuffer[
-                    Provider.of<ThoughtsProvider>(context).brainBuffer.length -
-                        1 -
-                        index],
+                // The first thought (at the top) to display is at index 5 - 3 = 2.
+                // The last thought (at the bottom) to display is at index 5 - 1 = 4.
+                //
+                thought: Provider.of<ThoughtsProvider>(context)
+                    .brainBuffer[overflow + index],
 
                 type: MarkdownDisplayType.topOfMind,
 
@@ -672,7 +673,7 @@ class ActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double actionIconSize = 30;
+    const double actionIconSize = 24;
     var container = Container(
       padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 6.0),
       child: Row(

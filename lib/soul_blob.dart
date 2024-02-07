@@ -149,7 +149,7 @@ class ColorBar extends StatelessWidget {
     Key? key,
     required this.comindColors,
     this.colorChoice = ColorChoice.primary,
-    this.height = 2,
+    this.height = 4,
   }) : super(key: key);
 
   @override

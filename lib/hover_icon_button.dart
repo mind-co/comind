@@ -27,7 +27,7 @@ class HoverIconButtonState extends State<HoverIconButton> {
       onExit: (event) => setState(() => _isHovering = false),
       child: IconButton(
         hoverColor:
-            Provider.of<ComindColorsNotifier>(context).primary.withAlpha(255),
+            Provider.of<ComindColorsNotifier>(context).primary.withAlpha(164),
         padding: EdgeInsets.zero,
         onPressed: widget.onPressed,
         visualDensity: VisualDensity.standard,

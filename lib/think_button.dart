@@ -29,6 +29,7 @@ class _ThinkButtonState extends State<ThinkButton> {
     return Stack(
       children: [
         IconButton(
+          tooltip: 'Send a new thought (Ctrl+Enter)',
           style: ButtonStyle(
             // backgroundColor: MaterialStateProperty.all<Color>(
             //     Provider.of<ComindColorsNotifier>(context)
