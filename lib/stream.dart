@@ -322,6 +322,109 @@ class _StreamState extends State<Stream> {
     );
   }
 
+  Widget actionBar(BuildContext context) {
+    const double actionIconSize = 24;
+    var container = Container(
+      padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 6.0),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          // verticalDirection: VerticalDirection.down,
+          children: [
+            // Settings button
+            HoverIconButton(
+              size: actionIconSize,
+              icon: LineIcons.cog,
+              onPressed: () {
+                // TODO: #18 Implement settings and user preferences
+              },
+            ),
+
+            // Concept button
+            HoverIconButton(
+              size: actionIconSize,
+              icon: LineIcons.hashtag,
+              onPressed: () {
+                // TODO: Implement concept navigation
+              },
+            ),
+
+            // Most recent button
+            HoverIconButton(
+                size: actionIconSize,
+                icon: LineIcons.clock,
+                onPressed: () {
+                  // Clear top of mind
+                  Provider.of<ThoughtsProvider>(context, listen: false).clear();
+
+                  // Fetch related thoughts
+                  fetchUserThoughts();
+
+                  // Set mode to mythoughts
+                  mode = Mode.myThoughts;
+                }),
+
+            // Dark mode button
+            HoverIconButton(
+              size: actionIconSize,
+              icon: Provider.of<ComindColorsNotifier>(context).darkMode
+                  ? LineIcons.moon
+                  : LineIcons.sun,
+              onPressed: () {
+                Provider.of<ComindColorsNotifier>(context, listen: false)
+                    .toggleTheme(!Provider.of<ComindColorsNotifier>(context,
+                            listen: false)
+                        .darkMode);
+              },
+            ),
+
+            // Public / private button
+            HoverIconButton(
+              // hoverText: Provider.of<ComindColorsNotifier>(context).publicMode
+              //     ? "Public mode"
+              //     : "Private mode",
+              size: actionIconSize,
+              icon: Provider.of<ComindColorsNotifier>(context).publicMode
+                  ? LineIcons.globe
+                  : LineIcons.lock,
+              onPressed: () {
+                Provider.of<ComindColorsNotifier>(context, listen: false)
+                    .togglePublicMode(!Provider.of<ComindColorsNotifier>(
+                            context,
+                            listen: false)
+                        .publicMode);
+              },
+            ),
+
+            // Clear button
+            HoverIconButton(
+              size: actionIconSize,
+              icon: LineIcons.broom,
+              onPressed: () {
+                Provider.of<ThoughtsProvider>(context, listen: false).clear();
+              },
+            ),
+
+            // // Color picker button
+            // HoverIconButton(
+            //   size: actionIconSize,
+            //   icon: Icons.color_lens,
+            //   onPressed: () async {
+            //     colorDialog(context).then((value) {
+            //       Provider.of<ComindColorsNotifier>(context, listen: false)
+            //           .modifyColors(value);
+            //     });
+            //   },
+            // ),
+          ],
+        ),
+      ),
+    );
+    return container;
+  }
+
   Widget mainStream(BoxConstraints constraints, BuildContext context) {
     return MainLayout(
       leftColumn: leftColumn(context),
@@ -472,17 +575,17 @@ class _StreamState extends State<Stream> {
           },
         ),
 
-        // three colored lines
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-          child: soulBlobRow(context),
-        ),
-
         // The main text box
         thinkBox(context),
 
         // Widget for the action bar.
-        const ActionBar(),
+        actionBar(context),
+
+        // three colored lines and the soul blob
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+          child: soulBlobRow(context),
+        ),
 
         Visibility(
           visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
@@ -611,7 +714,7 @@ class _StreamState extends State<Stream> {
   Stack thinkBox(BuildContext context) {
     return Stack(children: [
       Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: MainTextField(
             primaryController: _primaryController,
 
@@ -663,101 +766,6 @@ class _StreamState extends State<Stream> {
             }),
       ),
     ]);
-  }
-}
-
-class ActionBar extends StatelessWidget {
-  const ActionBar({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    const double actionIconSize = 24;
-    var container = Container(
-      padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 6.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        mainAxisSize: MainAxisSize.max,
-        // verticalDirection: VerticalDirection.down,
-        children: [
-          // Settings button
-          HoverIconButton(
-            size: actionIconSize,
-            icon: LineIcons.cog,
-            onPressed: () {
-              // TODO: #18 Implement settings and user preferences
-            },
-          ),
-
-          // Concept button
-          HoverIconButton(
-            size: actionIconSize,
-            icon: LineIcons.hashtag,
-            onPressed: () {
-              // TODO: Implement concept navigation
-            },
-          ),
-
-          // Most recent button
-          HoverIconButton(
-              size: actionIconSize, icon: LineIcons.clock, onPressed: () {}),
-
-          // Dark mode button
-          HoverIconButton(
-            size: actionIconSize,
-            icon: Provider.of<ComindColorsNotifier>(context).darkMode
-                ? LineIcons.moon
-                : LineIcons.sun,
-            onPressed: () {
-              Provider.of<ComindColorsNotifier>(context, listen: false)
-                  .toggleTheme(
-                      !Provider.of<ComindColorsNotifier>(context, listen: false)
-                          .darkMode);
-            },
-          ),
-
-          // Public / private button
-          HoverIconButton(
-            // hoverText: Provider.of<ComindColorsNotifier>(context).publicMode
-            //     ? "Public mode"
-            //     : "Private mode",
-            size: actionIconSize,
-            icon: Provider.of<ComindColorsNotifier>(context).publicMode
-                ? LineIcons.globe
-                : LineIcons.lock,
-            onPressed: () {
-              Provider.of<ComindColorsNotifier>(context, listen: false)
-                  .togglePublicMode(
-                      !Provider.of<ComindColorsNotifier>(context, listen: false)
-                          .publicMode);
-            },
-          ),
-
-          // Clear button
-          HoverIconButton(
-            size: actionIconSize,
-            icon: LineIcons.broom,
-            onPressed: () {
-              Provider.of<ThoughtsProvider>(context, listen: false).clear();
-            },
-          ),
-
-          // // Color picker button
-          // HoverIconButton(
-          //   size: actionIconSize,
-          //   icon: Icons.color_lens,
-          //   onPressed: () async {
-          //     colorDialog(context).then((value) {
-          //       Provider.of<ComindColorsNotifier>(context, listen: false)
-          //           .modifyColors(value);
-          //     });
-          //   },
-          // ),
-        ],
-      ),
-    );
-    return container;
   }
 }
 

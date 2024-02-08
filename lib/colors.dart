@@ -36,7 +36,7 @@ class ComindColors {
   }
 
   // What public/private mode the user is in
-  bool publicMode = false;
+  bool publicMode = true;
 
   // Dark mode tracker
   bool darkMode = true;
@@ -46,7 +46,7 @@ class ComindColors {
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
     surface: Colors.white,
-    background: Color.fromARGB(255, 239, 239, 239),
+    background: Color.fromARGB(255, 255, 239, 204),
     error: secondaryColorDefault,
     onPrimary: Colors.black,
     onSecondary: Colors.black,
@@ -61,8 +61,8 @@ class ComindColors {
     primary: primaryColorDefault,
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
-    surface: Color.fromRGBO(48, 48, 48, 1),
-    background: Color.fromRGBO(34, 34, 34, 1),
+    surface: Color.fromRGBO(30, 32, 42, 1), //Color.fromRGBO(43, 34, 34, 1),
+    background: Color.fromRGBO(16, 20, 30, 1),
     error: secondaryColorDefault,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
@@ -98,15 +98,15 @@ class ComindColors {
   }
 
   // Text themes
-  static final bodyStyle = GoogleFonts.ibmPlexSans(
-    fontWeight: FontWeight.w400,
-    height: 1.2,
-  );
-
-  // static final bodyStyle = GoogleFonts.nunito(
-  //   fontWeight: FontWeight.w400,
+  // static final bodyStyle = GoogleFonts.ibmPlexSans(
+  //   fontWeight: FontWeight.w300,
   //   height: 1.2,
   // );
+
+  static final bodyStyle = GoogleFonts.nunito(
+    fontWeight: FontWeight.w300,
+    height: 1.2,
+  );
 
   // static final bodyStyle =
   //     GoogleFonts.questrial(fontWeight: FontWeight.w400, height: 1.2);
@@ -123,7 +123,7 @@ class ComindColors {
 
   static const fontScalar = 1.2;
   static const double maxWidth = 600;
-  static const double bubbleRadius = 0;
+  static const double bubbleRadius = 10;
 
   TextTheme textTheme = TextTheme(
     // Nunito is good

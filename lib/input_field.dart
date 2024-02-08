@@ -204,7 +204,7 @@ class _MainTextFieldState extends State<MainTextField> {
             children: [
               // Text box
               Material(
-                elevation: 6,
+                elevation: 0,
                 borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
                 child: Container(
                   // Bordered
@@ -316,6 +316,29 @@ class _MainTextFieldState extends State<MainTextField> {
                   ),
                 ),
               ),
+
+              // Public or private mode overlay
+              // Positioned(
+              //   bottom: -10,
+              //   right: 0,
+              //   child: Visibility(
+              //     visible: widget.type == TextFieldType.main,
+              //     child: Padding(
+              //       padding: const EdgeInsets.fromLTRB(50, 12, 20, 12),
+              //       child: Opacity(
+              //         opacity: 0.5,
+              //         child: Text(
+              //           Provider.of<ComindColorsNotifier>(context).publicMode
+              //               ? "(public)"
+              //               : "(private)",
+              //           style: Provider.of<ComindColorsNotifier>(context)
+              //               .textTheme
+              //               .labelSmall,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
 
