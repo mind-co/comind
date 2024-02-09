@@ -190,165 +190,173 @@ class _MainTextFieldState extends State<MainTextField> {
     //
     var newInputDecoration = mainInputDecoration;
 
-    return SizedBox(
-      width: widget.type != TextFieldType.newThought
-          ? min(ComindColors.maxWidth, MediaQuery.of(context).size.width)
-          : min(
-              ComindColors.maxWidth - 130,
-              MediaQuery.of(context).size.width -
-                  80), // this shit is hacky as fuck
-      child: Column(
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              // Text box
-              Material(
-                elevation: 0,
-                borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-                child: Container(
-                  // Bordered
-                  decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.circular(ComindColors.bubbleRadius),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+      child: SizedBox(
+        width: widget.type != TextFieldType.newThought
+            ? min(ComindColors.maxWidth, MediaQuery.of(context).size.width)
+            : min(
+                ComindColors.maxWidth - 130,
+                MediaQuery.of(context).size.width -
+                    80), // this shit is hacky as fuck
+        child: Column(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Text box
+                Material(
+                  elevation: 0,
+                  borderRadius:
+                      BorderRadius.circular(ComindColors.bubbleRadius),
+                  child: Container(
+                    // Bordered
+                    decoration: BoxDecoration(
+                      borderRadius:
+                          BorderRadius.circular(ComindColors.bubbleRadius),
 
-                    // Fill color
-                    color: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .surface,
-                  ),
-
-                  // decoration: BoxDecoration(
-                  // borderRadius:
-                  //     BorderRadius.circular(ComindColors.bubbleRadius),
-                  // color: Provider.of<ComindColorsNotifier>(context)
-                  //     .colorScheme
-                  //     .surface
-                  //     .withAlpha(30)),
-                  child: KeyboardListener(
-                    focusNode: focusNode,
-                    onKeyEvent: (KeyEvent event) {
-                      if (focusNode.hasFocus) {
-                        if (event.logicalKey ==
-                                LogicalKeyboardKey.controlLeft &&
-                            event is KeyDownEvent) {
-                          controlPressed = true;
-                        } else if (event.logicalKey ==
-                                LogicalKeyboardKey.controlLeft &&
-                            event is KeyUpEvent) {
-                          controlPressed = false;
-                        }
-
-                        if (event.logicalKey == LogicalKeyboardKey.enter &&
-                            controlPressed) {
-                          _submit(context)();
-                          widget._primaryController.clear();
-                        }
-                      }
-                    },
-                    child: TextField(
-                      scrollController: _scrollController,
-                      // keyboardType: TextInputType.multiline,
-                      maxLines: 10,
-                      minLines: 1,
-                      // textInputAction: TextInputAction.send,
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .bodyMedium,
-
-                      // Autofocus if main text field or a new thought,
-                      // since the user
-                      autofocus: widget.type == TextFieldType.main ||
-                          widget.type == TextFieldType.newThought,
-                      controller: widget._primaryController,
-                      textInputAction: TextInputAction.newline,
-
-                      onSubmitted: (value) => {
-                        _submit(context)(),
-                        // Clear the text field because sometimes random newline chars
-                        // get added
-                        widget._primaryController.clear(),
-                      },
-
-                      // TODO #12 add the command processing stuff back in.
-                      // Can't turn it on because enabling the onChange function
-                      // breaks backspacing on android/linux.
-                      // see https://stackoverflow.com/questions/71783012/backspace-text-field-flutter-on-android-devices-not-working
-                      // onChanged: ... // do all the command processing stuff
-
-                      // Cursor stuff
-                      cursorWidth: 8,
-                      cursorColor: Provider.of<ComindColorsNotifier>(context)
+                      // Fill color
+                      color: Provider.of<ComindColorsNotifier>(context)
                           .colorScheme
-                          .onBackground,
-                      decoration: widget.type == TextFieldType.main
-                          ? mainInputDecoration
-                          : widget.type == TextFieldType.edit
-                              ? editInputDecoration
-                              : widget.type == TextFieldType.inline
-                                  ? inlineInputDecoration
-                                  : newInputDecoration,
+                          .surface,
                     ),
-                  ),
-                ),
-              ),
 
-              // ThinkButton only, send button
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Visibility(
-                  visible: widget.type == TextFieldType.main ||
-                      widget.type == TextFieldType.newThought ||
-                      widget.type == TextFieldType.inline,
-                  child: Padding(
-                    padding: const EdgeInsets.all(3),
-                    child: ThinkButton(
-                      icon: LineIcons.lightbulb,
-                      onPressed: () {
-                        _submit(context)();
+                    // decoration: BoxDecoration(
+                    // borderRadius:
+                    //     BorderRadius.circular(ComindColors.bubbleRadius),
+                    // color: Provider.of<ComindColorsNotifier>(context)
+                    //     .colorScheme
+                    //     .surface
+                    //     .withAlpha(30)),
+                    child: KeyboardListener(
+                      focusNode: focusNode,
+                      onKeyEvent: (KeyEvent event) {
+                        if (focusNode.hasFocus) {
+                          if (event.logicalKey ==
+                                  LogicalKeyboardKey.controlLeft &&
+                              event is KeyDownEvent) {
+                            controlPressed = true;
+                          } else if (event.logicalKey ==
+                                  LogicalKeyboardKey.controlLeft &&
+                              event is KeyUpEvent) {
+                            controlPressed = false;
+                          }
 
-                        // Clear the text field because sometimes random newline chars
-                        // get added
-                        widget._primaryController.clear();
+                          if (event.logicalKey == LogicalKeyboardKey.enter &&
+                              controlPressed) {
+                            _submit(context)();
+                            widget._primaryController.clear();
+                          }
+                        }
                       },
+                      child: TextField(
+                        scrollController: _scrollController,
+                        // keyboardType: TextInputType.multiline,
+                        maxLines: 10,
+                        minLines: 1,
+                        // textInputAction: TextInputAction.send,
+                        style: Provider.of<ComindColorsNotifier>(context)
+                            .textTheme
+                            .bodyMedium,
+
+                        // Autofocus if main text field or a new thought,
+                        // since the user
+                        autofocus: widget.type == TextFieldType.main ||
+                            widget.type == TextFieldType.newThought,
+                        controller: widget._primaryController,
+                        textInputAction: TextInputAction.newline,
+
+                        onSubmitted: (value) => {
+                          _submit(context)(),
+                          // Clear the text field because sometimes random newline chars
+                          // get added
+                          widget._primaryController.clear(),
+                        },
+
+                        // TODO #12 add the command processing stuff back in.
+                        // Can't turn it on because enabling the onChange function
+                        // breaks backspacing on android/linux.
+                        // see https://stackoverflow.com/questions/71783012/backspace-text-field-flutter-on-android-devices-not-working
+                        // onChanged: ... // do all the command processing stuff
+
+                        // Cursor stuff
+                        cursorWidth: 8,
+                        cursorColor: Provider.of<ComindColorsNotifier>(context)
+                            .colorScheme
+                            .onBackground,
+                        decoration: widget.type == TextFieldType.main
+                            ? mainInputDecoration
+                            : widget.type == TextFieldType.edit
+                                ? editInputDecoration
+                                : widget.type == TextFieldType.inline
+                                    ? inlineInputDecoration
+                                    : newInputDecoration,
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              // Public or private mode overlay
-              // Positioned(
-              //   bottom: -10,
-              //   right: 0,
-              //   child: Visibility(
-              //     visible: widget.type == TextFieldType.main,
-              //     child: Padding(
-              //       padding: const EdgeInsets.fromLTRB(50, 12, 20, 12),
-              //       child: Opacity(
-              //         opacity: 0.5,
-              //         child: Text(
-              //           Provider.of<ComindColorsNotifier>(context).publicMode
-              //               ? "(public)"
-              //               : "(private)",
-              //           style: Provider.of<ComindColorsNotifier>(context)
-              //               .textTheme
-              //               .labelSmall,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-            ],
-          ),
+                // ThinkButton only, send button
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Visibility(
+                    visible: widget.type == TextFieldType.main ||
+                        widget.type == TextFieldType.newThought ||
+                        widget.type == TextFieldType.inline,
+                    child: Padding(
+                      padding: const EdgeInsets.all(3),
+                      child: ThinkButton(
+                        icon: LineIcons.lightbulb,
+                        // icon: Provider.of<ComindColorsNotifier>(context)
+                        //         .publicMode
+                        //     ? LineIcons.windowRestore
+                        //     : LineIcons.lightbulb,
+                        onPressed: () {
+                          _submit(context)();
 
-          // Add the search results if they are not empty
-          if (uiMode == "search" && searchResults.isNotEmpty)
-            Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                child: ThoughtTable(thoughts: searchResults)),
-          // child: ComindSearchResultTable(searchResults: searchResults)),
-        ],
+                          // Clear the text field because sometimes random newline chars
+                          // get added
+                          widget._primaryController.clear();
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Public or private mode overlay
+                // Positioned(
+                //   bottom: -10,
+                //   right: 0,
+                //   child: Visibility(
+                //     visible: widget.type == TextFieldType.main,
+                //     child: Padding(
+                //       padding: const EdgeInsets.fromLTRB(50, 12, 20, 12),
+                //       child: Opacity(
+                //         opacity: 0.5,
+                //         child: Text(
+                //           Provider.of<ComindColorsNotifier>(context).publicMode
+                //               ? "(public)"
+                //               : "(private)",
+                //           style: Provider.of<ComindColorsNotifier>(context)
+                //               .textTheme
+                //               .labelSmall,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+              ],
+            ),
+
+            // Add the search results if they are not empty
+            if (uiMode == "search" && searchResults.isNotEmpty)
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  child: ThoughtTable(thoughts: searchResults)),
+            // child: ComindSearchResultTable(searchResults: searchResults)),
+          ],
+        ),
       ),
     );
   }

@@ -138,7 +138,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     // The stack is here to lay the dismiss button on top
     // of the main text box.
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 0, 0, 8),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Stack(children: [
         // Main text box. Has the title stacked on top of it.
         Column(
@@ -159,13 +159,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   },
                   child: SizedBox(
                     width: 600,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: titleBar(context),
-                        ),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: titleBar(context),
                     ),
                   ),
                 ),
@@ -175,151 +171,173 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             // The text box
             Visibility(
               visible: widget.showBody,
-              child: Opacity(
-                opacity: widget.showBody ? 1.0 : 0.5,
-                child: Column(
-                  children: [
-                    Material(
-                      elevation: 1,
-                      borderRadius:
-                          BorderRadius.circular(ComindColors.bubbleRadius),
-                      // color: Provider.of<ComindColorsNotifier>(context)
-                      //     .primary
-                      //     .withAlpha(64),
-                      color: Provider.of<ComindColorsNotifier>(context)
-                          .currentColors
-                          .colorScheme
-                          .surface,
-                      // color: Color.fromRGBO(30, 32, 42, 1),
-                      child: InkWell(
-                        borderRadius:
-                            BorderRadius.circular(ComindColors.bubbleRadius),
-                        onTap: () => {
-                          // Create a new ThoughtEditorScreen with the thought.
-                          // This is the full screen view of the thought.
-                          ThoughtLoader.loadThought(context,
-                              id: widget.thought.id)
-                        },
-                        child: Card(
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                ComindColors.bubbleRadius),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: Opacity(
+                  opacity: widget.showBody ? 1.0 : 0.5,
+                  child: Column(
+                    children: [
+                      Material(
+                        borderOnForeground: true,
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .surfaceVariant,
+                            width: 2,
                           ),
-                          color: Colors.transparent,
-                          surfaceTintColor: Colors.transparent,
-                          borderOnForeground: true,
-                          shadowColor: Colors.transparent,
-                          child: Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  // Cinewave username
-                                  Row(
-                                    children: [
-                                      // Link button for child thoughts
-                                      Visibility(
-                                        visible: widget.type ==
-                                            MarkdownDisplayType.searchResult,
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 0, 4, 0),
-                                          child: HoverIconButton(
-                                            icon: LineIcons.link,
-                                            onPressed: () async {
-                                              // If there is a parent thought
-                                              if (widget.parentThought !=
-                                                  null) {
-                                                // Link the thoughts
-                                                if (widget.thought.id !=
-                                                        widget.parentThought &&
-                                                    widget.parentThought !=
-                                                        null) {
-                                                  await linkThoughts(
-                                                      context,
-                                                      widget.thought.id,
-                                                      widget.parentThought!);
+                          borderRadius:
+                              BorderRadius.circular(ComindColors.bubbleRadius),
+                        ),
+                        elevation: 1,
+                        // borderRadius:
+                        //     BorderRadius.circular(ComindColors.bubbleRadius),
+                        // color: Provider.of<ComindColorsNotifier>(context)
+                        //     .primary
+                        //     .withAlpha(64),
+                        color: Provider.of<ComindColorsNotifier>(context)
+                            .currentColors
+                            .colorScheme
+                            .surface,
+                        // color: Color.fromRGBO(30, 32, 42, 1),
+                        child: InkWell(
+                          borderRadius:
+                              BorderRadius.circular(ComindColors.bubbleRadius),
+                          onTap: () => {
+                            // // Create a new ThoughtEditorScreen with the thought.
+                            // // This is the full screen view of the thought.
+                            // TODO #25 Add a "full screen" button
+                            // ThoughtLoader.loadThought(context,
+                            //     id: widget.thought.id)
+
+                            // Add it to top of mind
+                            Provider.of<ThoughtsProvider>(context,
+                                    listen: false)
+                                .addTopOfMind(context, widget.thought)
+                          },
+                          child: Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  ComindColors.bubbleRadius),
+                            ),
+                            color: Colors.transparent,
+                            surfaceTintColor: Colors.transparent,
+                            borderOnForeground: true,
+                            shadowColor: Colors.transparent,
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    // Cinewave username
+                                    Row(
+                                      children: [
+                                        // Link button for child thoughts
+                                        Visibility(
+                                          visible: widget.type ==
+                                              MarkdownDisplayType.searchResult,
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 0, 4, 0),
+                                            child: HoverIconButton(
+                                              icon: LineIcons.link,
+                                              onPressed: () async {
+                                                // If there is a parent thought
+                                                if (widget.parentThought !=
+                                                    null) {
+                                                  // Link the thoughts
+                                                  if (widget.thought.id !=
+                                                          widget
+                                                              .parentThought &&
+                                                      widget.parentThought !=
+                                                          null) {
+                                                    await linkThoughts(
+                                                        context,
+                                                        widget.thought.id,
+                                                        widget.parentThought!);
+                                                  }
                                                 }
-                                              }
-                                            },
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                      ],
+                                    ),
 
-                                  // // Show cosine similarity
-                                  // Text(widget.thought.cosineSimilarity.toString(),
-                                  //     style: Provider.of<ComindColorsNotifier>(context)
-                                  //         .textTheme
-                                  //         .bodySmall),
+                                    // // Show cosine similarity
+                                    // Text(widget.thought.cosineSimilarity.toString(),
+                                    //     style: Provider.of<ComindColorsNotifier>(context)
+                                    //         .textTheme
+                                    //         .bodySmall),
 
-                                  // Add thought body
-                                  Visibility(
-                                      visible: widget.showBody &&
-                                          !widget.showTextBox,
-                                      child: thoughtBody(context)),
+                                    // Add thought body
+                                    Visibility(
+                                        visible: widget.showBody &&
+                                            !widget.showTextBox,
+                                        child: thoughtBody(context)),
 
-                                  expandableEditBox(context),
+                                    expandableEditBox(context),
 
-                                  // Show new thought box
-                                  // Padding(
-                                  //   padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                  //   child: Row(
-                                  //     children: [
-                                  //       Visibility(
-                                  //         visible: newThoughtOpen,
-                                  //         child: IconButton(
-                                  //           padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                  //           enableFeedback: true,
-                                  //           splashRadius: 16,
-                                  //           onPressed: () {
-                                  //             // Toggle the body
-                                  //             setState(() {
-                                  //               newThoughtOpen = !newThoughtOpen;
-                                  //             });
-                                  //           },
-                                  //           icon: Icon(
-                                  //             Icons.subdirectory_arrow_right,
-                                  //             size: 16,
-                                  //             color: Provider.of<ComindColorsNotifier>(context)
-                                  //                 .colorScheme
-                                  //                 .onBackground
-                                  //                 .withAlpha(200),
-                                  //           ),
-                                  //         ),
-                                  //       ),
-                                  //     ],
-                                  //   ),
-                                  // ),
+                                    // Show new thought box
+                                    // Padding(
+                                    //   padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                    //   child: Row(
+                                    //     children: [
+                                    //       Visibility(
+                                    //         visible: newThoughtOpen,
+                                    //         child: IconButton(
+                                    //           padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                    //           enableFeedback: true,
+                                    //           splashRadius: 16,
+                                    //           onPressed: () {
+                                    //             // Toggle the body
+                                    //             setState(() {
+                                    //               newThoughtOpen = !newThoughtOpen;
+                                    //             });
+                                    //           },
+                                    //           icon: Icon(
+                                    //             Icons.subdirectory_arrow_right,
+                                    //             size: 16,
+                                    //             color: Provider.of<ComindColorsNotifier>(context)
+                                    //                 .colorScheme
+                                    //                 .onBackground
+                                    //                 .withAlpha(200),
+                                    //           ),
+                                    //         ),
+                                    //       ),
+                                    //     ],
+                                    //   ),
+                                    // ),
 
-                                  // New thought box
-                                  newThoughtBox(context),
-                                ],
+                                    // New thought box
+                                    newThoughtBox(context),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
 
-                    // Alternative action row
-                    Visibility(
-                        visible: widget.showBody,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: alternativeActionRow(context, onBackground),
-                        )),
+                      // Alternative action row
+                      Visibility(
+                          visible: widget.showBody &&
+                              widget.type != MarkdownDisplayType.topOfMind,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            child: alternativeActionRow(context, onBackground),
+                          )),
 
-                    // bOTTOM STATUS BAR bar
-                    // Visibility(
-                    //     visible: true,
-                    //     // widget.type != MarkdownDisplayType.topOfMind,
-                    //     child: titleBar(context)),
-                  ],
+                      // bOTTOM STATUS BAR bar
+                      // Visibility(
+                      //     visible: true,
+                      //     // widget.type != MarkdownDisplayType.topOfMind,
+                      //     child: titleBar(context)),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -451,115 +469,50 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             Visibility(
               visible: widget.thought.title.length > 0,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Container(
-                  //   width: 4,
-                  //   height: 14,
-                  //   color: Provider.of<ComindColorsNotifier>(context)
-                  //       .colorScheme
-                  //       .primary
-                  //       .withAlpha(255),
-                  // ),
-
-                  Flexible(
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                          child: Opacity(
-                            opacity: 0.7,
-                            child: ColorBlock(
-                                comindColors:
-                                    Provider.of<ComindColorsNotifier>(context)
-                                        .currentColors,
-                                colorChoice: ColorChoice.primary,
-                                radius: 10),
-                          ),
-                        ),
-
-                        // Title
-                        Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                            child: RichText(
-                              softWrap: true,
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: widget.thought.title,
-                                    style: Provider.of<ComindColorsNotifier>(
-                                            context,
-                                            listen: false)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(
-                                            height: 1,
-                                            color: Provider.of<
-                                                        ComindColorsNotifier>(
-                                                    context,
-                                                    listen: false)
-                                                .colorScheme
-                                                .onBackground
-                                                .withOpacity(0.7)),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                    child: Opacity(
+                      opacity: 0.9,
+                      child: ColorBlock(
+                          comindColors:
+                              Provider.of<ComindColorsNotifier>(context)
+                                  .currentColors,
+                          colorChoice: ColorChoice.primary,
+                          radius: 13),
                     ),
                   ),
 
-                  // TODO #21 add minimize and dismiss buttons
-                  //   // Minimize button
-                  // HoverIconButton(
-                  //       size: 16,
-                  //       icon: LineIcons.windowMinimize,
-                  //       onPressed: () => {
-                  //             // Toggle the body
-                  //             setState(() {
-                  //               widget.showBody = !widget.showBody;
-
-                  //               // Make disappear in 3 seconds
-                  //               Future.delayed(const Duration(seconds: 3), () {
-                  //                 // Kill the thought
-                  //                 setState(() {
-                  //                   widget.toBeDismissed = true;
-
-                  //                   // Remove the thought from the list
-                  //                   Provider.of<ThoughtsProvider>(context,
-                  //                           listen: false)
-                  //                       .removeThought(widget.thought);
-                  //                 });
-                  //               });
-                  //             }),
-                  //           }),
-
-                  //   // Dismiss button
-                  //   // Container(width: 20, height: 20, color: Colors.red)
-                  //   HoverIconButton(
-                  //       icon: LineIcons.times,
-                  //       onPressed: () => {
-                  //             // Toggle the body
-                  //             setState(() {
-                  //               widget.showBody = !widget.showBody;
-
-                  //               // Make disappear in 3 seconds
-                  //               Future.delayed(const Duration(seconds: 3), () {
-                  //                 // Kill the thought
-                  //                 setState(() {
-                  //                   widget.toBeDismissed = true;
-
-                  //                   // Remove the thought from the list
-                  //                   Provider.of<ThoughtsProvider>(context,
-                  //                           listen: false)
-                  //                       .removeThought(widget.thought);
-                  //                 });
-                  //               });
-                  //             }),
-                  //           }),
+                  // Title
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: RichText(
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        softWrap: false,
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: widget.thought.title,
+                              style: Provider.of<ComindColorsNotifier>(context,
+                                      listen: false)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                      height: 1,
+                                      color: Provider.of<ComindColorsNotifier>(
+                                              context,
+                                              listen: false)
+                                          .colorScheme
+                                          .onBackground
+                                          .withOpacity(0.7)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -724,22 +677,23 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         ),
       ),
 
-      // Colored lines on the top
-      Positioned(
-          top: 0,
-          child: SizedBox(
-            width: 600,
-            child: Row(
-              children: [
-                Container(
-                    color: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .primary
-                        .withAlpha(outlineAlpha),
-                    height: height),
-              ],
-            ),
-          )),
+      // // Colored lines on the top
+      // Positioned(
+      //     top: 0,
+      //     child: SizedBox(
+      //       width: 600,
+      //       child: Row(
+      //         children: [
+      //           Container(
+      //               color: Provider.of<ComindColorsNotifier>(context)
+      //                   .colorScheme
+      //                   .primary
+      //                   .withAlpha(outlineAlpha),
+      //               height: height),
+      //         ],
+      //       ),
+      //     )
+      //     ),
     ]);
   }
 
@@ -819,7 +773,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     });
 
     var linkButton = Visibility(
-      visible: widget.linkable &&
+      visible: !widget.linkable &&
           widget.parentThought != null &&
           !widget.viewOnly &&
           !widget.showTextBox,
@@ -1066,22 +1020,22 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       // linkButton,
 
       // Add thought button
-      HoverIconButton(
-          icon: LineIcons.link,
-          onPressed: () {
-            // Link to parent
-            if (widget.parentThought != null) {
-              // Link the thoughts
-              if (widget.thought.id != widget.parentThought &&
-                  widget.parentThought != null) {
-                linkThoughts(context, widget.thought.id, widget.parentThought!);
-              }
-            }
+      // HoverIconButton(
+      //     icon: LineIcons.link,
+      //     onPressed: () {
+      //       // Link to parent
+      //       if (widget.parentThought != null) {
+      //         // Link the thoughts
+      //         if (widget.thought.id != widget.parentThought &&
+      //             widget.parentThought != null) {
+      //           linkThoughts(context, widget.thought.id, widget.parentThought!);
+      //         }
+      //       }
 
-            // Next, add it to the topOfMind array
-            Provider.of<ThoughtsProvider>(context, listen: false)
-                .addTopOfMind(context, widget.thought);
-          }),
+      //       // Next, add it to the topOfMind array
+      //       Provider.of<ThoughtsProvider>(context, listen: false)
+      //           .addTopOfMind(context, widget.thought);
+      //     }),
 
       // Save button
       saveButton,
@@ -1696,7 +1650,7 @@ class TheMarkdownBox extends StatelessWidget {
           constraints: BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width - 16,
             minHeight: 10,
-            maxHeight: 200,
+            maxHeight: 500,
           ),
           child: Markdown(
             onTapLink: (text, url, title) {
@@ -1948,13 +1902,19 @@ class InfoCard extends StatelessWidget {
   }
 }
 
-MarkdownThought coThought(BuildContext context, String text, String title) {
+MarkdownThought coThought(
+  BuildContext context,
+  String text,
+  String title, {
+  bool linkable = false,
+}) {
   return MarkdownThought(
-    thought: Thought.fromString(text, "Co", true, title: title),
+    thought: Thought.fromString(text, "{co}", true, title: title),
     opacity: 1,
     opacityOnHover: 1,
     selectable: false,
     viewOnly: true,
+    linkable: linkable,
   );
 }
 

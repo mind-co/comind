@@ -267,29 +267,29 @@ class _StreamState extends State<Stream> {
                 //       }),
                 // ),
 
-                const SizedBox(height: 20),
-                Opacity(
-                    opacity: .7,
-                    child: Text("Dev buttons",
-                        style: getTextTheme(context).titleMedium)),
+                // const SizedBox(height: 20),
+                // Opacity(
+                //     opacity: .7,
+                //     child: Text("Dev buttons",
+                //         style: getTextTheme(context).titleMedium)),
 
-                // Debug button to add a top of mind thought
-                Visibility(
-                  visible: true,
-                  child: TextButtonSimple(
-                      text: "TOM",
-                      noBackground: true,
-                      onPressed: () {
-                        Provider.of<ThoughtsProvider>(context, listen: false)
-                            .addTopOfMind(
-                                context,
-                                Thought.fromString(
-                                    "I'm happy to have you here :smiley:",
-                                    "Co",
-                                    true,
-                                    title: "Welcome to comind"));
-                      }),
-                ),
+                // // Debug button to add a top of mind thought
+                // Visibility(
+                //   visible: true,
+                //   child: TextButtonSimple(
+                //       text: "TOM",
+                //       noBackground: true,
+                //       onPressed: () {
+                //         Provider.of<ThoughtsProvider>(context, listen: false)
+                //             .addTopOfMind(
+                //                 context,
+                //                 Thought.fromString(
+                //                     "I'm happy to have you here :smiley:",
+                //                     "Co",
+                //                     true,
+                //                     title: "Welcome to comind"));
+                //       }),
+                // ),
 
                 const SizedBox(height: 20),
                 Opacity(

@@ -46,7 +46,7 @@ class ComindColors {
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
     surface: Colors.white,
-    background: Color.fromARGB(255, 255, 239, 204),
+    background: Color.fromARGB(255, 237, 237, 237),
     error: secondaryColorDefault,
     onPrimary: Colors.black,
     onSecondary: Colors.black,
@@ -61,8 +61,8 @@ class ComindColors {
     primary: primaryColorDefault,
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
-    surface: Color.fromRGBO(30, 32, 42, 1), //Color.fromRGBO(43, 34, 34, 1),
-    background: Color.fromRGBO(16, 20, 30, 1),
+    surface: Color.fromRGBO(37, 36, 32, 1), //Color.fromRGBO(43, 34, 34, 1),
+    background: Color.fromRGBO(21, 23, 25, 1),
     error: secondaryColorDefault,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
@@ -70,7 +70,7 @@ class ComindColors {
     onBackground: Colors.white,
     onError: Colors.white,
     brightness: Brightness.dark,
-    surfaceVariant: Color.fromRGBO(136, 136, 136, 1),
+    surfaceVariant: Color.fromRGBO(40, 40, 40, 1),
   );
 
   // get _colorScheme => darkMode ? _darkScheme : _lightScheme;
@@ -98,18 +98,15 @@ class ComindColors {
   }
 
   // Text themes
-  // static final bodyStyle = GoogleFonts.ibmPlexSans(
-  //   fontWeight: FontWeight.w300,
-  //   height: 1.2,
-  // );
-
-  static final bodyStyle = GoogleFonts.nunito(
-    fontWeight: FontWeight.w300,
+  static final bodyStyle = GoogleFonts.ibmPlexSans(
+    fontWeight: FontWeight.w400,
     height: 1.2,
   );
 
-  // static final bodyStyle =
-  //     GoogleFonts.questrial(fontWeight: FontWeight.w400, height: 1.2);
+  // static final bodyStyle = GoogleFonts.nunito(
+  //   fontWeight: FontWeight.w400,
+  //   height: 1.2,
+  // );
 
   static final titleStyle = GoogleFonts.bungee(
     fontWeight: FontWeight.w400,
@@ -121,7 +118,7 @@ class ComindColors {
     fontSize: 20,
   );
 
-  static const fontScalar = 1.2;
+  static const fontScalar = 1.4;
   static const double maxWidth = 600;
   static const double bubbleRadius = 10;
 
@@ -155,7 +152,7 @@ class ComindColors {
   );
 
   static const Color _textColor = Colors.black;
-  static const Color _darkTextColor = Color.fromARGB(255, 220, 220, 220);
+  static const Color _darkTextColor = Color.fromARGB(255, 179, 179, 179);
   get textColor => darkMode ? _darkTextColor : _textColor;
 
   // Add color setting method

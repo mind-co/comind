@@ -1,6 +1,7 @@
 // Dispatches the user to where the need to go.
 // If not logged in, send them to the login page.
 // If logged in, send them to the home page.
+import 'package:comind/home.dart';
 import 'package:comind/login.dart';
 import 'package:comind/main.dart';
 import 'package:comind/providers.dart';
@@ -87,11 +88,14 @@ class Dispatch extends StatelessWidget {
       );
     } else {
       return Navigator(
-        pages: const [
-          MaterialPage(
-            // child: Stream(),
-            child: LoginScreen(),
-          ),
+        pages: [
+          // MaterialPage(
+          //   // child: Stream(),
+          //   child: LoginScreen(),
+          // ),
+
+          // Return home page
+          MaterialPage(child: HomePage()),
         ],
         onPopPage: (route, result) => route.didPop(result),
         onGenerateRoute: (settings) {

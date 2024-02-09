@@ -30,7 +30,7 @@ class TextButtonSimple extends StatelessWidget {
             // if (states.contains(MaterialState.hovered) || isHighlighted) {
             //   return const EdgeInsets.fromLTRB(8, 8, 8, 8);
             // }
-            return const EdgeInsets.fromLTRB(4, 12, 4, 12);
+            return const EdgeInsets.fromLTRB(8, 12, 8, 12);
           },
         ),
         // Title when hovered
@@ -42,7 +42,7 @@ class TextButtonSimple extends StatelessWidget {
                         Theme.of(context).colorScheme.onPrimary.withAlpha(255),
                   );
             }
-            return Theme.of(context).textTheme.bodyMedium!.copyWith(
+            return Theme.of(context).textTheme.titleSmall!.copyWith(
                   color:
                       Theme.of(context).colorScheme.onBackground.withAlpha(200),
                 );
@@ -57,7 +57,7 @@ class TextButtonSimple extends StatelessWidget {
             } else if (states.contains(MaterialState.disabled)) {
               return Theme.of(context).colorScheme.onBackground.withAlpha(64);
             } else {
-              return Theme.of(context).colorScheme.onBackground.withAlpha(164);
+              return Theme.of(context).colorScheme.onBackground.withAlpha(200);
             }
           },
         ),
@@ -74,13 +74,17 @@ class TextButtonSimple extends StatelessWidget {
             } else if (states.contains(MaterialState.disabled)) {
               return Theme.of(context).colorScheme.onBackground.withAlpha(0);
             }
-            // return Colors.transparent;
-            return Theme.of(context).colorScheme.surface;
+            return Colors.transparent;
+            // return Theme.of(context).colorScheme.surface;
             // return Theme.of(context).colorScheme.background;
           },
         ),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
+            // side: BorderSide(
+            //   color: Theme.of(context).colorScheme.primary,
+            //   width: 1,
+            // ),
             // borderRadius: BorderRadius.circular(0),
             borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
           ),

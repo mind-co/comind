@@ -76,30 +76,31 @@ class SectionHeader extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         // mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // if (waves)
-          //   const Expanded(
-          //       child: Padding(
-          //     padding: cineEdgeInsetsLeft,
-          //     child: CineWave(
-          //       amplitude: waveAmplitude,
-          //       frequency: waveFrequency,
-          //     ),
-          //   )),
+          if (waves)
+            const Expanded(
+                child: Padding(
+              padding: cineEdgeInsetsLeft,
+              child: CineWave(
+                amplitude: waveAmplitude,
+                frequency: waveFrequency,
+              ),
+            )),
 
           // Expanded gray line
-          Expanded(
-            child: Padding(
-              padding: cineEdgeInsetsRight,
-              child: Container(
-                height: 1,
-                color: Provider.of<ComindColorsNotifier>(context)
-                    .currentColors
-                    .colorScheme
-                    .onBackground
-                    .withAlpha(64),
+          if (!waves)
+            Expanded(
+              child: Padding(
+                padding: cineEdgeInsetsRight,
+                child: Container(
+                  height: 1,
+                  color: Provider.of<ComindColorsNotifier>(context)
+                      .currentColors
+                      .colorScheme
+                      .onBackground
+                      .withAlpha(64),
+                ),
               ),
             ),
-          ),
 
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -114,31 +115,32 @@ class SectionHeader extends StatelessWidget {
           ),
 
           // Expanded gray line
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: cineEdgeInsetsRight,
-              child: Container(
-                height: 1,
-                color: Provider.of<ComindColorsNotifier>(context)
-                    .currentColors
-                    .colorScheme
-                    .onBackground
-                    .withAlpha(64),
+          if (!waves)
+            Expanded(
+              flex: 1,
+              child: Padding(
+                padding: cineEdgeInsetsRight,
+                child: Container(
+                  height: 1,
+                  color: Provider.of<ComindColorsNotifier>(context)
+                      .currentColors
+                      .colorScheme
+                      .onBackground
+                      .withAlpha(64),
+                ),
               ),
             ),
-          )
 
-          // if (waves)
-          //   const Expanded(
-          //       child: Padding(
-          //     padding: cineEdgeInsetsRight,
-          //     child: CineWave(
-          //       amplitude: waveAmplitude,
-          //       frequency: waveFrequency,
-          //       goLeft: true,
-          //     ),
-          //   )),
+          if (waves)
+            const Expanded(
+                child: Padding(
+              padding: cineEdgeInsetsRight,
+              child: CineWave(
+                amplitude: waveAmplitude,
+                frequency: waveFrequency,
+                goLeft: true,
+              ),
+            )),
         ]);
   }
 }
