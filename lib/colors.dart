@@ -61,7 +61,7 @@ class ComindColors {
     primary: primaryColorDefault,
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
-    surface: Color.fromRGBO(46, 44, 44, 1), //Color.fromRGBO(43, 34, 34, 1),
+    surface: Color.fromRGBO(23, 23, 23, 1), //Color.fromRGBO(43, 34, 34, 1),
     background: Color.fromRGBO(15, 15, 26, 1),
     error: secondaryColorDefault,
     onPrimary: Colors.white,
@@ -119,7 +119,7 @@ class ComindColors {
   );
 
   static const fontScalar = 1.4;
-  static const double maxWidth = 800;
+  static const double maxWidth = 600;
   static const double bubbleRadius = 10;
 
   TextTheme textTheme = TextTheme(

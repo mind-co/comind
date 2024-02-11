@@ -95,7 +95,7 @@ class _MainTextFieldState extends State<MainTextField> {
       // ),
 
       hintText: "tabula rasa, baybee",
-      hintStyle: getTextTheme(context).titleSmall!.copyWith(
+      hintStyle: getTextTheme(context).titleMedium!.copyWith(
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
               .onPrimary
@@ -115,7 +115,7 @@ class _MainTextFieldState extends State<MainTextField> {
             .onPrimary
             .withAlpha(180),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(28, 28, 38, 28),
+      contentPadding: const EdgeInsets.fromLTRB(16, 20, 38, 20),
 
       // Top and bottom border only.
       // This is handled by the decoration for the container
@@ -136,8 +136,8 @@ class _MainTextFieldState extends State<MainTextField> {
           width: 2,
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
-              .secondary
-              .withAlpha(180),
+              .onBackground
+              .withAlpha(34),
         ),
       ),
     );

@@ -183,7 +183,8 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                           side: BorderSide(
                             color: Provider.of<ComindColorsNotifier>(context)
                                 .colorScheme
-                                .surfaceVariant,
+                                .onBackground
+                                .withAlpha(32),
                             width: 2,
                           ),
                           borderRadius:

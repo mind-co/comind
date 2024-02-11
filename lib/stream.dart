@@ -569,6 +569,7 @@ class _StreamState extends State<Stream> {
           visible:
               Provider.of<ThoughtsProvider>(context).brainBuffer.isNotEmpty,
           child: ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             // itemCount: Provider.of<ThoughtsProvider>(context).brainBuffer.length,
             itemCount: min2,

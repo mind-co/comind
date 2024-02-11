@@ -49,15 +49,15 @@ AppBar comindAppBar(BuildContext context, Widget title) {
   ComindColorsNotifier colors = Provider.of<ComindColorsNotifier>(context);
 
   // Determine whether to use the long or short logo
-  // var title = MediaQuery.of(context).size.width > 550
-  //     ? ComindLogo(
-  //         key: UniqueKey(),
-  //         colors: colors,
-  //       )
-  //     : ComindShortLogo(
-  //         key: UniqueKey(),
-  //         colors: colors,
-  //       );
+  var title = MediaQuery.of(context).size.width > 550
+      ? ComindLogo(
+          key: UniqueKey(),
+          colors: colors,
+        )
+      : ComindShortLogo(
+          key: UniqueKey(),
+          colors: colors,
+        );
 
   // Determine when to use
   return AppBar(
@@ -66,19 +66,19 @@ AppBar comindAppBar(BuildContext context, Widget title) {
 
     // If the width of the screen is less than 550 pixels, use the
     // ComindLogo class, otherwise use the original definition
-    // title: Row(
-    //   mainAxisSize: MainAxisSize.min,
-    //   children: [
-    //     title,
-    //   ],
-    // ),
-    title: title,
+    title: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        title,
+      ],
+    ),
+    // title: title,
     centerTitle: true,
     scrolledUnderElevation: 0,
     elevation: 0,
 
     // Add toolbar
-    toolbarHeight: 70,
+    toolbarHeight: 120,
     actions: [
       // Add dark mode toggle
       // IconButton(
