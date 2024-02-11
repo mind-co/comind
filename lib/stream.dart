@@ -1,6 +1,10 @@
 import 'dart:math';
 
 import 'package:comind/menu_bar.dart';
+import 'package:cyclop/cyclop.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter_hsvcolor_picker/flutter_hsvcolor_picker.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:logging/logging.dart';
 import 'package:comind/api.dart';
@@ -24,7 +28,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-enum Mode { stream, myThoughts, public, consciousness }
+enum Mode { stream, myThoughts, public, consciousness, begin }
+
+// Make a mode-to-title map
+Map<Mode, String> modeToTitle = {
+  Mode.stream: "Stream",
+  Mode.myThoughts: "My thoughts",
+  Mode.public: "Public stream",
+  Mode.consciousness: "Consciousness",
+  Mode.begin: "?",
+};
 
 class Stream extends StatefulWidget {
   const Stream({Key? key}) : super(key: key);
@@ -39,7 +52,7 @@ class _StreamState extends State<Stream> {
   final _primaryController = TextEditingController();
 
   // Mode of the stream
-  Mode mode = Mode.myThoughts;
+  Mode mode = Mode.begin;
 
   // Fetch user thoughts
   void fetchUserThoughts() async {
@@ -96,13 +109,40 @@ class _StreamState extends State<Stream> {
     } else {
       return Scaffold(
         // App bar
-        appBar: comindAppBar(context),
+        appBar: comindAppBar(
+            context,
+            modeToTitle[mode] != null
+                ? appBarTitle(modeToTitle[mode]!, context)
+                : appBarTitle("Stream", context)),
 
         // Drawer
         drawer: MenuDrawer(),
 
         // Bottom sheet
-        bottomSheet: const ComindBottomSheet(),
+        bottomSheet: mode == Mode.begin ? const ComindBottomSheet() : null,
+        // bottomSheet: Container(
+        //   color: Colors.red,
+        //   height: 120,
+        //   width: 800,
+        //   child: Column(
+        //     children: [
+        //       // The main text box
+        //       thinkBox(context),
+
+        //       // Widget for the action bar.
+        //       actionBar(context),
+
+        //       // // Padding(
+        //       // //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        //       // //   child: ComindBottomSheet(),
+        //       // // ),
+        //       // Padding(
+        //       //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        //       //   child: ComindBottomSheet(),
+        //       // ),
+        //     ],
+        //   ),
+        // ),
 
         // Body
         body: LayoutBuilder(
@@ -323,13 +363,13 @@ class _StreamState extends State<Stream> {
   }
 
   Widget actionBar(BuildContext context) {
-    const double actionIconSize = 24;
+    const double actionIconSize = 34;
     var container = Container(
       padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 6.0),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.end,
           mainAxisSize: MainAxisSize.max,
           // verticalDirection: VerticalDirection.down,
           children: [
@@ -365,6 +405,25 @@ class _StreamState extends State<Stream> {
                   // Set mode to mythoughts
                   mode = Mode.myThoughts;
                 }),
+
+            Material(
+              borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () async {
+                  await colorDialog(context);
+                },
+                borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+                child: // Soul blob
+                    Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SoulBlob(
+                    comindColors: Provider.of<ComindColorsNotifier>(context)
+                        .currentColors,
+                  ),
+                ),
+              ),
+            ),
 
             // Dark mode button
             HoverIconButton(
@@ -431,40 +490,6 @@ class _StreamState extends State<Stream> {
       middleColumn: CenterColumn(context),
       // rightColumn: rightColumn(context),
     );
-
-    // return SingleChildScrollView(
-    //   child: ConstrainedBox(
-    //     constraints: BoxConstraints(
-    //       minHeight: constraints.maxHeight,
-    //     ),
-    //     child: Row(
-    //       crossAxisAlignment: CrossAxisAlignment.start,
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       children: [
-
-    //         // // Center column
-    //         // CenterColumn(context),
-
-    //         // // Right column
-    //         // Visibility(
-    //           visible: showSideColumns(context),
-    //           child: SizedBox(
-    //             width: rightColumnWidth(context),
-    //             child: Column(
-    //               crossAxisAlignment: CrossAxisAlignment.center,
-    //               mainAxisAlignment: MainAxisAlignment.start,
-    //               children: [
-    //                 // Text("Notifications",
-    //                 //     style: getTextTheme(context).titleMedium),
-    //                 Text("", style: getTextTheme(context).titleMedium),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 
   // ignore: non_constant_identifier_names
@@ -540,52 +565,56 @@ class _StreamState extends State<Stream> {
         //     )),
 
         // Top of mind builder (use brainbuffer)
-        ListView.builder(
-          shrinkWrap: true,
-          // itemCount: Provider.of<ThoughtsProvider>(context).brainBuffer.length,
-          itemCount: min2,
-          // itemCount: relatedThoughts.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-              child: MarkdownThought(
-                // If the top of mind has more than the max buffer display size,
-                // then display only the most recent max buffer display size thoughts.
-                //
-                // The most recent thought is the last in the buffer.
-                // Example:
-                //
-                // Buffer cap is 3, have 5 thoughts. We want to display the last 3,
-                // thoughts 3, 4, and 5.
-                //
-                // Indices are 0-based, so the last thought is at index 4.
-                //
-                // The first thought (at the top) to display is at index 5 - 3 = 2.
-                // The last thought (at the bottom) to display is at index 5 - 1 = 4.
-                //
-                thought: Provider.of<ThoughtsProvider>(context)
-                    .brainBuffer[overflow + index],
+        Visibility(
+          visible:
+              Provider.of<ThoughtsProvider>(context).brainBuffer.isNotEmpty,
+          child: ListView.builder(
+            shrinkWrap: true,
+            // itemCount: Provider.of<ThoughtsProvider>(context).brainBuffer.length,
+            itemCount: min2,
+            // itemCount: relatedThoughts.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                child: MarkdownThought(
+                  // If the top of mind has more than the max buffer display size,
+                  // then display only the most recent max buffer display size thoughts.
+                  //
+                  // The most recent thought is the last in the buffer.
+                  // Example:
+                  //
+                  // Buffer cap is 3, have 5 thoughts. We want to display the last 3,
+                  // thoughts 3, 4, and 5.
+                  //
+                  // Indices are 0-based, so the last thought is at index 4.
+                  //
+                  // The first thought (at the top) to display is at index 5 - 3 = 2.
+                  // The last thought (at the bottom) to display is at index 5 - 1 = 4.
+                  //
+                  thought: Provider.of<ThoughtsProvider>(context)
+                      .brainBuffer[overflow + index],
 
-                type: MarkdownDisplayType.topOfMind,
+                  type: MarkdownDisplayType.topOfMind,
 
-                parentThought:
-                    getTopOfMind(context)?.id, // Link to most recent thought
-              ),
-            );
-          },
+                  parentThought:
+                      getTopOfMind(context)?.id, // Link to most recent thought
+                ),
+              );
+            },
+          ),
         ),
+
+        // // three colored lines and the soul blob
+        // Padding(
+        //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        //   child: soulBlobRow(context),
+        // ),
 
         // The main text box
         thinkBox(context),
 
         // Widget for the action bar.
         actionBar(context),
-
-        // three colored lines and the soul blob
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-          child: soulBlobRow(context),
-        ),
 
         Visibility(
           visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
@@ -627,23 +656,20 @@ class _StreamState extends State<Stream> {
                   Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty) ||
               (mode == Mode.myThoughts &&
                   Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty),
-          child: Section(
-            text: "Stream",
-            waves: false,
-            children: ListView.builder(
-              shrinkWrap: true,
-              // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
-              itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
-              itemBuilder: (context, index) {
-                return MarkdownThought(
-                  thought:
-                      Provider.of<ThoughtsProvider>(context).thoughts[index],
-                  linkable: true,
-                  parentThought: getTopOfMind(context)?.id,
-                  // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
-                );
-              },
-            ),
+          child: ListView.builder(
+            shrinkWrap: true,
+            dragStartBehavior: DragStartBehavior.start,
+            physics: const NeverScrollableScrollPhysics(),
+            // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+            itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+            itemBuilder: (context, index) {
+              return MarkdownThought(
+                thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
+                linkable: true,
+                parentThought: getTopOfMind(context)?.id,
+                // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
+              );
+            },
           ),
         ),
       ],

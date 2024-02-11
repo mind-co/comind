@@ -296,3 +296,15 @@ class ComindLineSpacer extends StatelessWidget {
     );
   }
 }
+
+// returns a squishy logo
+Widget getComindLogo(BuildContext context, ComindColorsNotifier colors) =>
+    MediaQuery.of(context).size.width > 550
+        ? ComindLogo(
+            key: UniqueKey(),
+            colors: colors,
+          )
+        : ComindShortLogo(
+            key: UniqueKey(),
+            colors: colors,
+          );

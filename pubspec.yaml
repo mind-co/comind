@@ -42,6 +42,7 @@ dependencies:
   logging: ^1.2.0
   # unicons: any
   line_icons: ^2.0.2
+  cyclop: ^0.7.0
 
 dev_dependencies:
   flutter_test:

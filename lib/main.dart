@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:comind/color_picker.dart';
 import 'package:comind/login.dart';
 import 'package:comind/markdown_display.dart';
+import 'package:cyclop/cyclop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logging/logging.dart';
@@ -242,7 +242,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
             backgroundColor: Provider.of<ComindColorsNotifier>(context)
                 .colorScheme
                 .background,
-            appBar: comindAppBar(context),
+            appBar: comindAppBar(context, appBarTitle("Stream", context)),
             drawer: Drawer(
               backgroundColor: Provider.of<ComindColorsNotifier>(context)
                   .colorScheme
@@ -694,201 +694,435 @@ Future<dynamic> colorDialog(BuildContext context) {
       var unselectedOpacity = 0.4;
       const edgeInsets = EdgeInsets.fromLTRB(0, 8, 0, 8);
 
-      return AlertDialog(
-        backgroundColor: colorScheme.background,
-        title: const Text('Colors'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                      "Hey, pick a color! This is how you show up to others. Your primary color is the color of your thoughts -- this is the color that thought will always be shown in unless you change a specific thought.",
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .bodyMedium),
-                  const SizedBox(height: 16),
-                  Visibility(
-                      visible: MediaQuery.of(context).size.width > 800,
-                      child: ComindLogo(
-                          colors: Provider.of<ComindColorsNotifier>(context))),
-                  Visibility(
-                      visible: MediaQuery.of(context).size.width <= 800,
-                      child: ComindShortLogo(
-                          colors: Provider.of<ComindColorsNotifier>(context))),
-                  const SizedBox(height: 16),
-                  Text('Primary color  ',
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .titleMedium),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                    child: Divider(
-                      color: colorScheme.onPrimary.withAlpha(32),
-                      thickness: 1,
-                      height: 1,
-                    ),
-                  ),
-                  ColorPicker(onColorSelected: (Color color) {
-                    Provider.of<ComindColorsNotifier>(context, listen: false)
-                        .modifyColors(color);
-                  }),
-                  const SizedBox(height: 16),
-                  Text('Color scheme  ',
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .titleMedium),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                    child: Divider(
-                      color: colorScheme.onPrimary.withAlpha(32),
-                      thickness: 1,
-                      height: 1,
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: edgeInsets,
-                        child: ComindTextButton(
-                            lineLocation: LineLocation.left,
-                            colorIndex: isTriadic(context) ? 1 : 0,
-                            opacity: isTriadic(context) ? 1 : unselectedOpacity,
-                            fontSize: fontSize,
-                            text: "triadic",
-                            onPressed: () {
-                              Provider.of<ComindColorsNotifier>(context,
-                                      listen: false)
-                                  .setColorMethod(ColorMethod.triadic);
-
-                              // Calculate the new scheme for the primary color
-                              Provider.of<ComindColorsNotifier>(context,
-                                      listen: false)
-                                  .modifyColors(
-                                      Provider.of<ComindColorsNotifier>(context)
-                                          .currentColors
-                                          .primaryColor);
-                            }),
-                      ),
-                      Padding(
-                        padding: edgeInsets,
-                        child: ComindTextButton(
-                            lineLocation: LineLocation.left,
-                            colorIndex: isComplementary(context) ? 1 : 0,
-                            opacity: isComplementary(context)
-                                ? 1
-                                : unselectedOpacity,
-                            fontSize: fontSize,
-                            text: "complementary",
-                            onPressed: () {
-                              Provider.of<ComindColorsNotifier>(context,
-                                      listen: false)
-                                  .setColorMethod(ColorMethod.complementary);
-                            }),
-                      ),
-                      Padding(
-                        padding: edgeInsets,
-                        child: ComindTextButton(
-                            lineLocation: LineLocation.left,
-                            colorIndex:
-                                Provider.of<ComindColorsNotifier>(context)
-                                            .colorMethod ==
-                                        ColorMethod.splitComplementary
-                                    ? 1
-                                    : 0,
-                            opacity: Provider.of<ComindColorsNotifier>(context)
-                                        .colorMethod ==
-                                    ColorMethod.splitComplementary
-                                ? 1
-                                : unselectedOpacity,
-                            fontSize: fontSize,
-                            text: "split complementary",
-                            onPressed: () {
-                              Provider.of<ComindColorsNotifier>(context,
-                                      listen: false)
-                                  .setColorMethod(
-                                      ColorMethod.splitComplementary);
-                            }),
-                      ),
-                      // Analogous
-                      Padding(
-                        padding: edgeInsets,
-                        child: ComindTextButton(
-                            lineLocation: LineLocation.left,
-                            colorIndex:
-                                Provider.of<ComindColorsNotifier>(context)
-                                            .colorMethod ==
-                                        ColorMethod.analogous
-                                    ? 1
-                                    : 0,
-                            opacity: Provider.of<ComindColorsNotifier>(context)
-                                        .colorMethod ==
-                                    ColorMethod.analogous
-                                ? 1
-                                : unselectedOpacity,
-                            fontSize: fontSize,
-                            text: "analogous",
-                            onPressed: () {
-                              Provider.of<ComindColorsNotifier>(context,
-                                      listen: false)
-                                  .setColorMethod(ColorMethod.analogous);
-                            }),
-                      ),
-
-                      // Monochromatic
-                      Padding(
-                        padding: edgeInsets,
-                        child: ComindTextButton(
-                            lineLocation: LineLocation.left,
-                            colorIndex:
-                                Provider.of<ComindColorsNotifier>(context)
-                                            .colorMethod ==
-                                        ColorMethod.monochromatic
-                                    ? 1
-                                    : 0,
-                            opacity: Provider.of<ComindColorsNotifier>(context)
-                                        .colorMethod ==
-                                    ColorMethod.monochromatic
-                                ? 1
-                                : unselectedOpacity,
-                            fontSize: fontSize,
-                            text: "monochromatic",
-                            onPressed: () {
-                              Provider.of<ComindColorsNotifier>(context,
-                                      listen: false)
-                                  .setColorMethod(ColorMethod.monochromatic);
-                            }),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          // TextButton(
-          //   child: Text('Close'),
-          //   onPressed: () {
-          //     Navigator.of(context).pop();
-          //   },
-          // ),
-
-          // ComindTextButton
-          ComindTextButton(
-            text: "Close",
-            onPressed: () {
-              Navigator.of(context).pop();
+      return Dialog(
+        child: ColorPicker(
+            config: ColorPickerConfig(),
+            selectedColor: colorScheme.primary,
+            onClose: () {
+              // pickerOverlay?.remove();
+              // pickerOverlay = null;
             },
-            colorIndex: 2,
-            opacity: 0.8,
-            fontSize: 16,
-          ),
-        ],
+            onColorSelected: (Color color) {
+              Provider.of<ComindColorsNotifier>(context, listen: false)
+                  .modifyColors(color);
+            }),
       );
+
+      // return ConstrainedBox(
+      //   constraints: const BoxConstraints(
+      //       maxWidth: ComindColors.maxWidth, maxHeight: 800),
+      //   child: AlertDialog(
+      //     backgroundColor: colorScheme.background,
+      //     title: const Text('Colors'),
+      //     content: ConstrainedBox(
+      //       constraints: const BoxConstraints(
+      //           maxWidth: ComindColors.maxWidth, maxHeight: 800),
+      //       child: SingleChildScrollView(
+      //         child: Column(
+      //           crossAxisAlignment: CrossAxisAlignment.start,
+      //           children: [
+      //             Column(
+      //               crossAxisAlignment: CrossAxisAlignment.start,
+      //               children: [
+      //                 Text(
+      //                     "Hey, pick a color! This is how you show up to others. Your primary color is the color of your thoughts -- this is the color that thought will always be shown in unless you change a specific thought.",
+      //                     style: Provider.of<ComindColorsNotifier>(context)
+      //                         .textTheme
+      //                         .bodyMedium),
+      //                 const SizedBox(height: 16),
+      //                 Visibility(
+      //                     visible: MediaQuery.of(context).size.width > 800,
+      //                     child: ComindLogo(
+      //                         colors:
+      //                             Provider.of<ComindColorsNotifier>(context))),
+      //                 Visibility(
+      //                     visible: MediaQuery.of(context).size.width <= 800,
+      //                     child: ComindShortLogo(
+      //                         colors:
+      //                             Provider.of<ComindColorsNotifier>(context))),
+      //                 const SizedBox(height: 16),
+      //                 Text('Primary color  ',
+      //                     style: Provider.of<ComindColorsNotifier>(context)
+      //                         .textTheme
+      //                         .titleMedium),
+      //                 Padding(
+      //                   padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      //                   child: Divider(
+      //                     color: colorScheme.onPrimary.withAlpha(32),
+      //                     thickness: 1,
+      //                     height: 1,
+      //                   ),
+      //                 ),
+      //                 // ColorPicker(onColorSelected: (Color color) {
+      //                 //   Provider.of<ComindColorsNotifier>(context, listen: false)
+      //                 //       .modifyColors(color);
+      //                 // }),
+      //                 ColorPicker(
+      //                     config: ColorPickerConfig(),
+      //                     selectedColor: colorScheme.primary,
+      //                     onClose: () {
+      //                       // pickerOverlay?.remove();
+      //                       // pickerOverlay = null;
+      //                     },
+      //                     onColorSelected: (Color color) {
+      //                       Provider.of<ComindColorsNotifier>(context,
+      //                               listen: false)
+      //                           .modifyColors(color);
+      //                     }),
+      //                 const SizedBox(height: 16),
+      //                 Text('Color scheme  ',
+      //                     style: Provider.of<ComindColorsNotifier>(context)
+      //                         .textTheme
+      //                         .titleMedium),
+      //                 Padding(
+      //                   padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      //                   child: Divider(
+      //                     color: colorScheme.onPrimary.withAlpha(32),
+      //                     thickness: 1,
+      //                     height: 1,
+      //                   ),
+      //                 ),
+      //                 Column(
+      //                   crossAxisAlignment: CrossAxisAlignment.start,
+      //                   children: [
+      //                     Padding(
+      //                       padding: edgeInsets,
+      //                       child: ComindTextButton(
+      //                           lineLocation: LineLocation.left,
+      //                           colorIndex: isTriadic(context) ? 1 : 0,
+      //                           opacity:
+      //                               isTriadic(context) ? 1 : unselectedOpacity,
+      //                           fontSize: fontSize,
+      //                           text: "triadic",
+      //                           onPressed: () {
+      //                             Provider.of<ComindColorsNotifier>(context,
+      //                                     listen: false)
+      //                                 .setColorMethod(ColorMethod.triadic);
+
+      //                             // Calculate the new scheme for the primary color
+      //                             Provider.of<ComindColorsNotifier>(context,
+      //                                     listen: false)
+      //                                 .modifyColors(
+      //                                     Provider.of<ComindColorsNotifier>(
+      //                                             context)
+      //                                         .currentColors
+      //                                         .primaryColor);
+      //                           }),
+      //                     ),
+      //                     Padding(
+      //                       padding: edgeInsets,
+      //                       child: ComindTextButton(
+      //                           lineLocation: LineLocation.left,
+      //                           colorIndex: isComplementary(context) ? 1 : 0,
+      //                           opacity: isComplementary(context)
+      //                               ? 1
+      //                               : unselectedOpacity,
+      //                           fontSize: fontSize,
+      //                           text: "complementary",
+      //                           onPressed: () {
+      //                             Provider.of<ComindColorsNotifier>(context,
+      //                                     listen: false)
+      //                                 .setColorMethod(
+      //                                     ColorMethod.complementary);
+      //                           }),
+      //                     ),
+      //                     Padding(
+      //                       padding: edgeInsets,
+      //                       child: ComindTextButton(
+      //                           lineLocation: LineLocation.left,
+      //                           colorIndex:
+      //                               Provider.of<ComindColorsNotifier>(context)
+      //                                           .colorMethod ==
+      //                                       ColorMethod.splitComplementary
+      //                                   ? 1
+      //                                   : 0,
+      //                           opacity:
+      //                               Provider.of<ComindColorsNotifier>(context)
+      //                                           .colorMethod ==
+      //                                       ColorMethod.splitComplementary
+      //                                   ? 1
+      //                                   : unselectedOpacity,
+      //                           fontSize: fontSize,
+      //                           text: "split complementary",
+      //                           onPressed: () {
+      //                             Provider.of<ComindColorsNotifier>(context,
+      //                                     listen: false)
+      //                                 .setColorMethod(
+      //                                     ColorMethod.splitComplementary);
+      //                           }),
+      //                     ),
+      //                     // Analogous
+      //                     Padding(
+      //                       padding: edgeInsets,
+      //                       child: ComindTextButton(
+      //                           lineLocation: LineLocation.left,
+      //                           colorIndex:
+      //                               Provider.of<ComindColorsNotifier>(context)
+      //                                           .colorMethod ==
+      //                                       ColorMethod.analogous
+      //                                   ? 1
+      //                                   : 0,
+      //                           opacity:
+      //                               Provider.of<ComindColorsNotifier>(context)
+      //                                           .colorMethod ==
+      //                                       ColorMethod.analogous
+      //                                   ? 1
+      //                                   : unselectedOpacity,
+      //                           fontSize: fontSize,
+      //                           text: "analogous",
+      //                           onPressed: () {
+      //                             Provider.of<ComindColorsNotifier>(context,
+      //                                     listen: false)
+      //                                 .setColorMethod(ColorMethod.analogous);
+      //                           }),
+      //                     ),
+
+      //                     // Monochromatic
+      //                     Padding(
+      //                       padding: edgeInsets,
+      //                       child: ComindTextButton(
+      //                           lineLocation: LineLocation.left,
+      //                           colorIndex:
+      //                               Provider.of<ComindColorsNotifier>(context)
+      //                                           .colorMethod ==
+      //                                       ColorMethod.monochromatic
+      //                                   ? 1
+      //                                   : 0,
+      //                           opacity:
+      //                               Provider.of<ComindColorsNotifier>(context)
+      //                                           .colorMethod ==
+      //                                       ColorMethod.monochromatic
+      //                                   ? 1
+      //                                   : unselectedOpacity,
+      //                           fontSize: fontSize,
+      //                           text: "monochromatic",
+      //                           onPressed: () {
+      //                             Provider.of<ComindColorsNotifier>(context,
+      //                                     listen: false)
+      //                                 .setColorMethod(
+      //                                     ColorMethod.monochromatic);
+      //                           }),
+      //                     ),
+      //                   ],
+      //                 ),
+      //               ],
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      //     actions: <Widget>[
+      //       // TextButton(
+      //       //   child: Text('Close'),
+      //       //   onPressed: () {
+      //       //     Navigator.of(context).pop();
+      //       //   },
+      //       // ),
+
+      //       // ComindTextButton
+      //       ComindTextButton(
+      //         text: "Close",
+      //         onPressed: () {
+      //           Navigator.of(context).pop();
+      //         },
+      //         colorIndex: 2,
+      //         opacity: 0.8,
+      //         fontSize: 16,
+      //       ),
+      //     ],
+      //     child: SingleChildScrollView(
+      //       child: Column(
+      //         crossAxisAlignment: CrossAxisAlignment.start,
+      //         children: [
+      //           Column(
+      //             crossAxisAlignment: CrossAxisAlignment.start,
+      //             children: [
+      //               Text(
+      //                   "Hey, pick a color! This is how you show up to others. Your primary color is the color of your thoughts -- this is the color that thought will always be shown in unless you change a specific thought.",
+      //                   style: Provider.of<ComindColorsNotifier>(context)
+      //                       .textTheme
+      //                       .bodyMedium),
+      //               const SizedBox(height: 16),
+      //               Visibility(
+      //                   visible: MediaQuery.of(context).size.width > 800,
+      //                   child: ComindLogo(
+      //                       colors:
+      //                           Provider.of<ComindColorsNotifier>(context))),
+      //               Visibility(
+      //                   visible: MediaQuery.of(context).size.width <= 800,
+      //                   child: ComindShortLogo(
+      //                       colors:
+      //                           Provider.of<ComindColorsNotifier>(context))),
+      //               const SizedBox(height: 16),
+      //               Text('Primary color  ',
+      //                   style: Provider.of<ComindColorsNotifier>(context)
+      //                       .textTheme
+      //                       .titleMedium),
+      //               Padding(
+      //                 padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      //                 child: Divider(
+      //                   color: colorScheme.onPrimary.withAlpha(32),
+      //                   thickness: 1,
+      //                   height: 1,
+      //                 ),
+      //               ),
+      //               // ColorPicker(onColorSelected: (Color color) {
+      //               //   Provider.of<ComindColorsNotifier>(context, listen: false)
+      //               //       .modifyColors(color);
+      //               // }),
+      //               ColorPicker(
+      //                   config: ColorPickerConfig(),
+      //                   selectedColor: colorScheme.primary,
+      //                   onClose: () {
+      //                     // pickerOverlay?.remove();
+      //                     // pickerOverlay = null;
+      //                   },
+      //                   onColorSelected: (Color color) {
+      //                     Provider.of<ComindColorsNotifier>(context,
+      //                             listen: false)
+      //                         .modifyColors(color);
+      //                   }),
+      //               const SizedBox(height: 16),
+      //               Text('Color scheme  ',
+      //                   style: Provider.of<ComindColorsNotifier>(context)
+      //                       .textTheme
+      //                       .titleMedium),
+      //               Padding(
+      //                 padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      //                 child: Divider(
+      //                   color: colorScheme.onPrimary.withAlpha(32),
+      //                   thickness: 1,
+      //                   height: 1,
+      //                 ),
+      //               ),
+      //               Column(
+      //                 crossAxisAlignment: CrossAxisAlignment.start,
+      //                 children: [
+      //                   Padding(
+      //                     padding: edgeInsets,
+      //                     child: ComindTextButton(
+      //                         lineLocation: LineLocation.left,
+      //                         colorIndex: isTriadic(context) ? 1 : 0,
+      //                         opacity:
+      //                             isTriadic(context) ? 1 : unselectedOpacity,
+      //                         fontSize: fontSize,
+      //                         text: "triadic",
+      //                         onPressed: () {
+      //                           Provider.of<ComindColorsNotifier>(context,
+      //                                   listen: false)
+      //                               .setColorMethod(ColorMethod.triadic);
+
+      //                           // Calculate the new scheme for the primary color
+      //                           Provider.of<ComindColorsNotifier>(context,
+      //                                   listen: false)
+      //                               .modifyColors(
+      //                                   Provider.of<ComindColorsNotifier>(
+      //                                           context)
+      //                                       .currentColors
+      //                                       .primaryColor);
+      //                         }),
+      //                   ),
+      //                   Padding(
+      //                     padding: edgeInsets,
+      //                     child: ComindTextButton(
+      //                         lineLocation: LineLocation.left,
+      //                         colorIndex: isComplementary(context) ? 1 : 0,
+      //                         opacity: isComplementary(context)
+      //                             ? 1
+      //                             : unselectedOpacity,
+      //                         fontSize: fontSize,
+      //                         text: "complementary",
+      //                         onPressed: () {
+      //                           Provider.of<ComindColorsNotifier>(context,
+      //                                   listen: false)
+      //                               .setColorMethod(ColorMethod.complementary);
+      //                         }),
+      //                   ),
+      //                   Padding(
+      //                     padding: edgeInsets,
+      //                     child: ComindTextButton(
+      //                         lineLocation: LineLocation.left,
+      //                         colorIndex:
+      //                             Provider.of<ComindColorsNotifier>(context)
+      //                                         .colorMethod ==
+      //                                     ColorMethod.splitComplementary
+      //                                 ? 1
+      //                                 : 0,
+      //                         opacity:
+      //                             Provider.of<ComindColorsNotifier>(context)
+      //                                         .colorMethod ==
+      //                                     ColorMethod.splitComplementary
+      //                                 ? 1
+      //                                 : unselectedOpacity,
+      //                         fontSize: fontSize,
+      //                         text: "split complementary",
+      //                         onPressed: () {
+      //                           Provider.of<ComindColorsNotifier>(context,
+      //                                   listen: false)
+      //                               .setColorMethod(
+      //                                   ColorMethod.splitComplementary);
+      //                         }),
+      //                   ),
+      //                   // Analogous
+      //                   Padding(
+      //                     padding: edgeInsets,
+      //                     child: ComindTextButton(
+      //                         lineLocation: LineLocation.left,
+      //                         colorIndex:
+      //                             Provider.of<ComindColorsNotifier>(context)
+      //                                         .colorMethod ==
+      //                                     ColorMethod.analogous
+      //                                 ? 1
+      //                                 : 0,
+      //                         opacity:
+      //                             Provider.of<ComindColorsNotifier>(context)
+      //                                         .colorMethod ==
+      //                                     ColorMethod.analogous
+      //                                 ? 1
+      //                                 : unselectedOpacity,
+      //                         fontSize: fontSize,
+      //                         text: "analogous",
+      //                         onPressed: () {
+      //                           Provider.of<ComindColorsNotifier>(context,
+      //                                   listen: false)
+      //                               .setColorMethod(ColorMethod.analogous);
+      //                         }),
+      //                   ),
+
+      //                   // Monochromatic
+      //                   Padding(
+      //                     padding: edgeInsets,
+      //                     child: ComindTextButton(
+      //                         lineLocation: LineLocation.left,
+      //                         colorIndex:
+      //                             Provider.of<ComindColorsNotifier>(context)
+      //                                         .colorMethod ==
+      //                                     ColorMethod.monochromatic
+      //                                 ? 1
+      //                                 : 0,
+      //                         opacity:
+      //                             Provider.of<ComindColorsNotifier>(context)
+      //                                         .colorMethod ==
+      //                                     ColorMethod.monochromatic
+      //                                 ? 1
+      //                                 : unselectedOpacity,
+      //                         fontSize: fontSize,
+      //                         text: "monochromatic",
+      //                         onPressed: () {
+      //                           Provider.of<ComindColorsNotifier>(context,
+      //                                   listen: false)
+      //                               .setColorMethod(ColorMethod.monochromatic);
+      //                         }),
+      //                   ),
+      //                 ],
+      //               ),
+      //             ],
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      // );
     },
   );
 }

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:comind/colors.dart';
+import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/think_button.dart';
 import 'package:comind/thought_table.dart';
@@ -87,13 +88,18 @@ class _MainTextFieldState extends State<MainTextField> {
     // DECORATION FOR THE MAIN TEXT FIELD
     //
     var mainInputDecoration = InputDecoration(
-      // The label that appears at the top of the text box.
+      // // The label that appears at the top of the text box.
       // label: Text(
       //   widget.type == TextFieldType.main ? uiMode : "Edit",
       //   style: Provider.of<ComindColorsNotifier>(context).textTheme.titleLarge,
       // ),
 
-      // hintText: "New, unlinked thought",
+      hintText: "tabula rasa, baybee",
+      hintStyle: getTextTheme(context).titleSmall!.copyWith(
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onPrimary
+              .withAlpha(80)),
 
       // Handle label for the text box label
       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -109,29 +115,29 @@ class _MainTextFieldState extends State<MainTextField> {
             .onPrimary
             .withAlpha(180),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(18, 18, 38, 18),
+      contentPadding: const EdgeInsets.fromLTRB(28, 28, 38, 28),
 
       // Top and bottom border only.
       // This is handled by the decoration for the container
       // wrapping the text field.
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-        borderSide: BorderSide(
-          width: 1,
-          color: Provider.of<ComindColorsNotifier>(context)
-              .colorScheme
-              .onPrimary
-              .withAlpha(16),
-        ),
+        // borderSide: BorderSide(
+        //   width: 1,
+        //   // color: Provider.of<ComindColorsNotifier>(context)
+        //   //     .colorScheme
+        //   //     .onPrimary
+        //   //     .withAlpha(16),
+        // ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         borderSide: BorderSide(
-          width: 1,
+          width: 2,
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
-              .onPrimary
-              .withAlpha(32),
+              .secondary
+              .withAlpha(180),
         ),
       ),
     );
@@ -191,7 +197,7 @@ class _MainTextFieldState extends State<MainTextField> {
     var newInputDecoration = mainInputDecoration;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: SizedBox(
         width: widget.type != TextFieldType.newThought
             ? min(ComindColors.maxWidth, MediaQuery.of(context).size.width)
@@ -206,7 +212,7 @@ class _MainTextFieldState extends State<MainTextField> {
               children: [
                 // Text box
                 Material(
-                  elevation: 0,
+                  elevation: 6,
                   borderRadius:
                       BorderRadius.circular(ComindColors.bubbleRadius),
                   child: Container(
@@ -257,7 +263,7 @@ class _MainTextFieldState extends State<MainTextField> {
                         // textInputAction: TextInputAction.send,
                         style: Provider.of<ComindColorsNotifier>(context)
                             .textTheme
-                            .bodyMedium,
+                            .bodyLarge,
 
                         // Autofocus if main text field or a new thought,
                         // since the user
@@ -280,7 +286,7 @@ class _MainTextFieldState extends State<MainTextField> {
                         // onChanged: ... // do all the command processing stuff
 
                         // Cursor stuff
-                        cursorWidth: 8,
+                        cursorWidth: 14,
                         cursorColor: Provider.of<ComindColorsNotifier>(context)
                             .colorScheme
                             .onBackground,

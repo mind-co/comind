@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  archive:
+    dependency: transitive
+    description:
+      name: archive
+      sha256: "22600aa1e926be775fa5fe7e6894e7fb3df9efda8891c73f70fb3262399a432d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.10"
   args:
     dependency: transitive
     description:
@@ -25,6 +33,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  basics:
+    dependency: transitive
+    description:
+      name: basics
+      sha256: "41ff8aded84ae174d1df5cce0bcac3ab9070caac9f7da35fd2cc638dfee6163f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.0"
   bcrypt:
     dependency: "direct main"
     description:
@@ -97,6 +113,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
+  cyclop:
+    dependency: "direct main"
+    description:
+      name: cyclop
+      sha256: d9ab5a38dc08271251dc34f502d3d6ef813a1668ed3b297da5ec0c6709663202
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   dart_jsonwebtoken:
     dependency: "direct main"
     description:
@@ -365,6 +389,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  image:
+    dependency: transitive
+    description:
+      name: image
+      sha256: "49a0d4b0c12402853d3f227fe7c315601b238d126aa4caa5dbb2dcf99421aa4a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.6"
   intl:
     dependency: "direct main"
     description:
@@ -541,6 +573,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      sha256: c15605cd28af66339f8eb6fbe0e541bfe2d1b72d5825efc6598f3e0a31b9ad27
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.2"
   platform:
     dependency: transitive
     description:
@@ -858,6 +898,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  xml:
+    dependency: transitive
+    description:
+      name: xml
+      sha256: b015a8ad1c488f66851d762d3090a21c600e479dc75e68328c52774040cf9226
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.5.0"
 sdks:
   dart: ">=3.3.0-279.1.beta <4.0.0"
   flutter: ">=3.16.0"

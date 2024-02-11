@@ -35,21 +35,29 @@ String exactTimestamp(String timestamp) {
   return DateFormat('MMMM d, y HH:mm').format(dateTime);
 }
 
+// Makes a quick app bar titles
+Text appBarTitle(String title, BuildContext context) {
+  return Text(
+    title,
+    style: getTextTheme(context).displayMedium,
+  );
+}
+
 // App bar widget
-AppBar comindAppBar(BuildContext context) {
+AppBar comindAppBar(BuildContext context, Widget title) {
   // Get the colors
   ComindColorsNotifier colors = Provider.of<ComindColorsNotifier>(context);
 
   // Determine whether to use the long or short logo
-  var title = MediaQuery.of(context).size.width > 550
-      ? ComindLogo(
-          key: UniqueKey(),
-          colors: colors,
-        )
-      : ComindShortLogo(
-          key: UniqueKey(),
-          colors: colors,
-        );
+  // var title = MediaQuery.of(context).size.width > 550
+  //     ? ComindLogo(
+  //         key: UniqueKey(),
+  //         colors: colors,
+  //       )
+  //     : ComindShortLogo(
+  //         key: UniqueKey(),
+  //         colors: colors,
+  //       );
 
   // Determine when to use
   return AppBar(
@@ -58,18 +66,19 @@ AppBar comindAppBar(BuildContext context) {
 
     // If the width of the screen is less than 550 pixels, use the
     // ComindLogo class, otherwise use the original definition
-    title: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        title,
-      ],
-    ),
+    // title: Row(
+    //   mainAxisSize: MainAxisSize.min,
+    //   children: [
+    //     title,
+    //   ],
+    // ),
+    title: title,
     centerTitle: true,
     scrolledUnderElevation: 0,
     elevation: 0,
 
     // Add toolbar
-    toolbarHeight: 120,
+    toolbarHeight: 70,
     actions: [
       // Add dark mode toggle
       // IconButton(

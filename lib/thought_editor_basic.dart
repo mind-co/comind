@@ -85,11 +85,8 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
   @override
   Widget build(BuildContext context) {
     // Print whether we're logged in
-    print("Parent thoughts: $parentThoughts");
-    print("Child thoughts: $childThoughts");
-
     return Scaffold(
-        appBar: comindAppBar(context),
+        appBar: comindAppBar(context, appBarTitle("Thought view", context)),
         body: MainLayout(
             middleColumn: Column(
           children: [

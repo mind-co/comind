@@ -138,7 +138,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     // The stack is here to lay the dismiss button on top
     // of the main text box.
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 14),
       child: Stack(children: [
         // Main text box. Has the title stacked on top of it.
         Column(
@@ -158,7 +158,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                     });
                   },
                   child: SizedBox(
-                    width: 600,
+                    width: ComindColors.maxWidth,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: titleBar(context),
@@ -324,8 +324,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
                       // Alternative action row
                       Visibility(
-                          visible: widget.showBody &&
-                              widget.type != MarkdownDisplayType.topOfMind,
+                          visible: widget.showBody,
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                             child: alternativeActionRow(context, onBackground),
@@ -488,7 +487,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                       child: RichText(
-                        overflow: TextOverflow.fade,
+                        overflow: TextOverflow.clip,
                         maxLines: 1,
                         softWrap: false,
                         text: TextSpan(
@@ -1193,6 +1192,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                     // ]),
 
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
@@ -1657,7 +1657,8 @@ class TheMarkdownBox extends StatelessWidget {
               launchUrl(Uri.parse(url!)); /*For url_launcher 6.1.0 and higher*/
               // launch(url);  /*For url_launcher 6.0.20 and lower*/
             },
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            padding: const EdgeInsets.all(8),
+            // padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
             styleSheet: MarkdownStyleSheet(
               blockquotePadding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
               h1: colorsNotifier.textTheme.titleMedium,
@@ -1665,8 +1666,10 @@ class TheMarkdownBox extends StatelessWidget {
               h3: colorsNotifier.textTheme.labelMedium,
               p: colorsNotifier.textTheme.bodyMedium,
               a: TextStyle(
-                color: colorsNotifier.colorScheme.onPrimary,
-                decoration: TextDecoration.underline,
+                // backgroundColor:
+                //     colorsNotifier.colorScheme.primary.withOpacity(0.4),
+                color: colorsNotifier.colorScheme.primary,
+                // decoration: TextDecoration.underline,
                 decorationColor: colorsNotifier.colorScheme.primary,
                 decorationThickness: 1,
               ),
@@ -1698,7 +1701,7 @@ class TheMarkdownBox extends StatelessWidget {
             // physics: BouncingScrollPhysics(),
             // physics: NeverScrollableScrollPhysics(),
             // physics: ClampingScrollPhysics(),
-            physics: BouncingScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             data: text,
 
             // Need these for the custom syntax. Currenlty not working,

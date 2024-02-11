@@ -61,8 +61,8 @@ class ComindColors {
     primary: primaryColorDefault,
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
-    surface: Color.fromRGBO(37, 36, 32, 1), //Color.fromRGBO(43, 34, 34, 1),
-    background: Color.fromRGBO(21, 23, 25, 1),
+    surface: Color.fromRGBO(46, 44, 44, 1), //Color.fromRGBO(43, 34, 34, 1),
+    background: Color.fromRGBO(15, 15, 26, 1),
     error: secondaryColorDefault,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
@@ -100,7 +100,7 @@ class ComindColors {
   // Text themes
   static final bodyStyle = GoogleFonts.ibmPlexSans(
     fontWeight: FontWeight.w400,
-    height: 1.2,
+    height: 1.0,
   );
 
   // static final bodyStyle = GoogleFonts.nunito(
@@ -119,7 +119,7 @@ class ComindColors {
   );
 
   static const fontScalar = 1.4;
-  static const double maxWidth = 600;
+  static const double maxWidth = 800;
   static const double bubbleRadius = 10;
 
   TextTheme textTheme = TextTheme(
@@ -133,7 +133,7 @@ class ComindColors {
     // Body style
     bodySmall: bodyStyle.copyWith(fontSize: fontScalar * 10),
     bodyMedium: bodyStyle.copyWith(fontSize: fontScalar * 12),
-    bodyLarge: bodyStyle.copyWith(fontSize: fontScalar * 14),
+    bodyLarge: bodyStyle.copyWith(fontSize: fontScalar * 16),
 
     // Title style
     titleSmall: titleStyle.copyWith(fontSize: fontScalar * 10),
