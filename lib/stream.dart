@@ -363,13 +363,16 @@ class _StreamState extends State<Stream> {
   }
 
   Widget actionBar(BuildContext context) {
-    const double actionIconSize = 34;
+    // Cosmetic settings
+    const double actionIconSize = 28;
+
+    // The action bar container
     var container = Container(
       padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 6.0),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.max,
           // verticalDirection: VerticalDirection.down,
           children: [
@@ -741,7 +744,9 @@ class _StreamState extends State<Stream> {
   Stack thinkBox(BuildContext context) {
     return Stack(children: [
       Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        padding: Provider.of<ThoughtsProvider>(context).hasTopOfMind
+            ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
+            : const EdgeInsets.fromLTRB(0, 32, 0, 0),
         child: MainTextField(
             primaryController: _primaryController,
 

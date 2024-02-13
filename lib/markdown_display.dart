@@ -138,7 +138,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     // The stack is here to lay the dismiss button on top
     // of the main text box.
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 0, 10, 14),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Stack(children: [
         // Main text box. Has the title stacked on top of it.
         Column(
@@ -180,13 +180,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                       Material(
                         borderOnForeground: true,
                         shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onBackground
-                                .withAlpha(32),
-                            width: 2,
-                          ),
                           borderRadius:
                               BorderRadius.circular(ComindColors.bubbleRadius),
                         ),
@@ -325,7 +318,8 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
                       // Alternative action row
                       Visibility(
-                          visible: widget.showBody,
+                          visible: widget.showBody &&
+                              widget.type != MarkdownDisplayType.topOfMind,
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                             child: alternativeActionRow(context, onBackground),
@@ -1193,7 +1187,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                     // ]),
 
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
@@ -1658,7 +1652,7 @@ class TheMarkdownBox extends StatelessWidget {
               launchUrl(Uri.parse(url!)); /*For url_launcher 6.1.0 and higher*/
               // launch(url);  /*For url_launcher 6.0.20 and lower*/
             },
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(0),
             // padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
             styleSheet: MarkdownStyleSheet(
               blockquotePadding: const EdgeInsets.fromLTRB(16, 0, 0, 0),

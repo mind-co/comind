@@ -94,7 +94,8 @@ class _MainTextFieldState extends State<MainTextField> {
       //   style: Provider.of<ComindColorsNotifier>(context).textTheme.titleLarge,
       // ),
 
-      hintText: "tabula rasa, baybee",
+      hintFadeDuration: Duration(milliseconds: 200),
+      hintText: "  tabula rasa, baybee",
       hintStyle: getTextTheme(context).titleMedium!.copyWith(
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
@@ -122,22 +123,22 @@ class _MainTextFieldState extends State<MainTextField> {
       // wrapping the text field.
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-        // borderSide: BorderSide(
-        //   width: 1,
-        //   // color: Provider.of<ComindColorsNotifier>(context)
-        //   //     .colorScheme
-        //   //     .onPrimary
-        //   //     .withAlpha(16),
-        // ),
+        borderSide: BorderSide(
+          width: 1,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onBackground
+              .withAlpha(32),
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         borderSide: BorderSide(
-          width: 2,
+          width: 1,
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
               .onBackground
-              .withAlpha(34),
+              .withAlpha(64),
         ),
       ),
     );
@@ -263,7 +264,7 @@ class _MainTextFieldState extends State<MainTextField> {
                         // textInputAction: TextInputAction.send,
                         style: Provider.of<ComindColorsNotifier>(context)
                             .textTheme
-                            .bodyLarge,
+                            .bodyMedium,
 
                         // Autofocus if main text field or a new thought,
                         // since the user
@@ -286,7 +287,7 @@ class _MainTextFieldState extends State<MainTextField> {
                         // onChanged: ... // do all the command processing stuff
 
                         // Cursor stuff
-                        cursorWidth: 14,
+                        cursorWidth: 8,
                         cursorColor: Provider.of<ComindColorsNotifier>(context)
                             .colorScheme
                             .onBackground,
