@@ -90,6 +90,11 @@ class _StreamState extends State<Stream> {
   @override
   void initState() {
     super.initState();
+
+    // Pull in the concepts
+    final newConcepts = fetchConcepts(context).then((value) =>
+        Provider.of<ConceptsProvider>(context, listen: false)
+            .addConcepts(value));
   }
 
   @override
@@ -390,7 +395,7 @@ class _StreamState extends State<Stream> {
               size: actionIconSize,
               icon: LineIcons.hashtag,
               onPressed: () {
-                // TODO: Implement concept navigation
+                Navigator.pushNamed(context, "/concepts");
               },
             ),
 
@@ -546,27 +551,6 @@ class _StreamState extends State<Stream> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Visibility(
-        //     visible: !Provider.of<ThoughtsProvider>(context).hasTopOfMind,
-        //     child: Column(
-        //       children: [
-        //         // Spacer
-        //         // SizedBox(
-        //         //     height: MediaQuery.of(context).size.height <= 400
-        //         //         ? 0
-        //         //         : MediaQuery.of(context).size.height <= 600
-        //         //             ? 64
-        //         //             : 128),
-        //         Padding(
-        //           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-        //           child: SectionHeader(
-        //               text:
-        //                   " HI ${Provider.of<AuthProvider>(context).username} ",
-        //               waves: false),
-        //         ),
-        //       ],
-        //     )),
-
         // Top of mind builder (use brainbuffer)
         Visibility(
           visible:
@@ -607,12 +591,6 @@ class _StreamState extends State<Stream> {
             },
           ),
         ),
-
-        // // three colored lines and the soul blob
-        // Padding(
-        //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        //   child: soulBlobRow(context),
-        // ),
 
         // The main text box
         thinkBox(context),

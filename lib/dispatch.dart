@@ -1,6 +1,7 @@
 // Dispatches the user to where the need to go.
 // If not logged in, send them to the login page.
 // If logged in, send them to the home page.
+import 'package:comind/concept_page.dart';
 import 'package:comind/home.dart';
 import 'package:comind/login.dart';
 import 'package:comind/main.dart';
@@ -38,6 +39,13 @@ class Dispatch extends StatelessWidget {
           if (settings.name == '/login') {
             return MaterialPageRoute(
               builder: (context) => const LoginScreen(),
+            );
+          }
+
+          // Handle /concepts
+          if (settings.name == '/concepts') {
+            return MaterialPageRoute(
+              builder: (context) => const ConceptPage(),
             );
           }
 

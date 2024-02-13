@@ -35,8 +35,11 @@ Future<void> main() async {
   runApp(ChangeNotifierProvider(
     create: (_) => ComindColorsNotifier(),
     child: ChangeNotifierProvider(
-      create: (_) => AuthProvider(),
-      child: const ComindApp(),
+      create: (_) => ConceptsProvider(),
+      child: ChangeNotifierProvider(
+        create: (_) => AuthProvider(),
+        child: const ComindApp(),
+      ),
     ),
   ));
 }

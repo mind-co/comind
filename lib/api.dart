@@ -583,3 +583,29 @@ Future<void> updateTopOfMind(BuildContext context, List<String> ids) async {
     throw Exception('Failed to update top of mind');
   }
 }
+
+// Get concepts from the server
+Future<List<Concept>> fetchConcepts(BuildContext context) async {
+  final url = Uri.parse(endpoint('/api/concepts/'));
+
+  final headers = getBaseHeaders(context);
+  headers['ComindPageNo'] = '0';
+  headers['ComindLimit'] = '10';
+
+  final response = await dio.get(
+    url.toString(),
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.data);
+    print("Concepts response: ${response.data}");
+    return jsonResponse
+        .map<Concept>((concept) => Concept.fromJson(concept))
+        .toList();
+  } else {
+    throw Exception('Failed to load concepts');
+  }
+}

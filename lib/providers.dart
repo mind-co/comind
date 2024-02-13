@@ -227,3 +227,47 @@ void linkToMostRecentTopOfMind(BuildContext context, String id) {
 
   linkThoughts(context, topOfMind.id, id);
 }
+
+// Concept class
+class Concept {
+  final String name;
+  final String? id;
+  final int numThoughts;
+
+  Concept({required this.name, required this.id, this.numThoughts = 0});
+
+  Concept.fromJson(Map<String, dynamic> json)
+      : name = json['concept'],
+        id = json['id'],
+        numThoughts = json['n_thoughts'];
+}
+
+// Concept provider
+class ConceptsProvider extends ChangeNotifier {
+  final List<Concept> _concepts = [Concept(name: "alpha", id: "abc")];
+
+  List<Concept> get concepts => _concepts;
+
+  void addConcepts(List<Concept> concepts) {
+    concepts.forEach(addConcept);
+  }
+
+  void addConcept(Concept concept) {
+    // Add concept if it doesn't already exist. Search by id.
+    if (!_concepts.any((element) => element.id == concept.id)) {
+      _concepts.add(concept);
+    }
+
+    notifyListeners();
+  }
+
+  void removeConcept(Concept concept) {
+    _concepts.removeWhere((element) => element.id == concept.id);
+    notifyListeners();
+  }
+
+  void clear() {
+    _concepts.clear();
+    notifyListeners();
+  }
+}
