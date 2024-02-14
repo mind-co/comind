@@ -31,7 +31,7 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: comindAppBar(context, appBarTitle('Welcome', context)),
+      appBar: comindAppBar(context, title: appBarTitle('Welcome', context)),
       body: MainLayout(middleColumn: middleColumn(context)),
     );
   }

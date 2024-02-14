@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
+import 'package:comind/types/concept.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:comind/types/thought.dart';
@@ -601,7 +602,6 @@ Future<List<Concept>> fetchConcepts(BuildContext context) async {
 
   if (response.statusCode == 200) {
     final jsonResponse = json.decode(response.data);
-    print("Concepts response: ${response.data}");
     return jsonResponse
         .map<Concept>((concept) => Concept.fromJson(concept))
         .toList();

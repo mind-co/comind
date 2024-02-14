@@ -114,11 +114,7 @@ class _StreamState extends State<Stream> {
     } else {
       return Scaffold(
         // App bar
-        appBar: comindAppBar(
-            context,
-            modeToTitle[mode] != null
-                ? appBarTitle(modeToTitle[mode]!, context)
-                : appBarTitle("Stream", context)),
+        appBar: comindAppBar(context),
 
         // Drawer
         drawer: MenuDrawer(),

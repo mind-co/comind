@@ -1,4 +1,5 @@
 import 'package:comind/api.dart';
+import 'package:comind/types/concept.dart';
 import 'package:comind/types/thought.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
@@ -228,23 +229,9 @@ void linkToMostRecentTopOfMind(BuildContext context, String id) {
   linkThoughts(context, topOfMind.id, id);
 }
 
-// Concept class
-class Concept {
-  final String name;
-  final String? id;
-  final int numThoughts;
-
-  Concept({required this.name, required this.id, this.numThoughts = 0});
-
-  Concept.fromJson(Map<String, dynamic> json)
-      : name = json['concept'],
-        id = json['id'],
-        numThoughts = json['n_thoughts'];
-}
-
 // Concept provider
 class ConceptsProvider extends ChangeNotifier {
-  final List<Concept> _concepts = [Concept(name: "alpha", id: "abc")];
+  final List<Concept> _concepts = [];
 
   List<Concept> get concepts => _concepts;
 
@@ -254,9 +241,10 @@ class ConceptsProvider extends ChangeNotifier {
 
   void addConcept(Concept concept) {
     // Add concept if it doesn't already exist. Search by id.
-    if (!_concepts.any((element) => element.id == concept.id)) {
-      _concepts.add(concept);
-    }
+    concepts.add(concept);
+    // if (!_concepts.any((element) => element.id == concept.id)) {
+    //   _concepts.add(concept);
+    // }
 
     notifyListeners();
   }

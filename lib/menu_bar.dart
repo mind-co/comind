@@ -17,11 +17,17 @@ class MenuDrawer extends StatelessWidget {
             ),
             child: Text(
               'Menu',
-              style: TextStyle(
-                color: Provider.of<ComindColorsNotifier>(context).onBackground,
-                fontSize: 24,
-              ),
+              style: Provider.of<ComindColorsNotifier>(context)
+                  .textTheme
+                  .displaySmall,
             ),
+          ),
+          // Navigate back to the stream
+          ListTile(
+            title: Text('Stream'),
+            onTap: () {
+              Navigator.pushNamed(context, '/');
+            },
           ),
           ListTile(
             title: Text('Color Dialog'),

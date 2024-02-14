@@ -120,7 +120,7 @@ class ComindColors {
 
   static const fontScalar = 1.4;
   static const double maxWidth = 600;
-  static const double bubbleRadius = 10;
+  static const double bubbleRadius = 5;
 
   TextTheme textTheme = TextTheme(
     // Nunito is good
@@ -146,9 +146,9 @@ class ComindColors {
     headlineSmall: titleStyle.copyWith(fontSize: fontScalar * 28),
 
     // Display style
-    displayLarge: titleStyle.copyWith(fontSize: fontScalar * 32),
+    displayLarge: titleStyle.copyWith(fontSize: fontScalar * 40),
     displayMedium: titleStyle.copyWith(fontSize: fontScalar * 36),
-    displaySmall: titleStyle.copyWith(fontSize: fontScalar * 40),
+    displaySmall: titleStyle.copyWith(fontSize: fontScalar * 30),
   );
 
   static const Color _textColor = Colors.black;

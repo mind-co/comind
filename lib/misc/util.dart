@@ -44,20 +44,24 @@ Text appBarTitle(String title, BuildContext context) {
 }
 
 // App bar widget
-AppBar comindAppBar(BuildContext context, Widget title) {
+AppBar comindAppBar(BuildContext context, {Widget? title}) {
   // Get the colors
   ComindColorsNotifier colors = Provider.of<ComindColorsNotifier>(context);
 
   // Determine whether to use the long or short logo
-  var title = MediaQuery.of(context).size.width > 550
-      ? ComindLogo(
-          key: UniqueKey(),
-          colors: colors,
-        )
-      : ComindShortLogo(
-          key: UniqueKey(),
-          colors: colors,
-        );
+  double appBarHeight = 80;
+  if (title == null) {
+    appBarHeight = 120;
+    title = MediaQuery.of(context).size.width > 550
+        ? ComindLogo(
+            key: UniqueKey(),
+            colors: colors,
+          )
+        : ComindShortLogo(
+            key: UniqueKey(),
+            colors: colors,
+          );
+  }
 
   // Determine when to use
   return AppBar(
@@ -78,7 +82,7 @@ AppBar comindAppBar(BuildContext context, Widget title) {
     elevation: 0,
 
     // Add toolbar
-    toolbarHeight: 120,
+    toolbarHeight: appBarHeight,
     actions: [
       // Add dark mode toggle
       // IconButton(

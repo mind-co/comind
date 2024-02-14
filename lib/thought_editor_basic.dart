@@ -86,7 +86,8 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
   Widget build(BuildContext context) {
     // Print whether we're logged in
     return Scaffold(
-        appBar: comindAppBar(context, appBarTitle("Thought view", context)),
+        appBar:
+            comindAppBar(context, title: appBarTitle("Thought view", context)),
         body: MainLayout(
             middleColumn: Column(
           children: [

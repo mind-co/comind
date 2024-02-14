@@ -56,7 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     return Scaffold(
       // ignore: library_private_types_in_public_api
-      appBar: comindAppBar(context, appBarTitle("Sign up", context)),
+      appBar: comindAppBar(context, title: appBarTitle("Sign up", context)),
 
       body: signUpMode ? signUpPage(context) : loginPage(context),
       bottomSheet: ComindBottomSheet(),

@@ -245,7 +245,8 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
             backgroundColor: Provider.of<ComindColorsNotifier>(context)
                 .colorScheme
                 .background,
-            appBar: comindAppBar(context, appBarTitle("Stream", context)),
+            appBar:
+                comindAppBar(context, title: appBarTitle("Stream", context)),
             drawer: Drawer(
               backgroundColor: Provider.of<ComindColorsNotifier>(context)
                   .colorScheme

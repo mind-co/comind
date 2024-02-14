@@ -186,13 +186,22 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                         elevation: 1,
                         // borderRadius:
                         //     BorderRadius.circular(ComindColors.bubbleRadius),
-                        // color: Provider.of<ComindColorsNotifier>(context)
-                        //     .primary
-                        //     .withAlpha(64),
+                        // color: widget.thought.isPublic
+                        //     ? Provider.of<ComindColorsNotifier>(context).primary
+                        //     : Provider.of<ComindColorsNotifier>(context)
+                        //         .colorScheme
+                        //         .secondary,
+
                         color: Provider.of<ComindColorsNotifier>(context)
                             .currentColors
                             .colorScheme
                             .surface,
+                        // color: Color.fromARGB(255, 21, 70, 138),
+                        // surfaceTintColor:
+                        //     Provider.of<ComindColorsNotifier>(context)
+                        //         .currentColors
+                        //         .colorScheme
+                        //         .primary,
                         // color: Color.fromRGBO(30, 32, 42, 1),
                         child: InkWell(
                           borderRadius:
@@ -324,12 +333,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                             padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                             child: alternativeActionRow(context, onBackground),
                           )),
-
-                      // bOTTOM STATUS BAR bar
-                      // Visibility(
-                      //     visible: true,
-                      //     // widget.type != MarkdownDisplayType.topOfMind,
-                      //     child: titleBar(context)),
                     ],
                   ),
                 ),
