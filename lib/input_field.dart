@@ -95,7 +95,9 @@ class _MainTextFieldState extends State<MainTextField> {
       // ),
 
       hintFadeDuration: Duration(milliseconds: 200),
-      hintText: "  tabula rasa, baybee",
+      hintText: Provider.of<ComindColorsNotifier>(context).publicMode
+          ? "Public mode"
+          : "Private mode",
       hintStyle: getTextTheme(context).titleMedium!.copyWith(
           color: Provider.of<ComindColorsNotifier>(context)
               .colorScheme
@@ -123,23 +125,23 @@ class _MainTextFieldState extends State<MainTextField> {
       // wrapping the text field.
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-        borderSide: BorderSide(
-          width: 1,
-          color: Provider.of<ComindColorsNotifier>(context)
-              .colorScheme
-              .onBackground
-              .withAlpha(32),
-        ),
+        // borderSide: BorderSide(
+        //   width: 0,
+        //   color: Provider.of<ComindColorsNotifier>(context)
+        //       .colorScheme
+        //       .onBackground
+        //       .withAlpha(32),
+        // ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-        borderSide: BorderSide(
-          width: 1,
-          color: Provider.of<ComindColorsNotifier>(context)
-              .colorScheme
-              .onBackground
-              .withAlpha(64),
-        ),
+        // borderSide: BorderSide(
+        //   width: 1,
+        //   color: Provider.of<ComindColorsNotifier>(context)
+        //       .colorScheme
+        //       .onBackground
+        //       .withAlpha(64),
+        // ),
       ),
     );
 

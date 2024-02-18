@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:comind/colors.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/types/concept.dart';
@@ -607,5 +608,32 @@ Future<List<Concept>> fetchConcepts(BuildContext context) async {
         .toList();
   } else {
     throw Exception('Failed to load concepts');
+  }
+}
+
+// Send the colors to the server
+Future<void> sendColors(
+    BuildContext context, ComindColors currentColors) async {
+  final url = Uri.parse(endpoint('/api/colors/'));
+
+  final headers = getBaseHeaders(context);
+
+  final body = jsonEncode(<String, dynamic>{
+    'primary': currentColors.primary.value.toRadixString(16),
+    'secondary': currentColors.secondary.value.toRadixString(16),
+    'tertiary': currentColors.tertiary.value.toRadixString(16),
+    'color_scheme': currentColors.colorMethod.name,
+  });
+
+  final response = await dio.post(
+    url.toString(),
+    data: body,
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to send colors');
   }
 }

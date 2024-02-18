@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum ColorChoice {
   primary,
@@ -14,6 +15,26 @@ enum ColorMethod {
   triadic,
   analogous,
   monochromatic
+}
+
+// Convert color method to string
+extension ColorMethodExtension on ColorMethod {
+  String get name {
+    switch (this) {
+      case ColorMethod.splitComplementary:
+        return 'splitComplementary';
+      case ColorMethod.complementary:
+        return 'complementary';
+      case ColorMethod.triadic:
+        return 'triadic';
+      case ColorMethod.analogous:
+        return 'analogous';
+      case ColorMethod.monochromatic:
+        return 'monochromatic';
+      default:
+        return 'splitComplementary';
+    }
+  }
 }
 
 class ComindColors {
@@ -62,7 +83,7 @@ class ComindColors {
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
     surface: Color.fromRGBO(43, 43, 43, 1), //Color.fromRGBO(43, 34, 34, 1),
-    background: Color.fromRGBO(15, 15, 26, 1),
+    background: Color.fromRGBO(0, 0, 0, 1),
     error: secondaryColorDefault,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
@@ -95,12 +116,14 @@ class ComindColors {
   // Init method and set the color scheme
   void init(prim, seco, tert) {
     colorScheme = darkMode ? _darkScheme : _lightScheme;
+
+    loadColors();
   }
 
   // Text themes
   static final bodyStyle = GoogleFonts.ibmPlexSans(
-    fontWeight: FontWeight.w400,
-    height: 1.0,
+    fontWeight: FontWeight.w300,
+    height: 1.2,
   );
 
   // static final bodyStyle = GoogleFonts.nunito(
@@ -120,7 +143,7 @@ class ComindColors {
 
   static const fontScalar = 1.4;
   static const double maxWidth = 600;
-  static const double bubbleRadius = 5;
+  static const double bubbleRadius = 0;
 
   TextTheme textTheme = TextTheme(
     // Nunito is good
@@ -358,6 +381,36 @@ class ComindColors {
   void modifyColors(Color primary) {
     final newColors = setColorScheme(primary);
     setColors(newColors[0], newColors[1], newColors[2]);
+
+    // Put it in preferences
+    saveColors();
+  }
+
+  // Save colors to preferences
+  void saveColors() async {
+    // Save the colors to preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Save the colors
+    prefs.setInt('primaryColor', primaryColor.value);
+    prefs.setInt('secondaryColor', secondaryColor.value);
+    prefs.setInt('tertiaryColor', tertiaryColor.value);
+    prefs.setInt('colorMethod', colorMethod.index);
+  }
+
+  // Load colors from preferences
+  void loadColors() async {
+    // Load the colors from preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Load the colors
+    primaryColor =
+        Color(prefs.getInt('primaryColor') ?? primaryColorDefault.value);
+    secondaryColor =
+        Color(prefs.getInt('secondaryColor') ?? secondaryColorDefault.value);
+    tertiaryColor =
+        Color(prefs.getInt('tertiaryColor') ?? tertiaryColorDefault.value);
+    colorMethod = ColorMethod.values[prefs.getInt('colorMethod') ?? 0];
   }
 }
 

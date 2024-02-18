@@ -698,18 +698,168 @@ Future<dynamic> colorDialog(BuildContext context) {
       var unselectedOpacity = 0.4;
       const edgeInsets = EdgeInsets.fromLTRB(0, 8, 0, 8);
 
-      return Dialog(
-        child: ColorPicker(
-            config: ColorPickerConfig(),
-            selectedColor: colorScheme.primary,
-            onClose: () {
-              // pickerOverlay?.remove();
-              // pickerOverlay = null;
+      return AlertDialog(
+        insetPadding: const EdgeInsets.all(16),
+        backgroundColor: colorScheme.background,
+        title: Text('Colors',
+            style: Provider.of<ComindColorsNotifier>(context)
+                .currentColors
+                .textTheme
+                .titleMedium),
+        actions: [
+          ComindTextButton(
+            text: "Close",
+            onPressed: () async {
+              // Send them to the API
+              await sendColors(
+                  context,
+                  Provider.of<ComindColorsNotifier>(context, listen: false)
+                      .currentColors);
+
+              Navigator.of(context).pop();
             },
-            onColorSelected: (Color color) {
-              Provider.of<ComindColorsNotifier>(context, listen: false)
-                  .modifyColors(color);
-            }),
+            colorIndex: 2,
+            opacity: 1,
+          ),
+        ],
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(
+              maxWidth: ComindColors.maxWidth, maxHeight: 800),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Color scheme picker
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+              //   child: Divider(
+              //     color: colorScheme.onPrimary.withAlpha(32),
+              //     thickness: 1,
+              //     height: 1,
+              //   ),
+              // ),
+
+              ComindShortLogo(
+                  colors: Provider.of<ComindColorsNotifier>(context)),
+
+              Expanded(
+                child: ColorPicker(
+                    darkMode:
+                        Provider.of<ComindColorsNotifier>(context).darkMode,
+                    config: const ColorPickerConfig(),
+                    selectedColor: colorScheme.primary,
+                    onClose: () {
+                      // pickerOverlay?.remove();
+                      // pickerOverlay = null;
+                    },
+                    onColorSelected: (Color color) {
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .modifyColors(color);
+                    }),
+              ),
+
+              Padding(
+                padding: edgeInsets,
+                child: ComindTextButton(
+                    lineLocation: LineLocation.left,
+                    colorIndex: isTriadic(context) ? 1 : 0,
+                    opacity: isTriadic(context) ? 1 : unselectedOpacity,
+                    fontSize: fontSize,
+                    text: "triadic",
+                    onPressed: () {
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .setColorMethod(ColorMethod.triadic);
+
+                      // Calculate the new scheme for the primary color
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .modifyColors(Provider.of<ComindColorsNotifier>(
+                                  context,
+                                  listen: false)
+                              .currentColors
+                              .primaryColor);
+                    }),
+              ),
+              Padding(
+                padding: edgeInsets,
+                child: ComindTextButton(
+                    lineLocation: LineLocation.left,
+                    colorIndex: isComplementary(context) ? 1 : 0,
+                    opacity: isComplementary(context) ? 1 : unselectedOpacity,
+                    fontSize: fontSize,
+                    text: "complementary",
+                    onPressed: () {
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .setColorMethod(ColorMethod.complementary);
+                    }),
+              ),
+              Padding(
+                padding: edgeInsets,
+                child: ComindTextButton(
+                    lineLocation: LineLocation.left,
+                    colorIndex: Provider.of<ComindColorsNotifier>(context)
+                                .colorMethod ==
+                            ColorMethod.splitComplementary
+                        ? 1
+                        : 0,
+                    opacity: Provider.of<ComindColorsNotifier>(context)
+                                .colorMethod ==
+                            ColorMethod.splitComplementary
+                        ? 1
+                        : unselectedOpacity,
+                    fontSize: fontSize,
+                    text: "split complementary",
+                    onPressed: () {
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .setColorMethod(ColorMethod.splitComplementary);
+                    }),
+              ),
+              // Analogous
+              Padding(
+                padding: edgeInsets,
+                child: ComindTextButton(
+                    lineLocation: LineLocation.left,
+                    colorIndex: Provider.of<ComindColorsNotifier>(context)
+                                .colorMethod ==
+                            ColorMethod.analogous
+                        ? 1
+                        : 0,
+                    opacity: Provider.of<ComindColorsNotifier>(context)
+                                .colorMethod ==
+                            ColorMethod.analogous
+                        ? 1
+                        : unselectedOpacity,
+                    fontSize: fontSize,
+                    text: "analogous",
+                    onPressed: () {
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .setColorMethod(ColorMethod.analogous);
+                    }),
+              ),
+
+              // Monochromatic
+              Padding(
+                padding: edgeInsets,
+                child: ComindTextButton(
+                    lineLocation: LineLocation.left,
+                    colorIndex: Provider.of<ComindColorsNotifier>(context)
+                                .colorMethod ==
+                            ColorMethod.monochromatic
+                        ? 1
+                        : 0,
+                    opacity: Provider.of<ComindColorsNotifier>(context)
+                                .colorMethod ==
+                            ColorMethod.monochromatic
+                        ? 1
+                        : unselectedOpacity,
+                    fontSize: fontSize,
+                    text: "monochromatic",
+                    onPressed: () {
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .setColorMethod(ColorMethod.monochromatic);
+                    }),
+              ),
+            ],
+          ),
+        ),
       );
 
       // return ConstrainedBox(
@@ -786,130 +936,130 @@ Future<dynamic> colorDialog(BuildContext context) {
       //                     height: 1,
       //                   ),
       //                 ),
-      //                 Column(
-      //                   crossAxisAlignment: CrossAxisAlignment.start,
-      //                   children: [
-      //                     Padding(
-      //                       padding: edgeInsets,
-      //                       child: ComindTextButton(
-      //                           lineLocation: LineLocation.left,
-      //                           colorIndex: isTriadic(context) ? 1 : 0,
-      //                           opacity:
-      //                               isTriadic(context) ? 1 : unselectedOpacity,
-      //                           fontSize: fontSize,
-      //                           text: "triadic",
-      //                           onPressed: () {
-      //                             Provider.of<ComindColorsNotifier>(context,
-      //                                     listen: false)
-      //                                 .setColorMethod(ColorMethod.triadic);
+      //   Column(
+      //     crossAxisAlignment: CrossAxisAlignment.start,
+      //     children: [
+      //       Padding(
+      //         padding: edgeInsets,
+      //         child: ComindTextButton(
+      //             lineLocation: LineLocation.left,
+      //             colorIndex: isTriadic(context) ? 1 : 0,
+      //             opacity:
+      //                 isTriadic(context) ? 1 : unselectedOpacity,
+      //             fontSize: fontSize,
+      //             text: "triadic",
+      //             onPressed: () {
+      //               Provider.of<ComindColorsNotifier>(context,
+      //                       listen: false)
+      //                   .setColorMethod(ColorMethod.triadic);
 
-      //                             // Calculate the new scheme for the primary color
-      //                             Provider.of<ComindColorsNotifier>(context,
-      //                                     listen: false)
-      //                                 .modifyColors(
-      //                                     Provider.of<ComindColorsNotifier>(
-      //                                             context)
-      //                                         .currentColors
-      //                                         .primaryColor);
-      //                           }),
-      //                     ),
-      //                     Padding(
-      //                       padding: edgeInsets,
-      //                       child: ComindTextButton(
-      //                           lineLocation: LineLocation.left,
-      //                           colorIndex: isComplementary(context) ? 1 : 0,
-      //                           opacity: isComplementary(context)
-      //                               ? 1
-      //                               : unselectedOpacity,
-      //                           fontSize: fontSize,
-      //                           text: "complementary",
-      //                           onPressed: () {
-      //                             Provider.of<ComindColorsNotifier>(context,
-      //                                     listen: false)
-      //                                 .setColorMethod(
-      //                                     ColorMethod.complementary);
-      //                           }),
-      //                     ),
-      //                     Padding(
-      //                       padding: edgeInsets,
-      //                       child: ComindTextButton(
-      //                           lineLocation: LineLocation.left,
-      //                           colorIndex:
-      //                               Provider.of<ComindColorsNotifier>(context)
-      //                                           .colorMethod ==
-      //                                       ColorMethod.splitComplementary
-      //                                   ? 1
-      //                                   : 0,
-      //                           opacity:
-      //                               Provider.of<ComindColorsNotifier>(context)
-      //                                           .colorMethod ==
-      //                                       ColorMethod.splitComplementary
-      //                                   ? 1
-      //                                   : unselectedOpacity,
-      //                           fontSize: fontSize,
-      //                           text: "split complementary",
-      //                           onPressed: () {
-      //                             Provider.of<ComindColorsNotifier>(context,
-      //                                     listen: false)
-      //                                 .setColorMethod(
-      //                                     ColorMethod.splitComplementary);
-      //                           }),
-      //                     ),
-      //                     // Analogous
-      //                     Padding(
-      //                       padding: edgeInsets,
-      //                       child: ComindTextButton(
-      //                           lineLocation: LineLocation.left,
-      //                           colorIndex:
-      //                               Provider.of<ComindColorsNotifier>(context)
-      //                                           .colorMethod ==
-      //                                       ColorMethod.analogous
-      //                                   ? 1
-      //                                   : 0,
-      //                           opacity:
-      //                               Provider.of<ComindColorsNotifier>(context)
-      //                                           .colorMethod ==
-      //                                       ColorMethod.analogous
-      //                                   ? 1
-      //                                   : unselectedOpacity,
-      //                           fontSize: fontSize,
-      //                           text: "analogous",
-      //                           onPressed: () {
-      //                             Provider.of<ComindColorsNotifier>(context,
-      //                                     listen: false)
-      //                                 .setColorMethod(ColorMethod.analogous);
-      //                           }),
-      //                     ),
+      //               // Calculate the new scheme for the primary color
+      //               Provider.of<ComindColorsNotifier>(context,
+      //                       listen: false)
+      //                   .modifyColors(
+      //                       Provider.of<ComindColorsNotifier>(
+      //                               context)
+      //                           .currentColors
+      //                           .primaryColor);
+      //             }),
+      //       ),
+      //       Padding(
+      //         padding: edgeInsets,
+      //         child: ComindTextButton(
+      //             lineLocation: LineLocation.left,
+      //             colorIndex: isComplementary(context) ? 1 : 0,
+      //             opacity: isComplementary(context)
+      //                 ? 1
+      //                 : unselectedOpacity,
+      //             fontSize: fontSize,
+      //             text: "complementary",
+      //             onPressed: () {
+      //               Provider.of<ComindColorsNotifier>(context,
+      //                       listen: false)
+      //                   .setColorMethod(
+      //                       ColorMethod.complementary);
+      //             }),
+      //       ),
+      //       Padding(
+      //         padding: edgeInsets,
+      //         child: ComindTextButton(
+      //             lineLocation: LineLocation.left,
+      //             colorIndex:
+      //                 Provider.of<ComindColorsNotifier>(context)
+      //                             .colorMethod ==
+      //                         ColorMethod.splitComplementary
+      //                     ? 1
+      //                     : 0,
+      //             opacity:
+      //                 Provider.of<ComindColorsNotifier>(context)
+      //                             .colorMethod ==
+      //                         ColorMethod.splitComplementary
+      //                     ? 1
+      //                     : unselectedOpacity,
+      //             fontSize: fontSize,
+      //             text: "split complementary",
+      //             onPressed: () {
+      //               Provider.of<ComindColorsNotifier>(context,
+      //                       listen: false)
+      //                   .setColorMethod(
+      //                       ColorMethod.splitComplementary);
+      //             }),
+      //       ),
+      //       // Analogous
+      //       Padding(
+      //         padding: edgeInsets,
+      //         child: ComindTextButton(
+      //             lineLocation: LineLocation.left,
+      //             colorIndex:
+      //                 Provider.of<ComindColorsNotifier>(context)
+      //                             .colorMethod ==
+      //                         ColorMethod.analogous
+      //                     ? 1
+      //                     : 0,
+      //             opacity:
+      //                 Provider.of<ComindColorsNotifier>(context)
+      //                             .colorMethod ==
+      //                         ColorMethod.analogous
+      //                     ? 1
+      //                     : unselectedOpacity,
+      //             fontSize: fontSize,
+      //             text: "analogous",
+      //             onPressed: () {
+      //               Provider.of<ComindColorsNotifier>(context,
+      //                       listen: false)
+      //                   .setColorMethod(ColorMethod.analogous);
+      //             }),
+      //       ),
 
-      //                     // Monochromatic
-      //                     Padding(
-      //                       padding: edgeInsets,
-      //                       child: ComindTextButton(
-      //                           lineLocation: LineLocation.left,
-      //                           colorIndex:
-      //                               Provider.of<ComindColorsNotifier>(context)
-      //                                           .colorMethod ==
-      //                                       ColorMethod.monochromatic
-      //                                   ? 1
-      //                                   : 0,
-      //                           opacity:
-      //                               Provider.of<ComindColorsNotifier>(context)
-      //                                           .colorMethod ==
-      //                                       ColorMethod.monochromatic
-      //                                   ? 1
-      //                                   : unselectedOpacity,
-      //                           fontSize: fontSize,
-      //                           text: "monochromatic",
-      //                           onPressed: () {
-      //                             Provider.of<ComindColorsNotifier>(context,
-      //                                     listen: false)
-      //                                 .setColorMethod(
-      //                                     ColorMethod.monochromatic);
-      //                           }),
-      //                     ),
-      //                   ],
-      //                 ),
-      //               ],
+      //       // Monochromatic
+      //       Padding(
+      //         padding: edgeInsets,
+      //         child: ComindTextButton(
+      //             lineLocation: LineLocation.left,
+      //             colorIndex:
+      //                 Provider.of<ComindColorsNotifier>(context)
+      //                             .colorMethod ==
+      //                         ColorMethod.monochromatic
+      //                     ? 1
+      //                     : 0,
+      //             opacity:
+      //                 Provider.of<ComindColorsNotifier>(context)
+      //                             .colorMethod ==
+      //                         ColorMethod.monochromatic
+      //                     ? 1
+      //                     : unselectedOpacity,
+      //             fontSize: fontSize,
+      //             text: "monochromatic",
+      //             onPressed: () {
+      //               Provider.of<ComindColorsNotifier>(context,
+      //                       listen: false)
+      //                   .setColorMethod(
+      //                       ColorMethod.monochromatic);
+      //             }),
+      //       ),
+      //     ],
+      //   ),
+      // ],
       //             ),
       //           ],
       //         ),

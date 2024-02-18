@@ -1,10 +1,7 @@
 import 'dart:math';
 
 import 'package:comind/menu_bar.dart';
-import 'package:cyclop/cyclop.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter_hsvcolor_picker/flutter_hsvcolor_picker.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:logging/logging.dart';
 import 'package:comind/api.dart';
@@ -14,11 +11,11 @@ import 'package:comind/hover_icon_button.dart';
 import 'package:comind/input_field.dart';
 import 'package:comind/main.dart';
 import 'package:comind/main_layout.dart';
-import 'package:comind/markdown_display.dart';
+import 'package:comind/markdown_display_line.dart'; // new trial display
+// import 'package:comind/markdown_display.dart'; // og display
 import 'package:comind/misc/comind_logo.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
-import 'package:comind/section.dart';
 import 'package:comind/soul_blob.dart';
 import 'package:comind/text_button.dart';
 import 'package:comind/text_button_simple.dart';
@@ -51,7 +48,6 @@ class _StreamState extends State<Stream> {
   // the text controller
   final _primaryController = TextEditingController();
 
-  // Mode of the stream
   Mode mode = Mode.begin;
 
   // Fetch user thoughts
@@ -259,6 +255,14 @@ class _StreamState extends State<Stream> {
                       Color color = await colorDialog(context);
                       Provider.of<ComindColorsNotifier>(context, listen: false)
                           .modifyColors(color);
+
+                      // Notify the server that the colors have changed.
+                      // Send the color and the color scheme
+                      await sendColors(
+                          context,
+                          Provider.of<ComindColorsNotifier>(context,
+                                  listen: false)
+                              .currentColors);
                     }),
 
                 // Dark mode
