@@ -29,6 +29,7 @@ class Thought {
   final String? associatedId;
   final bool? linkedFrom;
   final bool? linkedTo;
+  final String? relevance; // Used to track why a thought is relevant
 
   Thought({
     required this.title,
@@ -50,6 +51,7 @@ class Thought {
     this.associatedId = '',
     this.linkedFrom = false,
     this.linkedTo = false,
+    this.relevance = '',
   });
 
   factory Thought.fromJson(Map<String, dynamic> json) {
@@ -72,7 +74,8 @@ class Thought {
         cosineSimilarity: json['cosinesimilarity'],
         associatedId: json['associated_id'],
         linkedFrom: json['linked_to'],
-        linkedTo: json['linked_from']
+        linkedTo: json['linked_from'],
+        relevance: json['relevance']
         //
         );
   }

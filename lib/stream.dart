@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:comind/menu_bar.dart';
+import 'package:comind/notification_display.dart';
 import 'package:flutter/gestures.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:logging/logging.dart';
@@ -25,7 +26,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-enum Mode { stream, myThoughts, public, consciousness, begin }
+enum Mode { stream, myThoughts, public, consciousness, begin, notifications }
 
 // Make a mode-to-title map
 Map<Mode, String> modeToTitle = {
@@ -34,6 +35,7 @@ Map<Mode, String> modeToTitle = {
   Mode.public: "Public stream",
   Mode.consciousness: "Consciousness",
   Mode.begin: "?",
+  Mode.notifications: "Notifications",
 };
 
 class Stream extends StatefulWidget {
@@ -57,7 +59,6 @@ class _StreamState extends State<Stream> {
       await Future.delayed(const Duration(milliseconds: 100));
     }
 
-    // Replace with your API call
     List<Thought> fetchedThoughts = await fetchThoughts(context);
     setState(() {
       // Add all thoughts to the provider
@@ -390,6 +391,22 @@ class _StreamState extends State<Stream> {
               },
             ),
 
+            // Notifications
+            HoverIconButton(
+              size: actionIconSize,
+              icon: LineIcons.bell,
+              onPressed: () {
+                // Set the mode to notifications
+                mode = Mode.notifications;
+
+                // Fetch notifications
+                final newNotifications = fetchNotifications(context).then(
+                    (value) => Provider.of<NotificationsProvider>(context,
+                            listen: false)
+                        .addNotifications(value));
+              },
+            ),
+
             // Concept button
             HoverIconButton(
               size: actionIconSize,
@@ -563,7 +580,7 @@ class _StreamState extends State<Stream> {
             // itemCount: relatedThoughts.length,
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                 child: MarkdownThought(
                   // If the top of mind has more than the max buffer display size,
                   // then display only the most recent max buffer display size thoughts.
@@ -631,24 +648,41 @@ class _StreamState extends State<Stream> {
           ),
         ),
 
-        // The rest of the thoughts, stream
+        // The rest of the thoughts, mode is not notifications
         Visibility(
-          visible: getTopOfMind(context) != null ||
-              (mode == Mode.public &&
-                  Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty) ||
-              (mode == Mode.myThoughts &&
-                  Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty),
+          visible: mode == Mode.stream ||
+              mode == Mode.myThoughts ||
+              mode == Mode.public,
           child: ListView.builder(
             shrinkWrap: true,
             dragStartBehavior: DragStartBehavior.start,
             physics: const NeverScrollableScrollPhysics(),
-            // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
             itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
             itemBuilder: (context, index) {
               return MarkdownThought(
                 thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
                 linkable: true,
                 parentThought: getTopOfMind(context)?.id,
+              );
+            },
+          ),
+        ),
+
+        // Notifications
+        Visibility(
+          visible: mode == Mode.notifications,
+          child: ListView.builder(
+            shrinkWrap: true,
+            dragStartBehavior: DragStartBehavior.start,
+            physics: const NeverScrollableScrollPhysics(),
+            // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+            itemCount: Provider.of<NotificationsProvider>(context)
+                .notifications
+                .length,
+            itemBuilder: (context, index) {
+              return NotificationDisplay(
+                notification: Provider.of<NotificationsProvider>(context)
+                    .notifications[index],
                 // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
               );
             },
@@ -719,63 +753,60 @@ class _StreamState extends State<Stream> {
     );
   }
 
-  Stack thinkBox(BuildContext context) {
-    return Stack(children: [
-      Padding(
-        padding: Provider.of<ThoughtsProvider>(context).hasTopOfMind
-            ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-            : const EdgeInsets.fromLTRB(0, 32, 0, 0),
-        child: MainTextField(
-            primaryController: _primaryController,
+  Column thinkBox(BuildContext context) {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Padding(
+            padding: Provider.of<ThoughtsProvider>(context).hasTopOfMind
+                ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
+                : const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            child: MainTextField(
+                primaryController: _primaryController,
 
-            // Thought submission function
-            onThoughtSubmitted: (String body) {
-              // If the body is empty, do nothing
-              Logger.root.info("Body: $body");
-              if (body.isEmpty) {
-                // Log the error
-                Logger.root.warning("Empty thought submitted");
-                return;
-              }
+                // Thought submission function
+                onThoughtSubmitted: (String body) {
+                  // Create a new thought
+                  final thought = Thought.fromString(
+                      body,
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .username,
+                      Provider.of<ComindColorsNotifier>(context, listen: false)
+                          .publicMode);
 
-              // Create a new thought
-              final thought = Thought.fromString(
-                  body,
-                  Provider.of<AuthProvider>(context, listen: false).username,
-                  Provider.of<ComindColorsNotifier>(context, listen: false)
-                      .publicMode);
+                  // Log the new ID
+                  Logger.root.info("{'new_id':${thought.id}}, 'body':'$body'");
 
-              // Log the new ID
-              Logger.root.info("{'new_id':${thought.id}}, 'body':'$body'");
+                  // Send the thought, add it to the top of mind
+                  saveThought(context, thought, newThought: true).then((value) {
+                    // Add the thought to the provider
+                    Provider.of<ThoughtsProvider>(context, listen: false)
+                        .addThought(thought);
 
-              // Send the thought
-              saveThought(context, thought, newThought: true).then((value) {
-                // Add the thought to the providerthis
-                Provider.of<ThoughtsProvider>(context, listen: false)
-                    .addThought(thought);
+                    // Search for related thoughts
+                    // searchThoughts(context, thought.body,
+                    //         associatedId: thought.id)
+                    //     .then((value) {
+                    //   // Add the related thoughts to the provider
+                    //   Provider.of<ThoughtsProvider>(context, listen: false)
+                    //       .addThoughts(value);
 
-                // Search for related thoughts
-                searchThoughts(context, thought.body, associatedId: thought.id)
-                    .then((value) {
-                  // Add the related thoughts to the provider
-                  Provider.of<ThoughtsProvider>(context, listen: false)
-                      .addThoughts(value);
+                    //   // // Update the UI
+                    //   // setState(() {
+                    //   //   relatedThoughts = value;
+                    //   // });
+                    // });
 
-                  // // Update the UI
-                  // setState(() {
-                  //   relatedThoughts = value;
-                  // });
-                });
-
-                // Lastly, update the UI
-                setState(() {
-                  Provider.of<ThoughtsProvider>(context, listen: false)
-                      .addTopOfMind(context, thought);
-                });
-              });
-            }),
-      ),
-    ]);
+                    // Lastly, update the UI
+                    setState(() {
+                      Provider.of<ThoughtsProvider>(context, listen: false)
+                          .addTopOfMind(context, thought);
+                    });
+                  });
+                }),
+          ),
+        ]);
   }
 }
 

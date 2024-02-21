@@ -94,7 +94,6 @@ class _MainTextFieldState extends State<MainTextField> {
       //   style: Provider.of<ComindColorsNotifier>(context).textTheme.titleLarge,
       // ),
 
-      hintFadeDuration: Duration(milliseconds: 200),
       hintText: Provider.of<ComindColorsNotifier>(context).publicMode
           ? "Public mode"
           : "Private mode",
@@ -118,7 +117,7 @@ class _MainTextFieldState extends State<MainTextField> {
             .onPrimary
             .withAlpha(180),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(16, 20, 38, 20),
+      contentPadding: const EdgeInsets.fromLTRB(8, 22, 38, 22),
 
       // Top and bottom border only.
       // This is handled by the decoration for the container
@@ -221,13 +220,34 @@ class _MainTextFieldState extends State<MainTextField> {
                   child: Container(
                     // Bordered
                     decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          width: 1,
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .colorScheme
+                              .onPrimary
+                              .withAlpha(128),
+                        ),
+                        bottom: BorderSide(
+                          width: 1,
+                          color: Provider.of<ComindColorsNotifier>(context)
+                              .colorScheme
+                              .onPrimary
+                              .withAlpha(128),
+                        ),
+                      ),
+
+                      // Fill color
+                      // color: Provider.of<ComindColorsNotifier>(context)
+                      //     .colorScheme
+                      //     .surface,
                       borderRadius:
                           BorderRadius.circular(ComindColors.bubbleRadius),
 
                       // Fill color
-                      color: Provider.of<ComindColorsNotifier>(context)
-                          .colorScheme
-                          .surface,
+                      // color: Provider.of<ComindColorsNotifier>(context)
+                      //     .colorScheme
+                      //     .surface,
                     ),
 
                     // decoration: BoxDecoration(

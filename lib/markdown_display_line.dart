@@ -1,9 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:math';
-
 import 'package:comind/api.dart';
-import 'package:comind/concept_syntax.dart';
 import 'package:comind/hover_icon_button.dart';
 // import 'package:comind/concept_syntax.dart';
 import 'package:comind/input_field.dart';
@@ -11,23 +8,15 @@ import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/soul_blob.dart';
 import 'package:comind/text_button.dart';
-import 'package:comind/text_button_simple.dart';
-import 'package:comind/thought_editor_basic.dart';
 import 'package:comind/thought_table.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:comind/types/thought.dart';
 import 'package:comind/colors.dart';
 import 'package:provider/provider.dart';
-import 'package:comind/cine_wave.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 enum MarkdownDisplayType {
@@ -207,18 +196,20 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                         child: InkWell(
                           borderRadius:
                               BorderRadius.circular(ComindColors.bubbleRadius),
-                          onTap: () => {
-                            // // Create a new ThoughtEditorScreen with the thought.
-                            // // This is the full screen view of the thought.
-                            // TODO #25 Add a "full screen" button
-                            // ThoughtLoader.loadThought(context,
-                            //     id: widget.thought.id)
+                          onTap: widget.selectable
+                              ? () => {
+                                    // // Create a new ThoughtEditorScreen with the thought.
+                                    // // This is the full screen view of the thought.
+                                    // TODO #25 Add a "full screen" button
+                                    // ThoughtLoader.loadThought(context,
+                                    //     id: widget.thought.id)
 
-                            // Add it to top of mind
-                            Provider.of<ThoughtsProvider>(context,
-                                    listen: false)
-                                .addTopOfMind(context, widget.thought)
-                          },
+                                    // Add it to top of mind
+                                    Provider.of<ThoughtsProvider>(context,
+                                            listen: false)
+                                        .addTopOfMind(context, widget.thought)
+                                  }
+                              : null,
                           child: Padding(
                             padding: const EdgeInsets.all(6.0),
                             child: SizedBox(
@@ -465,7 +456,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           children: [
             // Title with grey line  from end of title to far right
             Visibility(
-              visible: widget.thought.title.length > 0,
+              visible: widget.thought.title.isNotEmpty,
               child: Row(
                 children: [
                   Padding(
@@ -803,19 +794,15 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         });
       },
     );
-    // Info button
-    // var infoButton = newIconButton(
-    //   context,
 
-    //   Icon(
-    //     widget.infoMode ? Icons.close : Icons.info_outline,
-    //     size: 14,
-    //     color: Provider.of<ComindColorsNotifier>(context)
-    //         .colorScheme
-    //         .onPrimary
-    //         .withAlpha(64),
-    //   ),
-    // );
+    // Fullscreen button
+    var fullscreenButton = HoverIconButton(
+      icon: LineIcons.expand,
+      onPressed: () {
+        // Go to the viewing page for this thought
+        Navigator.pushNamed(context, '/thoughts/${widget.thought.id}');
+      },
+    );
 
     var infoButton = HoverIconButton(
       icon: widget.infoMode ? LineIcons.windowClose : LineIcons.infoCircle,
@@ -855,6 +842,8 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       Visibility(
           visible: !widget.relatedMode && !newThoughtOpen && !widget.viewOnly,
           child: infoButton),
+
+      fullscreenButton,
 
       Visibility(
           visible: widget.type == MarkdownDisplayType.searchResult &&
@@ -980,7 +969,10 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   // Markdown body
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    child: TheMarkdownBox(text: widget.thought.body),
+                    child: TheMarkdownBox(
+                        text: widget.thought.body,
+                        fullHeight:
+                            widget.type == MarkdownDisplayType.fullScreen),
                   ),
 
                   // Row(children: [
@@ -1128,6 +1120,48 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                               // Links
                               TextSpan(
                                 text: formatLinks(widget.thought.numLinks),
+
+                                // If timestamp is hovered, make it underline
+                                style: Provider.of<ComindColorsNotifier>(
+                                        context)
+                                    .textTheme
+                                    .labelSmall!
+                                    .copyWith(
+                                        color:
+                                            Provider.of<ComindColorsNotifier>(
+                                                    context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withOpacity(
+                                                    hoveredLinks ? 1 : 0.5),
+                                        decorationColor:
+                                            Provider.of<ComindColorsNotifier>(
+                                                    context,
+                                                    listen: false)
+                                                .colorScheme
+                                                .onSurface,
+                                        decoration: hoveredLinks
+                                            ? TextDecoration.underline
+                                            : TextDecoration.none),
+                                onEnter: (event) => {
+                                  setState(() {
+                                    hoveredLinks = true;
+                                  })
+                                },
+                                onExit: (event) => {
+                                  setState(() {
+                                    hoveredLinks = false;
+                                  })
+                                },
+                              ),
+
+                              textSpan,
+
+                              // Relevance if it exists
+                              TextSpan(
+                                text: widget.thought.relevance != null
+                                    ? "relevance: ${widget.thought.relevance}"
+                                    : "",
 
                                 // If timestamp is hovered, make it underline
                                 style: Provider.of<ComindColorsNotifier>(
@@ -1395,9 +1429,11 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 }
 
 class TheMarkdownBox extends StatelessWidget {
-  const TheMarkdownBox({super.key, required this.text});
+  const TheMarkdownBox(
+      {super.key, required this.text, this.fullHeight = false});
 
   final String text;
+  final bool fullHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -1410,9 +1446,10 @@ class TheMarkdownBox extends StatelessWidget {
           constraints: BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width - 16,
             minHeight: 10,
-            maxHeight: 500,
+            maxHeight: fullHeight ? double.infinity : 400,
           ),
           child: Markdown(
+            selectable: true,
             onTapLink: (text, url, title) {
               launchUrl(Uri.parse(url!)); /*For url_launcher 6.1.0 and higher*/
               // launch(url);  /*For url_launcher 6.0.20 and lower*/
@@ -1424,7 +1461,9 @@ class TheMarkdownBox extends StatelessWidget {
               h1: colorsNotifier.textTheme.titleMedium,
               h2: colorsNotifier.textTheme.titleSmall,
               h3: colorsNotifier.textTheme.labelMedium,
-              p: colorsNotifier.textTheme.bodyMedium,
+              p: colorsNotifier.textTheme.bodyMedium!.copyWith(
+                height: 1.2,
+              ),
               a: TextStyle(
                 // backgroundColor:
                 //     colorsNotifier.colorScheme.primary.withOpacity(0.4),
@@ -1458,10 +1497,10 @@ class TheMarkdownBox extends StatelessWidget {
               ),
             ),
             shrinkWrap: true,
-            // physics: BouncingScrollPhysics(),
+            physics: BouncingScrollPhysics(),
             // physics: NeverScrollableScrollPhysics(),
             // physics: ClampingScrollPhysics(),
-            physics: const NeverScrollableScrollPhysics(),
+            // physics: const NeverScrollableScrollPhysics(),
             data: text,
 
             // Need these for the custom syntax. Currenlty not working,

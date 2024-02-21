@@ -1,5 +1,5 @@
 import 'package:comind/main_layout.dart';
-import 'package:comind/markdown_display.dart';
+import 'package:comind/markdown_display_line.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/section.dart';
@@ -92,7 +92,12 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
             middleColumn: Column(
           children: [
             // Put the thought at the top
-            MarkdownThought(thought: widget.thought),
+            MarkdownThought(
+              thought: widget.thought,
+              type: MarkdownDisplayType.fullScreen,
+              linkable: false,
+              selectable: false,
+            ),
 
             // ListView for children
             Section(

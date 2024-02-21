@@ -23,6 +23,7 @@ import 'package:comind/thought_editor_basic.dart';
 // import 'package:comind/thought_editor_quill.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/dispatch.dart';
+import 'dart:io';
 
 Future<void> main() async {
   // Set up logging
@@ -31,17 +32,9 @@ Future<void> main() async {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
 
-  // await dotenv.load(fileName: ".env");
-  runApp(ChangeNotifierProvider(
-    create: (_) => ComindColorsNotifier(),
-    child: ChangeNotifierProvider(
-      create: (_) => ConceptsProvider(),
-      child: ChangeNotifierProvider(
-        create: (_) => AuthProvider(),
-        child: const ComindApp(),
-      ),
-    ),
-  ));
+  runApp(
+    const ComindApp(),
+  );
 }
 
 class ComindApp extends StatelessWidget {
@@ -53,6 +46,7 @@ class ComindApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ComindColorsNotifier()),
+        ChangeNotifierProvider(create: (_) => NotificationsProvider()),
         ChangeNotifierProvider(create: (_) => ThoughtsProvider()),
       ],
       builder: (context, child) {

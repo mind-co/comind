@@ -127,7 +127,12 @@ class ComindColors {
   );
 
   // static final bodyStyle = GoogleFonts.nunito(
-  //   fontWeight: FontWeight.w400,
+  //   fontWeight: FontWeight.w300,
+  //   height: 1.2,
+  // );
+
+  // static final bodyStyle = GoogleFonts.angkor(
+  //   fontWeight: FontWeight.w300,
   //   height: 1.2,
   // );
 
@@ -142,7 +147,7 @@ class ComindColors {
   );
 
   static const fontScalar = 1.4;
-  static const double maxWidth = 600;
+  static const double maxWidth = 800;
   static const double bubbleRadius = 0;
 
   TextTheme textTheme = TextTheme(

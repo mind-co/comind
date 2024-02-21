@@ -317,6 +317,7 @@ class SearchResult {
 
 Future<List<Thought>> searchThoughts(BuildContext context, String query,
     {String? associatedId}) async {
+  print("FUCK");
   final url = Uri.parse(endpoint('/api/search/'));
   final body = associatedId == null
       ? jsonEncode(<String, dynamic>{
@@ -562,8 +563,10 @@ Future<List<Thought>> getStream(BuildContext context) async {
   }
 }
 
-// Update the server with the current top of mind.
-Future<void> updateTopOfMind(BuildContext context, List<String> ids) async {
+// Update the server with the current top of mind. The API call
+// returns a new list of thoughts.
+Future<List<Thought>> updateTopOfMind(
+    BuildContext context, List<String> ids) async {
   final url = Uri.parse(endpoint('/api/top-of-mind/'));
 
   final headers = getBaseHeaders(context);
@@ -583,6 +586,15 @@ Future<void> updateTopOfMind(BuildContext context, List<String> ids) async {
 
   if (response.statusCode != 200) {
     throw Exception('Failed to update top of mind');
+  } else {
+    // print(response.data);
+    // final jsonResponse = json.decode(response.data);
+    final jsonResponse = response.data;
+    var newThoughts = jsonResponse
+        .map<Thought>((thought) => Thought.fromJson(thought))
+        .toList();
+
+    return newThoughts;
   }
 }
 
@@ -635,5 +647,32 @@ Future<void> sendColors(
 
   if (response.statusCode != 200) {
     throw Exception('Failed to send colors');
+  }
+}
+
+// retrieve notifications
+Future<List<ComindNotification>> fetchNotifications(
+    BuildContext context) async {
+  final url = Uri.parse(endpoint('/api/notifications/'));
+
+  final headers = getBaseHeaders(context);
+  headers['ComindPageNo'] = '0';
+  headers['ComindLimit'] = '10';
+
+  final response = await dio.get(
+    url.toString(),
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.data);
+    return jsonResponse
+        .map<ComindNotification>(
+            (notification) => ComindNotification.fromJson(notification))
+        .toList();
+  } else {
+    throw Exception('Failed to load notifications');
   }
 }
