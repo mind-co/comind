@@ -1,18 +1,17 @@
-import 'package:comind/cine_wave.dart';
-import 'package:comind/color_picker.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/main_layout.dart';
 import 'package:comind/markdown_display.dart';
 import 'package:comind/misc/comind_logo.dart';
-import 'package:comind/popdrop.dart';
-import 'package:comind/section.dart';
 import 'package:comind/text_button_simple.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
-  final _shadowAlpha = 100;
   final shadowOffset = 4.0;
+
+  // Constructor with key
+  const HomePage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,47 +36,6 @@ class HomePage extends StatelessWidget {
             child:
                 ComindLogo(colors: Provider.of<ComindColorsNotifier>(context)),
           ),
-
-          // is a place in bunpop
-          // Text(
-          //   "is a place to",
-          //   style: Theme.of(context).textTheme.bodyLarge,
-          // ),
-
-          // ColorPicker(onColorSelected: (value) => {}),
-
-          // Think something
-          // Center(
-          //   child: Text("Think something",
-          //       softWrap: true,
-          //       style: Theme.of(context)
-          //           .textTheme
-          //           .titleLarge!
-          //           .copyWith(fontFamily: "bunpop", fontSize: 40)),
-          // ),
-
-          // Sign in or login button
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButtonSimple(
-                    text: "Login",
-                    onPressed: () => {Navigator.pushNamed(context, '/login')}),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(" or ",
-                      style: Theme.of(context).textTheme.bodyLarge),
-                ),
-                TextButtonSimple(
-                    text: "Sign up",
-                    onPressed: () => {Navigator.pushNamed(context, '/signup')}),
-              ],
-            ),
-          ),
-
-          SizedBox(height: 8),
 
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -143,8 +101,10 @@ class HomePage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("BUCKLE UP",
-                        style: Theme.of(context).textTheme.titleLarge),
+                    TextButtonSimple(
+                        text: "BUCKLE UP",
+                        onPressed: () =>
+                            {Navigator.pushNamed(context, '/login')}),
                     // TextButtonSimple(
                     //     text: "Terms of Service",
                     //     onPressed: () => {

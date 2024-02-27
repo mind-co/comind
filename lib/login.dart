@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       // ignore: library_private_types_in_public_api
-      appBar: comindAppBar(context, title: appBarTitle("Login", context)),
+      appBar: comindAppBar(context, title: appBarTitle("Login?", context)),
 
       body: signUpMode ? signUpPage(context) : loginPage(context),
       bottomSheet: ComindBottomSheet(),
@@ -132,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // coThought(context, "Welcome to Comind!"),
+                coThought(context, "What's your username or email?", "Login"),
 
                 // Email field
                 Padding(
@@ -152,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       labelStyle: textStyle,
                       // ignore: library_private_types_in_public_api
                       border: const OutlineInputBorder(),
-                      labelText: 'Email or Username',
+                      // labelText: 'Email or Username',
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                             color: Provider.of<ComindColorsNotifier>(context)
@@ -180,6 +180,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 // Password field
+                coThought(
+                    context,
+                    "I also need your password. Don't worry, it's safe (I hope).",
+                    "password"),
+
                 Padding(
                   padding: edgeInsets,
                   child: TextFormField(
@@ -192,7 +197,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     onSaved: (val) => _passwordController.text = val!,
                     obscureText: true,
                     decoration: InputDecoration(
-                      labelStyle: textStyle,
                       // ignore: library_private_types_in_public_api
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
@@ -213,7 +217,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: BorderStyle.solid),
                       ),
                       border: OutlineInputBorder(),
-                      labelText: 'Password',
+                      // labelStyle: textStyle,
+                      // labelText: 'Password',
                       // icon: Icon(
                       //   Icons.lock,
                       //   color: Colors.grey,
@@ -232,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Login button
-                        loginButton(1),
+                        loginButton(1, fontScalar: 2.0),
 
                         // Divider line
                         // horizontalSpacerLine(context),
@@ -241,13 +246,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         // orTextLoginRow(context),
 
                         // Vertical spacer
-                        Container(
-                            height: 16,
-                            width: 1,
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onBackground
-                                .withAlpha(150)),
+                        // Container(
+                        //     height: 16,
+                        //     width: 1,
+                        //     color: Provider.of<ComindColorsNotifier>(context)
+                        //         .colorScheme
+                        //         .onBackground
+                        //         .withAlpha(150)),
 
                         // Divider line
                         // horizontalSpacerLine(context),
@@ -255,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         //////////////
                         /// Sign up  button
                         ///
-                        signupButton(0.5),
+                        // signupButton(0.5),
                       ],
                     ),
                   ),
@@ -613,11 +618,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Padding loginButton(double opacity) {
+  Padding loginButton(double opacity, {double fontScalar = 1.0}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextButtonSimple(
         text: "Login",
+        fontScalar: fontScalar,
         onPressed: () async {
           setState(() {
             signUpMode = false;
@@ -682,11 +688,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Padding signupButton(double opacity) {
+  Padding signupButton(double opacity, {double fontScalar = 1.0}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextButtonSimple(
         text: "Sign up",
+        fontScalar: fontScalar,
         onPressed: () async {
           if (signUpMode) {
             // Validate the fields

@@ -217,7 +217,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Login button
-                      loginButton(1),
+                      loginButton(1, fontScalar: 2.0),
 
                       // Divider line
                       // horizontalSpacerLine(context),
@@ -240,7 +240,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       //////////////
                       /// Sign up  button
                       ///
-                      signupButton(0.5),
+                      // signupButton(0.5),
                     ],
                   ),
                 ),
@@ -264,13 +264,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                "Sign up",
-                style: Provider.of<ComindColorsNotifier>(context)
-                    .textTheme
-                    .titleSmall,
-              ),
-
               // Username field
               Padding(
                 padding: edgeInsets,
@@ -517,7 +510,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       //////////////
                       /// Sign up  button
                       ///
-                      signupButton(1),
+                      signupButton(1, fontScalar: 2.0),
 
                       // Divider line
                       // horizontalSpacerLine(context),
@@ -538,7 +531,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       // horizontalSpacerLine(context),
 
                       // Login button
-                      loginButton(0.4),
+                      loginButton(0.4, fontScalar: 1.0),
                     ],
                   ),
                 ),
@@ -587,11 +580,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Padding loginButton(double opacity) {
+  Padding loginButton(double opacity, {double fontScalar = 1.0}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextButtonSimple(
         text: "Login",
+        fontScalar: fontScalar,
         onPressed: () async {
           setState(() {
             signUpMode = false;
@@ -653,11 +647,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Padding signupButton(double opacity) {
+  Padding signupButton(double opacity, {double fontScalar = 1.0}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextButtonSimple(
         text: "Sign up",
+        fontScalar: fontScalar,
         onPressed: () async {
           if (signUpMode) {
             // Validate the fields

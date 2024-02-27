@@ -46,6 +46,7 @@ class ComindApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ComindColorsNotifier()),
+        ChangeNotifierProvider(create: (_) => ConceptsProvider()),
         ChangeNotifierProvider(create: (_) => NotificationsProvider()),
         ChangeNotifierProvider(create: (_) => ThoughtsProvider()),
       ],
@@ -453,6 +454,7 @@ class _ThoughtListScreenState extends State<ThoughtListScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
             child: MainTextField(
+                colors: Provider.of<ComindColorsNotifier>(context),
                 // This function is called when the user submits a new thought
                 // It should create a new thought and send it to the API.
                 onThoughtSubmitted: (String body) {

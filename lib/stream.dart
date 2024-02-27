@@ -143,18 +143,40 @@ class _StreamState extends State<Stream> {
         // ),
 
         // Body
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            return Consumer2<AuthProvider, ThoughtsProvider>(
-              builder: (context, authProvider, thoughtsProvider, child) {
-                // Your code here
-                // Use authProvider to access authentication related data
-                // Return the desired widget tree
+        body: Stack(
+          children: [
+            // A screen-sized gradient background
+            // Container(
+            //   decoration: BoxDecoration(
+            //     gradient: LinearGradient(
+            //       begin: Alignment.topLeft,
+            //       end: Alignment.bottomRight,
+            //       colors: [
+            //         Provider.of<ComindColorsNotifier>(context)
+            //             .currentColors
+            //             .primary,
+            //         Provider.of<ComindColorsNotifier>(context)
+            //             .currentColors
+            //             .secondary,
+            //       ],
+            //     ),
+            //   ),
+            // ),
 
-                return mainStream(constraints, context);
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return Consumer2<AuthProvider, ThoughtsProvider>(
+                  builder: (context, authProvider, thoughtsProvider, child) {
+                    // Your code here
+                    // Use authProvider to access authentication related data
+                    // Return the desired widget tree
+
+                    return mainStream(constraints, context);
+                  },
+                );
               },
-            );
-          },
+            ),
+          ],
         ),
       );
     }
@@ -781,6 +803,7 @@ class _StreamState extends State<Stream> {
                     ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
                     : const EdgeInsets.fromLTRB(0, 64, 0, 0),
             child: MainTextField(
+                colors: Provider.of<ComindColorsNotifier>(context),
                 primaryController: _primaryController,
 
                 // Thought submission function

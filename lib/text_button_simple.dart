@@ -7,6 +7,7 @@ class TextButtonSimple extends StatelessWidget {
   final ColorChoice colorChoice;
   final bool isHighlighted;
   final bool noBackground;
+  final double fontScalar;
 
   TextButtonSimple(
       {Key? key,
@@ -14,11 +15,15 @@ class TextButtonSimple extends StatelessWidget {
       required this.onPressed,
       this.colorChoice = ColorChoice.primary,
       this.noBackground = false,
+      this.fontScalar = 1.0,
       this.isHighlighted = false})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var textTheme = Theme.of(context).textTheme;
+    var titleSmall = textTheme.titleSmall;
+
     return TextButton(
       style: ButtonStyle(
         animationDuration: const Duration(milliseconds: 10),
@@ -37,17 +42,18 @@ class TextButtonSimple extends StatelessWidget {
         textStyle: MaterialStateProperty.resolveWith<TextStyle>(
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.hovered) || isHighlighted) {
-              return Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color:
-                        Theme.of(context).colorScheme.onPrimary.withAlpha(255),
-                  );
+              return titleSmall!.copyWith(
+                fontSize: titleSmall!.fontSize! * fontScalar,
+                color: Theme.of(context).colorScheme.onPrimary.withAlpha(255),
+              );
             }
-            return Theme.of(context).textTheme.titleSmall!.copyWith(
-                  color:
-                      Theme.of(context).colorScheme.onBackground.withAlpha(200),
-                );
+            return titleSmall!.copyWith(
+              fontSize: titleSmall!.fontSize! * fontScalar,
+              color: Theme.of(context).colorScheme.onBackground.withAlpha(200),
+            );
           },
         ),
+        // letters become onprimary
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.hovered)) {
@@ -61,6 +67,7 @@ class TextButtonSimple extends StatelessWidget {
             }
           },
         ),
+        // background becomes primary
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.hovered)) {

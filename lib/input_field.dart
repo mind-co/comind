@@ -22,6 +22,7 @@ class MainTextField extends StatefulWidget {
   MainTextField({
     super.key,
     required TextEditingController primaryController,
+    required this.colors,
 
     // Optional functions
     this.toggleEditor,
@@ -44,6 +45,7 @@ class MainTextField extends StatefulWidget {
   final Thought? thought;
   var colorIndex = 0;
   final TextFieldType type;
+  final ComindColorsNotifier colors;
 
   // Optional functions
   final Function()? toggleEditor;
@@ -91,31 +93,21 @@ class _MainTextFieldState extends State<MainTextField> {
       // // The label that appears at the top of the text box.
       // label: Text(
       //   widget.type == TextFieldType.main ? uiMode : "Edit",
-      //   style: Provider.of<ComindColorsNotifier>(context).textTheme.titleLarge,
+      //   style: widget.colors.textTheme.titleLarge,
       // ),
 
-      hintText: Provider.of<ComindColorsNotifier>(context).publicMode
-          ? "Public mode"
-          : "Private mode",
-      hintStyle: getTextTheme(context).titleMedium!.copyWith(
-          color: Provider.of<ComindColorsNotifier>(context)
-              .colorScheme
-              .onPrimary
-              .withAlpha(80)),
+      hintText: widget.colors.publicMode ? "Public mode" : "Private mode",
+      hintStyle: getTextTheme(context)
+          .titleMedium!
+          .copyWith(color: widget.colors.colorScheme.onPrimary.withAlpha(80)),
 
       // Handle label for the text box label
       floatingLabelBehavior: FloatingLabelBehavior.always,
       floatingLabelStyle: TextStyle(
-        color: Provider.of<ComindColorsNotifier>(context)
-            .colorScheme
-            .onPrimary
-            .withAlpha(180),
+        color: widget.colors.colorScheme.onPrimary.withAlpha(180),
       ),
       labelStyle: TextStyle(
-        color: Provider.of<ComindColorsNotifier>(context)
-            .colorScheme
-            .onPrimary
-            .withAlpha(180),
+        color: widget.colors.colorScheme.onPrimary.withAlpha(180),
       ),
       contentPadding: const EdgeInsets.fromLTRB(8, 22, 38, 22),
 
@@ -126,7 +118,7 @@ class _MainTextFieldState extends State<MainTextField> {
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         // borderSide: BorderSide(
         //   width: 0,
-        //   color: Provider.of<ComindColorsNotifier>(context)
+        //   color: widget.colors
         //       .colorScheme
         //       .onBackground
         //       .withAlpha(32),
@@ -136,7 +128,7 @@ class _MainTextFieldState extends State<MainTextField> {
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         // borderSide: BorderSide(
         //   width: 1,
-        //   color: Provider.of<ComindColorsNotifier>(context)
+        //   color: widget.colors
         //       .colorScheme
         //       .onBackground
         //       .withAlpha(64),
@@ -155,40 +147,28 @@ class _MainTextFieldState extends State<MainTextField> {
     var inlineInputDecoration = InputDecoration(
       label: Text(
         "Insert",
-        style: Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall,
+        style: widget.colors.textTheme.titleSmall,
       ),
       floatingLabelBehavior: FloatingLabelBehavior.always,
       floatingLabelStyle: TextStyle(
-        color: Provider.of<ComindColorsNotifier>(context)
-            .colorScheme
-            .onPrimary
-            .withAlpha(180),
+        color: widget.colors.colorScheme.onPrimary.withAlpha(180),
       ),
       labelStyle: TextStyle(
-        color: Provider.of<ComindColorsNotifier>(context)
-            .colorScheme
-            .onPrimary
-            .withAlpha(180),
+        color: widget.colors.colorScheme.onPrimary.withAlpha(180),
       ),
       contentPadding: const EdgeInsets.fromLTRB(10, 16, 36, 16),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         borderSide: BorderSide(
           width: 1,
-          color: Provider.of<ComindColorsNotifier>(context)
-              .colorScheme
-              .onPrimary
-              .withAlpha(64),
+          color: widget.colors.colorScheme.onPrimary.withAlpha(64),
         ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         borderSide: BorderSide(
           width: 1,
-          color: Provider.of<ComindColorsNotifier>(context)
-              .colorScheme
-              .onPrimary
-              .withAlpha(128),
+          color: widget.colors.colorScheme.onPrimary.withAlpha(128),
         ),
       ),
     );
@@ -220,32 +200,40 @@ class _MainTextFieldState extends State<MainTextField> {
                   child: Container(
                     // Bordered
                     decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          width: 1,
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onPrimary
-                              .withAlpha(128),
-                        ),
-                        bottom: BorderSide(
-                          width: 1,
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onPrimary
-                              .withAlpha(128),
-                        ),
+                      // borderRadius:
+                      //     BorderRadius.circular(ComindColors.bubbleRadius),
+                      // border: Border(
+                      //   // left: BorderSide(
+                      //   //   width: 1,
+                      //   //   color: widget.colors.onPrimary.withAlpha(128),
+                      //   // ),
+                      //   // top: BorderSide(
+                      //   //   width: 1,
+                      //   //   color:
+                      //   //       widget.colors.colorScheme.primary.withAlpha(128),
+                      //   // ),
+                      //   // bottom: BorderSide(
+                      //   //   width: 1,
+                      //   //   color: widget.colors.colorScheme.onPrimary
+                      //   //       .withAlpha(128),
+                      //   // ),
+                      // ),
+
+                      border: Border.all(
+                        width: 2,
+                        color:
+                            widget.colors.colorScheme.onPrimary.withAlpha(128),
                       ),
 
                       // Fill color
-                      // color: Provider.of<ComindColorsNotifier>(context)
+                      // color: widget.colors
                       //     .colorScheme
                       //     .surface,
                       borderRadius:
                           BorderRadius.circular(ComindColors.bubbleRadius),
 
                       // Fill color
-                      // color: Provider.of<ComindColorsNotifier>(context)
+                      // color: widget.colors
                       //     .colorScheme
                       //     .surface,
                     ),
@@ -253,7 +241,7 @@ class _MainTextFieldState extends State<MainTextField> {
                     // decoration: BoxDecoration(
                     // borderRadius:
                     //     BorderRadius.circular(ComindColors.bubbleRadius),
-                    // color: Provider.of<ComindColorsNotifier>(context)
+                    // color: widget.colors
                     //     .colorScheme
                     //     .surface
                     //     .withAlpha(30)),
@@ -284,9 +272,7 @@ class _MainTextFieldState extends State<MainTextField> {
                         maxLines: 20,
                         minLines: 1,
                         // textInputAction: TextInputAction.send,
-                        style: Provider.of<ComindColorsNotifier>(context)
-                            .textTheme
-                            .bodyMedium,
+                        style: widget.colors.textTheme.bodyMedium,
 
                         // Autofocus if main text field or a new thought,
                         // since the user
@@ -310,9 +296,7 @@ class _MainTextFieldState extends State<MainTextField> {
 
                         // Cursor stuff
                         cursorWidth: 8,
-                        cursorColor: Provider.of<ComindColorsNotifier>(context)
-                            .colorScheme
-                            .onBackground,
+                        cursorColor: widget.colors.colorScheme.onBackground,
                         decoration: widget.type == TextFieldType.main
                             ? mainInputDecoration
                             : widget.type == TextFieldType.edit
@@ -337,7 +321,7 @@ class _MainTextFieldState extends State<MainTextField> {
                       padding: const EdgeInsets.all(3),
                       child: ThinkButton(
                         icon: LineIcons.lightbulb,
-                        // icon: Provider.of<ComindColorsNotifier>(context)
+                        // icon: widget.colors
                         //         .publicMode
                         //     ? LineIcons.windowRestore
                         //     : LineIcons.lightbulb,
@@ -364,10 +348,10 @@ class _MainTextFieldState extends State<MainTextField> {
                 //       child: Opacity(
                 //         opacity: 0.5,
                 //         child: Text(
-                //           Provider.of<ComindColorsNotifier>(context).publicMode
+                //           widget.colors.publicMode
                 //               ? "(public)"
                 //               : "(private)",
-                //           style: Provider.of<ComindColorsNotifier>(context)
+                //           style: widget.colors
                 //               .textTheme
                 //               .labelSmall,
                 //         ),
@@ -444,20 +428,11 @@ class _MainTextFieldState extends State<MainTextField> {
 
   Color colorMap(BuildContext context) {
     return widget.colorIndex == 0
-        ? Provider.of<ComindColorsNotifier>(context).colorScheme.onPrimary
+        ? widget.colors.colorScheme.onPrimary
         : widget.colorIndex == 1
-            ? Provider.of<ComindColorsNotifier>(context)
-                .colorScheme
-                .primary
-                .withAlpha(128)
+            ? widget.colors.colorScheme.primary.withAlpha(128)
             : widget.colorIndex == 2
-                ? Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .secondary
-                    .withAlpha(128)
-                : Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .tertiary
-                    .withAlpha(128);
+                ? widget.colors.colorScheme.secondary.withAlpha(128)
+                : widget.colors.colorScheme.tertiary.withAlpha(128);
   }
 }

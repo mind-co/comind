@@ -204,8 +204,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                         //         .primary,
                         // color: Color.fromRGBO(30, 32, 42, 1),
                         child: InkWell(
-                          borderRadius:
-                              BorderRadius.circular(ComindColors.bubbleRadius),
+                          borderRadius: BorderRadius.circular(
+                            ComindColors.bubbleRadius,
+                          ),
                           onTap: () => {
                             // // Create a new ThoughtEditorScreen with the thought.
                             // // This is the full screen view of the thought.
@@ -702,6 +703,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         // Top padding to separate it from the body
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: MainTextField(
+            colors: Provider.of<ComindColorsNotifier>(context, listen: false),
             thought: Thought.fromString(
                 "",
                 Provider.of<AuthProvider>(context, listen: false).username,
@@ -742,6 +744,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     return Visibility(
       visible: !widget.viewOnly && widget.showTextBox,
       child: MainTextField(
+          colors: Provider.of<ComindColorsNotifier>(context, listen: false),
           thought: widget.thought,
           onThoughtEdited: (Thought thought) async {
             // Update the thought

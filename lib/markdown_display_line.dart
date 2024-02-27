@@ -564,6 +564,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
         // Top padding to separate it from the body
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: MainTextField(
+            colors: Provider.of<ComindColorsNotifier>(context, listen: false),
             thought: Thought.fromString(
                 "",
                 Provider.of<AuthProvider>(context, listen: false).username,
@@ -604,6 +605,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     return Visibility(
       visible: !widget.viewOnly && widget.showTextBox,
       child: MainTextField(
+          colors: Provider.of<ComindColorsNotifier>(context, listen: false),
           thought: widget.thought,
           onThoughtEdited: (Thought thought) async {
             // Update the thought
@@ -815,7 +817,113 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     );
 
     // the action row
-    return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+    var delimiter = Text(
+      " ∘ ",
+      style: Provider.of<ComindColorsNotifier>(context)
+          .textTheme
+          .labelSmall!
+          .copyWith(
+              color: Provider.of<ComindColorsNotifier>(context)
+                  .colorScheme
+                  .onBackground
+                  .withOpacity(0.5)),
+    );
+    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+      // Time since
+      Text(
+        formatTimestamp(widget.thought.dateCreated),
+        style: Provider.of<ComindColorsNotifier>(context)
+            .textTheme
+            .labelSmall!
+            .copyWith(
+                color: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .onBackground
+                    .withOpacity(hoveredTimestamp ? 1 : 0.5),
+                decorationColor: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .onBackground,
+                decoration: hoveredTimestamp
+                    ? TextDecoration.underline
+                    : TextDecoration.none),
+      ),
+
+      // Delimiter ∘
+      delimiter,
+
+      // username
+      Text(
+        widget.thought.username,
+        style: Provider.of<ComindColorsNotifier>(context)
+            .textTheme
+            .labelSmall!
+            .copyWith(
+                color: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .onBackground
+                    .withOpacity(hoveredUsername ? 1 : 0.5),
+                decorationColor: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .onBackground,
+                decoration: hoveredUsername
+                    ? TextDecoration.underline
+                    : TextDecoration.none),
+      ),
+
+      // delimiter ∘
+      delimiter,
+
+      // Public/private
+      Visibility(
+        visible: !widget.viewOnly,
+        child: Text(
+          widget.thought.isPublic ? "public" : "private",
+          style: Provider.of<ComindColorsNotifier>(context)
+              .textTheme
+              .labelSmall!
+              .copyWith(
+                  color: Provider.of<ComindColorsNotifier>(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(hoveredPublic ? 1 : 0.5),
+                  decorationColor: Provider.of<ComindColorsNotifier>(context)
+                      .colorScheme
+                      .onBackground,
+                  decoration: hoveredPublic
+                      ? TextDecoration.underline
+                      : TextDecoration.none),
+        ),
+      ),
+
+      // delimiter ∘
+      delimiter,
+
+      // Link count
+      Visibility(
+        visible:
+            widget.thought.numLinks != null && widget.thought.numLinks! > 0,
+        child: Text(
+          "${widget.thought.numLinks} links",
+          style: Provider.of<ComindColorsNotifier>(context)
+              .textTheme
+              .labelSmall!
+              .copyWith(
+                  color: Provider.of<ComindColorsNotifier>(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(hoveredLinks ? 1 : 0.5),
+                  decorationColor: Provider.of<ComindColorsNotifier>(context)
+                      .colorScheme
+                      .onBackground,
+                  decoration: hoveredLinks
+                      ? TextDecoration.underline
+                      : TextDecoration.none),
+        ),
+      ),
+
+      // Expanded divider
+      Expanded(child: Container()),
+
       // Lock icon
       Visibility(
           visible: !widget.viewOnly && !widget.relatedMode && !newThoughtOpen,
@@ -984,224 +1092,224 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   //   ),
                   // ]),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                        child: RichText(
-                          text: TextSpan(
-                            // style: ,
-                            children: [
-                              // Timestamp
-                              TextSpan(
-                                text:
-                                    formatTimestamp(widget.thought.dateCreated),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   children: [
+                  //     Padding(
+                  //       padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                  //       child: RichText(
+                  //         text: TextSpan(
+                  //           // style: ,
+                  //           children: [
+                  //             // Timestamp
+                  //             TextSpan(
+                  //               text:
+                  //                   formatTimestamp(widget.thought.dateCreated),
 
-                                // If timestamp is hovered, make it underline
-                                style: Provider.of<ComindColorsNotifier>(
-                                        context)
-                                    .textTheme
-                                    .labelSmall!
-                                    .copyWith(
-                                        color:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withOpacity(
-                                                    hoveredTimestamp ? 1 : 0.5),
-                                        decorationColor:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context,
-                                                    listen: false)
-                                                .colorScheme
-                                                .onSurface,
-                                        decoration: hoveredTimestamp
-                                            ? TextDecoration.underline
-                                            : TextDecoration.none),
-                                onEnter: (event) => {
-                                  setState(() {
-                                    hoveredTimestamp = true;
-                                  })
-                                },
-                                onExit: (event) => {
-                                  setState(() {
-                                    hoveredTimestamp = false;
-                                  })
-                                },
-                              ),
+                  //               // If timestamp is hovered, make it underline
+                  //               style: Provider.of<ComindColorsNotifier>(
+                  //                       context)
+                  //                   .textTheme
+                  //                   .labelSmall!
+                  //                   .copyWith(
+                  //                       color:
+                  //                           Provider.of<ComindColorsNotifier>(
+                  //                                   context)
+                  //                               .colorScheme
+                  //                               .onSurface
+                  //                               .withOpacity(
+                  //                                   hoveredTimestamp ? 1 : 0.5),
+                  //                       decorationColor:
+                  //                           Provider.of<ComindColorsNotifier>(
+                  //                                   context,
+                  //                                   listen: false)
+                  //                               .colorScheme
+                  //                               .onSurface,
+                  //                       decoration: hoveredTimestamp
+                  //                           ? TextDecoration.underline
+                  //                           : TextDecoration.none),
+                  //               onEnter: (event) => {
+                  //                 setState(() {
+                  //                   hoveredTimestamp = true;
+                  //                 })
+                  //               },
+                  //               onExit: (event) => {
+                  //                 setState(() {
+                  //                   hoveredTimestamp = false;
+                  //                 })
+                  //               },
+                  //             ),
 
-                              // spacer
-                              textSpan,
+                  //             // spacer
+                  //             textSpan,
 
-                              // username
-                              TextSpan(
-                                text: widget.thought.username,
+                  //             // username
+                  //             TextSpan(
+                  //               text: widget.thought.username,
 
-                                // If timestamp is hovered, make it underline
-                                style: Provider.of<ComindColorsNotifier>(
-                                        context)
-                                    .textTheme
-                                    .labelSmall!
-                                    .copyWith(
-                                        color:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withOpacity(
-                                                    hoveredUsername ? 1 : 0.5),
-                                        decorationColor:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context,
-                                                    listen: false)
-                                                .colorScheme
-                                                .onSurface,
-                                        decoration: hoveredUsername
-                                            ? TextDecoration.underline
-                                            : TextDecoration.none),
-                                onEnter: (event) => {
-                                  setState(() {
-                                    hoveredUsername = true;
-                                  })
-                                },
-                                onExit: (event) => {
-                                  setState(() {
-                                    hoveredUsername = false;
-                                  })
-                                },
-                              ),
+                  //               // If timestamp is hovered, make it underline
+                  //               style: Provider.of<ComindColorsNotifier>(
+                  //                       context)
+                  //                   .textTheme
+                  //                   .labelSmall!
+                  //                   .copyWith(
+                  //                       color:
+                  //                           Provider.of<ComindColorsNotifier>(
+                  //                                   context)
+                  //                               .colorScheme
+                  //                               .onSurface
+                  //                               .withOpacity(
+                  //                                   hoveredUsername ? 1 : 0.5),
+                  //                       decorationColor:
+                  //                           Provider.of<ComindColorsNotifier>(
+                  //                                   context,
+                  //                                   listen: false)
+                  //                               .colorScheme
+                  //                               .onSurface,
+                  //                       decoration: hoveredUsername
+                  //                           ? TextDecoration.underline
+                  //                           : TextDecoration.none),
+                  //               onEnter: (event) => {
+                  //                 setState(() {
+                  //                   hoveredUsername = true;
+                  //                 })
+                  //               },
+                  //               onExit: (event) => {
+                  //                 setState(() {
+                  //                   hoveredUsername = false;
+                  //                 })
+                  //               },
+                  //             ),
 
-                              textSpan,
+                  //             textSpan,
 
-                              // Public private
-                              TextSpan(
-                                text: widget.thought.isPublic
-                                    ? "public"
-                                    : "private",
+                  //             // Public private
+                  //             TextSpan(
+                  //               text: widget.thought.isPublic
+                  //                   ? "public"
+                  //                   : "private",
 
-                                // If timestamp is hovered, make it underline
-                                style: Provider.of<ComindColorsNotifier>(
-                                        context)
-                                    .textTheme
-                                    .labelSmall!
-                                    .copyWith(
-                                        color:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withOpacity(
-                                                    hoveredPublic ? 1 : 0.5),
-                                        decorationColor:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context,
-                                                    listen: false)
-                                                .colorScheme
-                                                .onSurface,
-                                        decoration: hoveredPublic
-                                            ? TextDecoration.underline
-                                            : TextDecoration.none),
-                                onEnter: (event) => {
-                                  setState(() {
-                                    hoveredPublic = true;
-                                  })
-                                },
-                                onExit: (event) => {
-                                  setState(() {
-                                    hoveredPublic = false;
-                                  })
-                                },
-                              ),
+                  //               // If timestamp is hovered, make it underline
+                  //               style: Provider.of<ComindColorsNotifier>(
+                  //                       context)
+                  //                   .textTheme
+                  //                   .labelSmall!
+                  //                   .copyWith(
+                  //                       color:
+                  //                           Provider.of<ComindColorsNotifier>(
+                  //                                   context)
+                  //                               .colorScheme
+                  //                               .onSurface
+                  //                               .withOpacity(
+                  //                                   hoveredPublic ? 1 : 0.5),
+                  //                       decorationColor:
+                  //                           Provider.of<ComindColorsNotifier>(
+                  //                                   context,
+                  //                                   listen: false)
+                  //                               .colorScheme
+                  //                               .onSurface,
+                  //                       decoration: hoveredPublic
+                  //                           ? TextDecoration.underline
+                  //                           : TextDecoration.none),
+                  //               onEnter: (event) => {
+                  //                 setState(() {
+                  //                   hoveredPublic = true;
+                  //                 })
+                  //               },
+                  //               onExit: (event) => {
+                  //                 setState(() {
+                  //                   hoveredPublic = false;
+                  //                 })
+                  //               },
+                  //             ),
 
-                              textSpan,
+                  //             textSpan,
 
-                              // Links
-                              TextSpan(
-                                text: formatLinks(widget.thought.numLinks),
+                  //             // Links
+                  //             TextSpan(
+                  //               text: formatLinks(widget.thought.numLinks),
 
-                                // If timestamp is hovered, make it underline
-                                style: Provider.of<ComindColorsNotifier>(
-                                        context)
-                                    .textTheme
-                                    .labelSmall!
-                                    .copyWith(
-                                        color:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withOpacity(
-                                                    hoveredLinks ? 1 : 0.5),
-                                        decorationColor:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context,
-                                                    listen: false)
-                                                .colorScheme
-                                                .onSurface,
-                                        decoration: hoveredLinks
-                                            ? TextDecoration.underline
-                                            : TextDecoration.none),
-                                onEnter: (event) => {
-                                  setState(() {
-                                    hoveredLinks = true;
-                                  })
-                                },
-                                onExit: (event) => {
-                                  setState(() {
-                                    hoveredLinks = false;
-                                  })
-                                },
-                              ),
+                  //               // If timestamp is hovered, make it underline
+                  //               style: Provider.of<ComindColorsNotifier>(
+                  //                       context)
+                  //                   .textTheme
+                  //                   .labelSmall!
+                  //                   .copyWith(
+                  //                       color:
+                  //                           Provider.of<ComindColorsNotifier>(
+                  //                                   context)
+                  //                               .colorScheme
+                  //                               .onSurface
+                  //                               .withOpacity(
+                  //                                   hoveredLinks ? 1 : 0.5),
+                  //                       decorationColor:
+                  //                           Provider.of<ComindColorsNotifier>(
+                  //                                   context,
+                  //                                   listen: false)
+                  //                               .colorScheme
+                  //                               .onSurface,
+                  //                       decoration: hoveredLinks
+                  //                           ? TextDecoration.underline
+                  //                           : TextDecoration.none),
+                  //               onEnter: (event) => {
+                  //                 setState(() {
+                  //                   hoveredLinks = true;
+                  //                 })
+                  //               },
+                  //               onExit: (event) => {
+                  //                 setState(() {
+                  //                   hoveredLinks = false;
+                  //                 })
+                  //               },
+                  //             ),
 
-                              textSpan,
+                  //             textSpan,
 
-                              // Relevance if it exists
-                              TextSpan(
-                                text: widget.thought.relevance != null
-                                    ? "relevance: ${widget.thought.relevance}"
-                                    : "",
+                  //             // Relevance if it exists
+                  //             TextSpan(
+                  //               text: widget.thought.relevance != null
+                  //                   ? "relevance: ${widget.thought.relevance}"
+                  //                   : "",
 
-                                // If timestamp is hovered, make it underline
-                                style: Provider.of<ComindColorsNotifier>(
-                                        context)
-                                    .textTheme
-                                    .labelSmall!
-                                    .copyWith(
-                                        color:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withOpacity(
-                                                    hoveredLinks ? 1 : 0.5),
-                                        decorationColor:
-                                            Provider.of<ComindColorsNotifier>(
-                                                    context,
-                                                    listen: false)
-                                                .colorScheme
-                                                .onSurface,
-                                        decoration: hoveredLinks
-                                            ? TextDecoration.underline
-                                            : TextDecoration.none),
-                                onEnter: (event) => {
-                                  setState(() {
-                                    hoveredLinks = true;
-                                  })
-                                },
-                                onExit: (event) => {
-                                  setState(() {
-                                    hoveredLinks = false;
-                                  })
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ), // Username
-                    ],
-                  ),
+                  //               // If timestamp is hovered, make it underline
+                  //               style: Provider.of<ComindColorsNotifier>(
+                  //                       context)
+                  //                   .textTheme
+                  //                   .labelSmall!
+                  //                   .copyWith(
+                  //                       color:
+                  //                           Provider.of<ComindColorsNotifier>(
+                  //                                   context)
+                  //                               .colorScheme
+                  //                               .onSurface
+                  //                               .withOpacity(
+                  //                                   hoveredLinks ? 1 : 0.5),
+                  //                       decorationColor:
+                  //                           Provider.of<ComindColorsNotifier>(
+                  //                                   context,
+                  //                                   listen: false)
+                  //                               .colorScheme
+                  //                               .onSurface,
+                  //                       decoration: hoveredLinks
+                  //                           ? TextDecoration.underline
+                  //                           : TextDecoration.none),
+                  //               onEnter: (event) => {
+                  //                 setState(() {
+                  //                   hoveredLinks = true;
+                  //                 })
+                  //               },
+                  //               onExit: (event) => {
+                  //                 setState(() {
+                  //                   hoveredLinks = false;
+                  //                 })
+                  //               },
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ), // Username
+                  //   ],
+                  // ),
 
                   // Row(
                   //   children: [
