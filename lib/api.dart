@@ -128,6 +128,7 @@ Future<void> saveThought(BuildContext context, Thought thought,
       'public': thought.isPublic,
       'synthetic': false,
       'origin': "app",
+      'title': thought.title.trim()
     });
 
     // Logging

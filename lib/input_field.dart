@@ -281,7 +281,7 @@ class _MainTextFieldState extends State<MainTextField> {
                       child: TextField(
                         scrollController: _scrollController,
                         // keyboardType: TextInputType.multiline,
-                        maxLines: 10,
+                        maxLines: 20,
                         minLines: 1,
                         // textInputAction: TextInputAction.send,
                         style: Provider.of<ComindColorsNotifier>(context)

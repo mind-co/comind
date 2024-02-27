@@ -1446,7 +1446,7 @@ class TheMarkdownBox extends StatelessWidget {
           constraints: BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width - 16,
             minHeight: 10,
-            maxHeight: fullHeight ? double.infinity : 400,
+            maxHeight: fullHeight ? double.infinity : 900,
           ),
           child: Markdown(
             selectable: true,
@@ -1469,6 +1469,7 @@ class TheMarkdownBox extends StatelessWidget {
                 //     colorsNotifier.colorScheme.primary.withOpacity(0.4),
                 color: colorsNotifier.colorScheme.primary,
                 // decoration: TextDecoration.underline,
+                fontWeight: FontWeight.bold,
                 decorationColor: colorsNotifier.colorScheme.primary,
                 decorationThickness: 1,
               ),

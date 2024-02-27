@@ -88,6 +88,16 @@ class Thought {
     var formatter = DateFormat('yyyy-MM-ddTHH:mm:ss');
     var formattedDate = formatter.format(now);
 
+    // If the title is empty, check if there's a markdown header in the first line
+    // after trimming leading and trailing whitespace.
+    if (title.isEmpty) {
+      var lines = text.split('\n');
+      if (lines[0].trim().startsWith('# ')) {
+        title = lines[0].trim().substring(2);
+        text = lines.sublist(1).join('\n');
+      }
+    }
+
     // https://pub.dev/packages/uuid
     return Thought(
       title: title,

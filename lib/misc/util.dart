@@ -52,7 +52,7 @@ AppBar comindAppBar(BuildContext context, {Widget? title}) {
   double appBarHeight = 80;
   if (title == null) {
     appBarHeight = 120;
-    title = MediaQuery.of(context).size.width > 550
+    title = MediaQuery.of(context).size.width > ComindColors.maxWidth
         ? ComindLogo(
             key: UniqueKey(),
             colors: colors,

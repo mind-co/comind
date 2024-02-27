@@ -207,37 +207,37 @@ class _StreamState extends State<Stream> {
                               .publicMode);
                     }),
 
-                // Load public thoughts
-                TextButtonSimple(
-                    noBackground: true,
-                    text: "Load public",
-                    onPressed: () {
-                      // Clear top of mind
-                      Provider.of<ThoughtsProvider>(context, listen: false)
-                          .clear();
+                // // Load public thoughts
+                // TextButtonSimple(
+                //     noBackground: true,
+                //     text: "Load public",
+                //     onPressed: () {
+                //       // Clear top of mind
+                //       Provider.of<ThoughtsProvider>(context, listen: false)
+                //           .clear();
 
-                      // Fetch related thoughts
-                      _fetchStream(context);
+                //       // Fetch related thoughts
+                //       _fetchStream(context);
 
-                      // Set mode to stream
-                      mode = Mode.public;
-                    }),
+                //       // Set mode to stream
+                //       mode = Mode.public;
+                //     }),
 
-                // My thoughts
-                TextButtonSimple(
-                    noBackground: true,
-                    text: "My thoughts",
-                    onPressed: () {
-                      // Clear top of mind
-                      Provider.of<ThoughtsProvider>(context, listen: false)
-                          .clear();
+                // // My thoughts
+                // TextButtonSimple(
+                //     noBackground: true,
+                //     text: "My thoughts",
+                //     onPressed: () {
+                //       // Clear top of mind
+                //       Provider.of<ThoughtsProvider>(context, listen: false)
+                //           .clear();
 
-                      // Fetch related thoughts
-                      fetchUserThoughts();
+                //       // Fetch related thoughts
+                //       fetchUserThoughts();
 
-                      // Set mode to mythoughts
-                      mode = Mode.myThoughts;
-                    }),
+                //       // Set mode to mythoughts
+                //       mode = Mode.myThoughts;
+                //     }),
 
                 // Clear top of mind
                 TextButtonSimple(
@@ -430,6 +430,22 @@ class _StreamState extends State<Stream> {
                   // Set mode to mythoughts
                   mode = Mode.myThoughts;
                 }),
+
+            // Public thoughts button
+            HoverIconButton(
+              size: actionIconSize,
+              icon: LineIcons.globe,
+              onPressed: () {
+                // Clear top of mind
+                Provider.of<ThoughtsProvider>(context, listen: false).clear();
+
+                // Fetch related thoughts
+                _fetchStream(context);
+
+                // Set mode to stream
+                mode = Mode.public;
+              },
+            ),
 
             Material(
               borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
@@ -761,7 +777,9 @@ class _StreamState extends State<Stream> {
           Padding(
             padding: Provider.of<ThoughtsProvider>(context).hasTopOfMind
                 ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-                : const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                : MediaQuery.of(context).size.height <= 400
+                    ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
+                    : const EdgeInsets.fromLTRB(0, 64, 0, 0),
             child: MainTextField(
                 primaryController: _primaryController,
 
@@ -783,20 +801,6 @@ class _StreamState extends State<Stream> {
                     // Add the thought to the provider
                     Provider.of<ThoughtsProvider>(context, listen: false)
                         .addThought(thought);
-
-                    // Search for related thoughts
-                    // searchThoughts(context, thought.body,
-                    //         associatedId: thought.id)
-                    //     .then((value) {
-                    //   // Add the related thoughts to the provider
-                    //   Provider.of<ThoughtsProvider>(context, listen: false)
-                    //       .addThoughts(value);
-
-                    //   // // Update the UI
-                    //   // setState(() {
-                    //   //   relatedThoughts = value;
-                    //   // });
-                    // });
 
                     // Lastly, update the UI
                     setState(() {
