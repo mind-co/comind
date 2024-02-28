@@ -99,7 +99,7 @@ class _MainTextFieldState extends State<MainTextField> {
 
   // Perform semantic search and add the results to the search results
   void performSearch(String query) {
-    //
+    // Debounce search
     EasyDebounce.debounce(
         'my-debouncer', // <-- An ID for this particular debouncer
         Duration(milliseconds: 1000), // <-- The debounce duration
@@ -387,12 +387,6 @@ class _MainTextFieldState extends State<MainTextField> {
                           // get added
                           widget._primaryController.clear(),
                         },
-
-                        // TODO #12 add the command processing stuff back in.
-                        // Can't turn it on because enabling the onChange function
-                        // breaks backspacing on android/linux.
-                        // see https://stackoverflow.com/questions/71783012/backspace-text-field-flutter-on-android-devices-not-working
-                        // onChanged: ... // do all the command processing stuff
 
                         // Cursor stuff
                         cursorWidth: 8,
