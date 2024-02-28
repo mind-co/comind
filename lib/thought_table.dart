@@ -21,7 +21,7 @@ class ThoughtTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 32, 0, 30),
+      padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
       child: Stack(clipBehavior: Clip.none, children: [
         ConstrainedBox(
           constraints: const BoxConstraints(

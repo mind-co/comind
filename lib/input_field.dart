@@ -488,9 +488,7 @@ class _MainTextFieldState extends State<MainTextField> {
 
             // Add the search results if they are not empty
             if (isSearchMode(textFieldMode) && searchResults.isNotEmpty)
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: ThoughtTable(thoughts: searchResults)),
+              ThoughtTable(thoughts: searchResults),
             // child: ComindSearchResultTable(searchResults: searchResults)),
           ],
         ),
