@@ -677,3 +677,26 @@ Future<List<ComindNotification>> fetchNotifications(
     throw Exception('Failed to load notifications');
   }
 }
+
+Future<Thought> fetchStartPageThought(BuildContext context) async {
+  final url = Uri.parse(endpoint('/api/start-page/'));
+
+  final headers = getBaseHeaders(context);
+
+  final response = await dio.get(
+    url.toString(),
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  // The response is of the form {"start_thoughts" : {thought}, . . .}
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.data);
+    print(jsonResponse);
+    print(jsonResponse['start_thoughts']);
+    return Thought.fromJson(jsonResponse['start_thoughts']);
+  } else {
+    throw Exception('Failed to load start page thought');
+  }
+}

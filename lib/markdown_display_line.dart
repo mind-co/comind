@@ -8,6 +8,7 @@ import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/soul_blob.dart';
 import 'package:comind/text_button.dart';
+import 'package:comind/thought_editor_basic.dart';
 import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -43,6 +44,7 @@ class MarkdownThought extends StatefulWidget {
       this.linkable = false,
       this.noTitle = false,
       this.viewOnly = false,
+      this.showBody = true,
       this.selectable = true});
 
   final Thought thought;
@@ -55,7 +57,7 @@ class MarkdownThought extends StatefulWidget {
   MarkdownDisplayType type;
   String? parentThought;
   bool showTextBox = false;
-  bool showBody = true;
+  bool showBody;
   bool dismissClicked = false;
   bool toBeDismissed = false;
   final bool linkable;
@@ -136,8 +138,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           children: [
             // The title
             Visibility(
-              visible: !widget.noTitle &&
-                  widget.type != MarkdownDisplayType.topOfMind,
+              visible: !widget.noTitle,
               child: Material(
                 child: InkWell(
                   onTap: () {
@@ -158,174 +159,185 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             ),
 
             // The text box
-            Visibility(
-              visible: widget.showBody,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                child: Opacity(
-                  opacity: widget.showBody ? 1.0 : 0.5,
-                  child: Column(
-                    children: [
-                      Material(
-                        borderOnForeground: true,
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(ComindColors.bubbleRadius),
-                        ),
-                        elevation: 1,
-                        // borderRadius:
-                        //     BorderRadius.circular(ComindColors.bubbleRadius),
-                        // color: widget.thought.isPublic
-                        //     ? Provider.of<ComindColorsNotifier>(context).primary
-                        //     : Provider.of<ComindColorsNotifier>(context)
-                        //         .colorScheme
-                        //         .secondary,
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+                color: Provider.of<ComindColorsNotifier>(context)
+                    .currentColors
+                    .colorScheme
+                    .surface,
+                // gradient: LinearGradient(
+                //   transform: GradientRotation(0.9),
+                //   begin: Alignment.topLeft,
+                //   end: Alignment.bottomRight,
+                //   colors: [
+                //     Provider.of<ComindColorsNotifier>(context)
+                //         .colorScheme
+                //         .primary
+                //         .withAlpha(64),
+                //     Provider.of<ComindColorsNotifier>(context)
+                //         .colorScheme
+                //         .secondary
+                //         .withAlpha(64),
+                //   ],
+                // ),
+              ),
+              child: Visibility(
+                visible: widget.showBody,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: Opacity(
+                    opacity: widget.showBody ? 1.0 : 0.5,
+                    child: Column(
+                      children: [
+                        Material(
+                          borderOnForeground: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                ComindColors.bubbleRadius),
+                          ),
+                          elevation: 0,
+                          // borderRadius:
+                          //     BorderRadius.circular(ComindColors.bubbleRadius),
+                          // color: widget.thought.isPublic
+                          //     ? Provider.of<ComindColorsNotifier>(context).primary
+                          //     : Provider.of<ComindColorsNotifier>(context)
+                          //         .colorScheme
+                          //         .secondary,
 
-                        color: Provider.of<ComindColorsNotifier>(context)
-                            .currentColors
-                            .colorScheme
-                            .background,
-                        surfaceTintColor: Colors.transparent,
-                        // color: Color.fromARGB(255, 21, 70, 138),
-                        // surfaceTintColor:
-                        //     Provider.of<ComindColorsNotifier>(context)
-                        //         .currentColors
-                        //         .colorScheme
-                        //         .primary,
-                        // color: Color.fromRGBO(30, 32, 42, 1),
-                        child: InkWell(
-                          borderRadius:
-                              BorderRadius.circular(ComindColors.bubbleRadius),
-                          onTap: widget.selectable
-                              ? () => {
-                                    // // Create a new ThoughtEditorScreen with the thought.
-                                    // // This is the full screen view of the thought.
-                                    // TODO #25 Add a "full screen" button
-                                    // ThoughtLoader.loadThought(context,
-                                    //     id: widget.thought.id)
+                          color: Colors.transparent,
+                          surfaceTintColor: Colors.transparent,
+                          // color: Color.fromARGB(255, 21, 70, 138),
+                          // surfaceTintColor:
+                          //     Provider.of<ComindColorsNotifier>(context)
+                          //         .currentColors
+                          //         .colorScheme
+                          //         .primary,
+                          // color: Color.fromRGBO(30, 32, 42, 1),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(
+                                ComindColors.bubbleRadius),
+                            // onTap: widget.selectable
+                            //     ? () => {
+                            //           // // Create a new ThoughtEditorScreen with the thought.
+                            //           // // This is the full screen view of the thought.
+                            //           // TODO #25 Add a "full screen" button
+                            //           print(widget.thought.id),
+                            //           ThoughtLoader.loadThought(context,
+                            //               thought: widget.thought)
 
-                                    // Add it to top of mind
-                                    Provider.of<ThoughtsProvider>(context,
-                                            listen: false)
-                                        .addTopOfMind(context, widget.thought)
-                                  }
-                              : null,
-                          child: Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  // Cinewave username
-                                  Row(
-                                    children: [
-                                      // Link button for child thoughts
-                                      Visibility(
-                                        visible: widget.type ==
-                                            MarkdownDisplayType.searchResult,
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 0, 4, 0),
-                                          child: HoverIconButton(
-                                            icon: LineIcons.link,
-                                            onPressed: () async {
-                                              // If there is a parent thought
-                                              if (widget.parentThought !=
-                                                  null) {
-                                                // Link the thoughts
-                                                if (widget.thought.id !=
-                                                        widget.parentThought &&
-                                                    widget.parentThought !=
-                                                        null) {
-                                                  await linkThoughts(
-                                                      context,
-                                                      widget.thought.id,
-                                                      widget.parentThought!);
+                            //           // Add it to top of mind
+                            //           // Provider.of<ThoughtsProvider>(context,
+                            //           //         listen: false)
+                            //           //     .addTopOfMind(context, widget.thought)
+                            //         }
+                            //     : null,
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    // Cinewave username
+                                    Row(
+                                      children: [
+                                        // Link button for child thoughts
+                                        Visibility(
+                                          visible: widget.type ==
+                                              MarkdownDisplayType.searchResult,
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 0, 4, 0),
+                                            child: HoverIconButton(
+                                              icon: LineIcons.link,
+                                              onPressed: () async {
+                                                // If there is a parent thought
+                                                if (widget.parentThought !=
+                                                    null) {
+                                                  // Link the thoughts
+                                                  if (widget.thought.id !=
+                                                          widget
+                                                              .parentThought &&
+                                                      widget.parentThought !=
+                                                          null) {
+                                                    await linkThoughts(
+                                                        context,
+                                                        widget.thought.id,
+                                                        widget.parentThought!);
+                                                  }
                                                 }
-                                              }
-                                            },
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                      ],
+                                    ),
 
-                                  // // Show cosine similarity
-                                  // Text(widget.thought.cosineSimilarity.toString(),
-                                  //     style: Provider.of<ComindColorsNotifier>(context)
-                                  //         .textTheme
-                                  //         .bodySmall),
+                                    // // Show cosine similarity
+                                    // Text(widget.thought.cosineSimilarity.toString(),
+                                    //     style: Provider.of<ComindColorsNotifier>(context)
+                                    //         .textTheme
+                                    //         .bodySmall),
 
-                                  // Add thought body
-                                  Visibility(
-                                      visible: widget.showBody &&
-                                          !widget.showTextBox,
-                                      child: thoughtBody(context)),
+                                    // Add thought body
+                                    Visibility(
+                                        visible: widget.showBody &&
+                                            !widget.showTextBox,
+                                        child: thoughtBody(context)),
 
-                                  expandableEditBox(context),
+                                    expandableEditBox(context),
 
-                                  // Show new thought box
-                                  // Padding(
-                                  //   padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                  //   child: Row(
-                                  //     children: [
-                                  //       Visibility(
-                                  //         visible: newThoughtOpen,
-                                  //         child: IconButton(
-                                  //           padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                  //           enableFeedback: true,
-                                  //           splashRadius: 16,
-                                  //           onPressed: () {
-                                  //             // Toggle the body
-                                  //             setState(() {
-                                  //               newThoughtOpen = !newThoughtOpen;
-                                  //             });
-                                  //           },
-                                  //           icon: Icon(
-                                  //             Icons.subdirectory_arrow_right,
-                                  //             size: 16,
-                                  //             color: Provider.of<ComindColorsNotifier>(context)
-                                  //                 .colorScheme
-                                  //                 .onBackground
-                                  //                 .withAlpha(200),
-                                  //           ),
-                                  //         ),
-                                  //       ),
-                                  //     ],
-                                  //   ),
-                                  // ),
+                                    // Show new thought box
+                                    // Padding(
+                                    //   padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                    //   child: Row(
+                                    //     children: [
+                                    //       Visibility(
+                                    //         visible: newThoughtOpen,
+                                    //         child: IconButton(
+                                    //           padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                    //           enableFeedback: true,
+                                    //           splashRadius: 16,
+                                    //           onPressed: () {
+                                    //             // Toggle the body
+                                    //             setState(() {
+                                    //               newThoughtOpen = !newThoughtOpen;
+                                    //             });
+                                    //           },
+                                    //           icon: Icon(
+                                    //             Icons.subdirectory_arrow_right,
+                                    //             size: 16,
+                                    //             color: Provider.of<ComindColorsNotifier>(context)
+                                    //                 .colorScheme
+                                    //                 .onBackground
+                                    //                 .withAlpha(200),
+                                    //           ),
+                                    //         ),
+                                    //       ),
+                                    //     ],
+                                    //   ),
+                                    // ),
 
-                                  // New thought box
-                                  newThoughtBox(context),
-                                ],
+                                    // New thought box
+                                    newThoughtBox(context),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
 
-                      // Alternative action row
-                      Visibility(
-                          visible: widget.showBody &&
-                              widget.type != MarkdownDisplayType.topOfMind,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            child: alternativeActionRow(context, onBackground),
-                          )),
-
-                      // Line at bottom
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                        child: Container(
-                          height: 1,
-                          color: Provider.of<ComindColorsNotifier>(context)
-                              .colorScheme
-                              .onBackground
-                              .withAlpha(64),
-                        ),
-                      ),
-                    ],
+                        // Alternative action row
+                        Visibility(
+                            visible: widget.showBody,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child:
+                                  alternativeActionRow(context, onBackground),
+                            )),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -456,7 +468,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           children: [
             // Title with grey line  from end of title to far right
             Visibility(
-              visible: widget.thought.title.isNotEmpty,
               child: Row(
                 children: [
                   Padding(
@@ -485,7 +496,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: widget.thought.title.toLowerCase(),
+                                text: widget.thought.title.isNotEmpty
+                                    ? widget.thought.title.toLowerCase()
+                                    : "(we're still making a title)",
                                 // style: Provider.of<ComindColorsNotifier>(
                                 //         context,
                                 //         listen: false)
@@ -623,7 +636,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   }
 
   // The action row
-  Row alternativeActionRow(BuildContext context, Color onBackground) {
+  Container alternativeActionRow(BuildContext context, Color onBackground) {
     // The expand button
     var expandButton = newButton(
         onBackground, context, widget.showBody ? "Close" : "View", () {
@@ -634,52 +647,22 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     });
 
     var linkButton = Visibility(
-      visible: !widget.linkable &&
-          widget.parentThought != null &&
-          !widget.viewOnly &&
-          !widget.showTextBox,
+      visible: widget.type != MarkdownDisplayType.topOfMind,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
         child: ComindTextButton(
-          text: "Link",
+          text: "Think",
           opacity: 0.4,
           fontSize: 12,
           colorIndex: 2,
           onPressed: () {
-            // Link to parent if there is one
-            if (widget.parentThought != null) {
-              // Link the thoughts
-              if (widget.thought.id != widget.parentThought &&
-                  widget.parentThought != null) {
-                linkThoughts(context, widget.thought.id, widget.parentThought!);
-              }
-            }
+            // Add it to top of mind
+            Provider.of<ThoughtsProvider>(context, listen: false)
+                .addTopOfMind(context, widget.thought);
           },
         ),
       ),
     );
-
-    // The save button when editing
-    // TODO needs to be replaced with an icon button
-    // var saveButton = Visibility(
-    //   visible: widget.showTextBox,
-    //   child: ComindTextButton(
-    //     text: "Save",
-    //     opacity: 0.4,
-    //     fontSize: 12,
-    //     colorIndex: 3,
-    //     onPressed: () {
-    //       // Update the thought
-    //       widget.thought.body = _editController.text;
-    //       saveThought(context, widget.thought);
-
-    //       // Close the text box
-    //       setState(() {
-    //         widget.showTextBox = false;
-    //       });
-    //     },
-    //   ),
-    // );
 
     var saveButton = Visibility(
       visible: widget.showTextBox,
@@ -828,56 +811,36 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   .onBackground
                   .withOpacity(0.5)),
     );
-    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-      // Time since
-      Text(
-        formatTimestamp(widget.thought.dateCreated),
-        style: Provider.of<ComindColorsNotifier>(context)
-            .textTheme
-            .labelSmall!
-            .copyWith(
-                color: Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .onBackground
-                    .withOpacity(hoveredTimestamp ? 1 : 0.5),
-                decorationColor: Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .onBackground,
-                decoration: hoveredTimestamp
-                    ? TextDecoration.underline
-                    : TextDecoration.none),
-      ),
+    return Container(
+      child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+        // Time since
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+          child: Text(
+            formatTimestamp(widget.thought.dateCreated),
+            style: Provider.of<ComindColorsNotifier>(context)
+                .textTheme
+                .labelSmall!
+                .copyWith(
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .onBackground
+                        .withOpacity(hoveredTimestamp ? 1 : 0.5),
+                    decorationColor: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .onBackground,
+                    decoration: hoveredTimestamp
+                        ? TextDecoration.underline
+                        : TextDecoration.none),
+          ),
+        ),
 
-      // Delimiter ∘
-      delimiter,
+        // Delimiter ∘
+        delimiter,
 
-      // username
-      Text(
-        widget.thought.username,
-        style: Provider.of<ComindColorsNotifier>(context)
-            .textTheme
-            .labelSmall!
-            .copyWith(
-                color: Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .onBackground
-                    .withOpacity(hoveredUsername ? 1 : 0.5),
-                decorationColor: Provider.of<ComindColorsNotifier>(context)
-                    .colorScheme
-                    .onBackground,
-                decoration: hoveredUsername
-                    ? TextDecoration.underline
-                    : TextDecoration.none),
-      ),
-
-      // delimiter ∘
-      delimiter,
-
-      // Public/private
-      Visibility(
-        visible: !widget.viewOnly,
-        child: Text(
-          widget.thought.isPublic ? "public" : "private",
+        // username
+        Text(
+          widget.thought.username,
           style: Provider.of<ComindColorsNotifier>(context)
               .textTheme
               .labelSmall!
@@ -885,85 +848,104 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                   color: Provider.of<ComindColorsNotifier>(context)
                       .colorScheme
                       .onBackground
-                      .withOpacity(hoveredPublic ? 1 : 0.5),
+                      .withOpacity(hoveredUsername ? 1 : 0.5),
                   decorationColor: Provider.of<ComindColorsNotifier>(context)
                       .colorScheme
                       .onBackground,
-                  decoration: hoveredPublic
+                  decoration: hoveredUsername
                       ? TextDecoration.underline
                       : TextDecoration.none),
         ),
-      ),
 
-      // delimiter ∘
-      delimiter,
+        // delimiter ∘
+        delimiter,
 
-      // Link count
-      Visibility(
-        visible:
-            widget.thought.numLinks != null && widget.thought.numLinks! > 0,
-        child: Text(
-          "${widget.thought.numLinks} links",
-          style: Provider.of<ComindColorsNotifier>(context)
-              .textTheme
-              .labelSmall!
-              .copyWith(
-                  color: Provider.of<ComindColorsNotifier>(context)
-                      .colorScheme
-                      .onBackground
-                      .withOpacity(hoveredLinks ? 1 : 0.5),
-                  decorationColor: Provider.of<ComindColorsNotifier>(context)
-                      .colorScheme
-                      .onBackground,
-                  decoration: hoveredLinks
-                      ? TextDecoration.underline
-                      : TextDecoration.none),
+        // Public/private
+        Visibility(
+          visible: !widget.viewOnly,
+          child: Text(
+            widget.thought.isPublic ? "public" : "private",
+            style: Provider.of<ComindColorsNotifier>(context)
+                .textTheme
+                .labelSmall!
+                .copyWith(
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .onBackground
+                        .withOpacity(hoveredPublic ? 1 : 0.5),
+                    decorationColor: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .onBackground,
+                    decoration: hoveredPublic
+                        ? TextDecoration.underline
+                        : TextDecoration.none),
+          ),
         ),
-      ),
 
-      // Expanded divider
-      Expanded(child: Container()),
+        // delimiter ∘
+        delimiter,
 
-      // Lock icon
-      Visibility(
-          visible: !widget.viewOnly && !widget.relatedMode && !newThoughtOpen,
-          child: lockButton),
+        // Link count
+        Visibility(
+          visible: widget.thought.numLinks != null,
+          child: Text(
+            "${widget.thought.numLinks} links",
+            style: Provider.of<ComindColorsNotifier>(context)
+                .textTheme
+                .labelSmall!
+                .copyWith(
+                    color: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .onBackground
+                        .withOpacity(hoveredLinks ? 1 : 0.5),
+                    decorationColor: Provider.of<ComindColorsNotifier>(context)
+                        .colorScheme
+                        .onBackground,
+                    decoration: hoveredLinks
+                        ? TextDecoration.underline
+                        : TextDecoration.none),
+          ),
+        ),
 
-      // Buttons
-      Visibility(
-          visible: !widget.showTextBox &&
-              !widget.relatedMode &&
-              !newThoughtOpen &&
-              !widget.viewOnly,
-          child: deleteButton),
+        // Expanded divider
+        Expanded(child: Container()),
 
-      // Edit button
-      Visibility(
-          visible: !widget.viewOnly &&
-              !widget.relatedMode &&
-              !newThoughtOpen &&
-              widget.thought.username ==
-                  Provider.of<AuthProvider>(context).username,
-          child: editThoughtButton),
+        // Lock icon
+        Visibility(
+            visible: !widget.viewOnly && !widget.relatedMode && !newThoughtOpen,
+            child: lockButton),
 
-      // Info button
-      Visibility(
-          visible: !widget.relatedMode && !newThoughtOpen && !widget.viewOnly,
-          child: infoButton),
+        // Buttons
+        Visibility(
+            visible: !widget.showTextBox &&
+                !widget.relatedMode &&
+                !newThoughtOpen &&
+                !widget.viewOnly,
+            child: deleteButton),
 
-      fullscreenButton,
+        // Edit button
+        Visibility(
+            visible: !widget.viewOnly &&
+                !widget.relatedMode &&
+                !newThoughtOpen &&
+                widget.thought.username ==
+                    Provider.of<AuthProvider>(context).username,
+            child: editThoughtButton),
 
-      Visibility(
-          visible: widget.type == MarkdownDisplayType.searchResult &&
-              !newThoughtOpen,
-          child: expandButton),
+        // Info button
+        Visibility(
+            visible: !widget.relatedMode && !newThoughtOpen && !widget.viewOnly,
+            child: infoButton),
 
-      // Expanded to push the buttons to the right
-      // Expanded(child: Container()),
+        fullscreenButton,
 
-      // Save button
-      saveButton,
-    ]);
+        // Link button
+        linkButton,
+
+        // Save button
+        saveButton,
+      ]),
+    );
   }
 
   IconButton newIconButton(

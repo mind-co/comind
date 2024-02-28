@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:comind/api.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
@@ -8,11 +9,35 @@ import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/types/thought.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:line_icons/line_icons.dart';
 
 // Enums for type of text field
 enum TextFieldType { main, edit, fullscreen, inline, newThought }
+
+// Enums for the mode of the text field
+enum TextFieldMode { think, search }
+
+// Methods to check mode status
+bool isSearchMode(TextFieldMode mode) {
+  return mode == TextFieldMode.search;
+}
+
+bool isThinkMode(TextFieldMode mode) {
+  return mode == TextFieldMode.think;
+}
+
+// Methods to convert text field modes into verbs
+String modeToString(TextFieldMode mode) {
+  if (mode == TextFieldMode.think) {
+    return "Think";
+  } else if (mode == TextFieldMode.search) {
+    return "Search";
+  } else {
+    return "Unknown";
+  }
+}
 
 //
 // The primary text field for Comind, stateful version
@@ -61,21 +86,11 @@ class _MainTextFieldState extends State<MainTextField> {
   _MainTextFieldState();
 
   final ScrollController _scrollController = ScrollController();
-  String uiMode = "think";
-  // String uiMode = "think";
+  TextFieldMode textFieldMode = TextFieldMode.think;
+
   List<Thought> searchResults = [
-    // SearchResult(
-    //     id: "a", body: "Howdy", username: "Cameron", cosineSimilarity: 0.8),
-    // SearchResult(
-    //     id: "b", body: "Hello", username: "John", cosineSimilarity: 0.7),
-    // SearchResult(
-    //     id: "c", body: "Hi there", username: "Alice", cosineSimilarity: 0.6),
-    // SearchResult(
-    //     id: "d", body: "Greetings", username: "Bob", cosineSimilarity: 0.5),
-    // SearchResult(
-    //     id: "e", body: "Hey", username: "Emily", cosineSimilarity: 0.4),
-    // SearchResult(
-    //     id: "f", body: "What's up", username: "David", cosineSimilarity: 0.3),
+    Thought.fromString("Or, maybe not. We'll never know.", "cameron", true,
+        title: "This could be what you're looking for")
   ];
 
   // Things to track textfield keys
@@ -84,19 +99,25 @@ class _MainTextFieldState extends State<MainTextField> {
   // Bool for whether control is pressed
   bool controlPressed = false;
 
+  // Perform semantic search and add the results to the search results
+  void performSearch(String query) {
+    //
+    searchThoughts(context, query).then((value) => setState(() {
+          searchResults = value;
+        }));
+  }
+
   @override
   Widget build(BuildContext context) {
     //
     // DECORATION FOR THE MAIN TEXT FIELD
     //
     var mainInputDecoration = InputDecoration(
-      // // The label that appears at the top of the text box.
-      // label: Text(
-      //   widget.type == TextFieldType.main ? uiMode : "Edit",
-      //   style: widget.colors.textTheme.titleLarge,
-      // ),
-
-      hintText: widget.colors.publicMode ? "Public mode" : "Private mode",
+      hintText: isSearchMode(textFieldMode)
+          ? "Search"
+          : widget.colors.publicMode
+              ? "Public mode"
+              : "Private mode",
       hintStyle: getTextTheme(context)
           .titleMedium!
           .copyWith(color: widget.colors.colorScheme.onPrimary.withAlpha(80)),
@@ -189,6 +210,60 @@ class _MainTextFieldState extends State<MainTextField> {
                     80), // this shit is hacky as fuck
         child: Column(
           children: [
+            // Visibility(
+            //   visible: widget.type == TextFieldType.main,
+            //   child: Container(
+            //     width: double.infinity,
+            //     child: Row(
+            //       children: [
+            //         // Think mode
+            //         Padding(
+            //           padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+            //           child: Container(
+            //             decoration: isThinkMode(textFieldMode)
+            //                 ? BoxDecoration(
+            //                     border: Border(
+            //                       bottom: BorderSide(
+            //                         width: 6,
+            //                         color: widget.colors.primary,
+            //                       ),
+            //                     ),
+            //                   )
+            //                 : BoxDecoration(),
+            //             child: Text(
+            //               modeToString(TextFieldMode.think),
+            //               style: widget.colors.textTheme.titleMedium,
+            //               textAlign: TextAlign.start,
+            //             ),
+            //           ),
+            //         ),
+
+            //         // Search mode
+            //         Padding(
+            //           padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+            //           child: Container(
+            //             decoration: isSearchMode(textFieldMode)
+            //                 ? BoxDecoration(
+            //                     border: Border(
+            //                       bottom: BorderSide(
+            //                         width: 6,
+            //                         color: widget.colors.primary,
+            //                       ),
+            //                     ),
+            //                   )
+            //                 : BoxDecoration(),
+            //             child: Text(
+            //               modeToString(TextFieldMode.search),
+            //               style: widget.colors.textTheme.titleMedium,
+            //               textAlign: TextAlign.start,
+            //             ),
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+
             Stack(
               clipBehavior: Clip.none,
               children: [
@@ -293,6 +368,34 @@ class _MainTextFieldState extends State<MainTextField> {
                         // breaks backspacing on android/linux.
                         // see https://stackoverflow.com/questions/71783012/backspace-text-field-flutter-on-android-devices-not-working
                         // onChanged: ... // do all the command processing stuff
+                        onChanged: (value) => {
+                          // If the value starts with '/', then we're in search mode
+                          // "." is think mode
+                          if (value.length == 1)
+                            {
+                              if (value.startsWith("/") &&
+                                  !isSearchMode(textFieldMode))
+                                {
+                                  widget._primaryController.clear(),
+                                  setState(() {
+                                    textFieldMode = TextFieldMode.search;
+                                  })
+                                }
+                              else if (value.startsWith(".") &&
+                                  !isThinkMode(textFieldMode))
+                                {
+                                  widget._primaryController.clear(),
+                                  setState(() {
+                                    textFieldMode = TextFieldMode.think;
+                                  })
+                                }
+                            }
+                          else if (value.length > 1 &&
+                              isSearchMode(textFieldMode))
+                            {
+                              performSearch(value),
+                            }
+                        },
 
                         // Cursor stuff
                         cursorWidth: 8,
@@ -314,9 +417,10 @@ class _MainTextFieldState extends State<MainTextField> {
                   bottom: 0,
                   right: 0,
                   child: Visibility(
-                    visible: widget.type == TextFieldType.main ||
-                        widget.type == TextFieldType.newThought ||
-                        widget.type == TextFieldType.inline,
+                    visible: !isSearchMode(textFieldMode) &&
+                        (widget.type == TextFieldType.main ||
+                            widget.type == TextFieldType.newThought ||
+                            widget.type == TextFieldType.inline),
                     child: Padding(
                       padding: const EdgeInsets.all(3),
                       child: ThinkButton(
@@ -328,6 +432,26 @@ class _MainTextFieldState extends State<MainTextField> {
                         onPressed: () {
                           _submit(context)();
 
+                          // Clear the text field because sometimes random newline chars
+                          // get added
+                          widget._primaryController.clear();
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Search button if in search mode
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Visibility(
+                    visible: isSearchMode(textFieldMode),
+                    child: Padding(
+                      padding: const EdgeInsets.all(3),
+                      child: ThinkButton(
+                        icon: LineIcons.search,
+                        onPressed: () {
                           // Clear the text field because sometimes random newline chars
                           // get added
                           widget._primaryController.clear();
@@ -363,9 +487,9 @@ class _MainTextFieldState extends State<MainTextField> {
             ),
 
             // Add the search results if they are not empty
-            if (uiMode == "search" && searchResults.isNotEmpty)
+            if (isSearchMode(textFieldMode) && searchResults.isNotEmpty)
               Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: ThoughtTable(thoughts: searchResults)),
             // child: ComindSearchResultTable(searchResults: searchResults)),
           ],
@@ -434,5 +558,44 @@ class _MainTextFieldState extends State<MainTextField> {
             : widget.colorIndex == 2
                 ? widget.colors.colorScheme.secondary.withAlpha(128)
                 : widget.colors.colorScheme.tertiary.withAlpha(128);
+  }
+}
+
+class ColorButton extends StatelessWidget {
+  // Things
+  final bool isUnderlined;
+  final Color color;
+  final TextStyle textStyle;
+  final String text;
+
+  // Creator method
+  ColorButton(
+      {required this.text,
+      this.isUnderlined = false,
+      this.color = Colors.transparent,
+      required this.textStyle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+      child: Container(
+        decoration: isUnderlined
+            ? BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    width: 6,
+                    color: color,
+                  ),
+                ),
+              )
+            : const BoxDecoration(),
+        child: Text(
+          text,
+          style: textStyle,
+          textAlign: TextAlign.start,
+        ),
+      ),
+    );
   }
 }

@@ -50,6 +50,10 @@ class _StreamState extends State<Stream> {
   // the text controller
   final _primaryController = TextEditingController();
 
+  Thought startPageThought = Thought.fromString(
+      "I'm happy to have you here :smiley:", "Co", true,
+      title: "Welcome to comind");
+
   Mode mode = Mode.begin;
 
   // Fetch user thoughts
@@ -88,10 +92,20 @@ class _StreamState extends State<Stream> {
   void initState() {
     super.initState();
 
+    // Load the start page thought
+    // fetchStartPageThought(context).then((value) => {
+    //       setState(() {
+    //         startPageThought = value;
+    //       })
+    //     });
+
     // Pull in the concepts
-    final newConcepts = fetchConcepts(context).then((value) =>
-        Provider.of<ConceptsProvider>(context, listen: false)
-            .addConcepts(value));
+    fetchConcepts(context).then((newConcepts) {
+      Provider.of<ConceptsProvider>(context, listen: false)
+          .addConcepts(newConcepts);
+    });
+
+    //
   }
 
   @override
@@ -154,10 +168,12 @@ class _StreamState extends State<Stream> {
             //       colors: [
             //         Provider.of<ComindColorsNotifier>(context)
             //             .currentColors
-            //             .primary,
+            //             .primary
+            //             .withAlpha(128),
             //         Provider.of<ComindColorsNotifier>(context)
             //             .currentColors
-            //             .secondary,
+            //             .secondary
+            //             .withAlpha(128),
             //       ],
             //     ),
             //   ),
@@ -453,22 +469,6 @@ class _StreamState extends State<Stream> {
                   mode = Mode.myThoughts;
                 }),
 
-            // Public thoughts button
-            HoverIconButton(
-              size: actionIconSize,
-              icon: LineIcons.globe,
-              onPressed: () {
-                // Clear top of mind
-                Provider.of<ThoughtsProvider>(context, listen: false).clear();
-
-                // Fetch related thoughts
-                _fetchStream(context);
-
-                // Set mode to stream
-                mode = Mode.public;
-              },
-            ),
-
             Material(
               borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
               color: Colors.transparent,
@@ -486,6 +486,22 @@ class _StreamState extends State<Stream> {
                   ),
                 ),
               ),
+            ),
+
+            // Public thoughts button
+            HoverIconButton(
+              size: actionIconSize,
+              icon: LineIcons.stream,
+              onPressed: () {
+                // Clear top of mind
+                Provider.of<ThoughtsProvider>(context, listen: false).clear();
+
+                // Fetch related thoughts
+                _fetchStream(context);
+
+                // Set mode to stream
+                mode = Mode.public;
+              },
             ),
 
             // Dark mode button
@@ -613,10 +629,13 @@ class _StreamState extends State<Stream> {
           child: ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            // itemCount: Provider.of<ThoughtsProvider>(context).brainBuffer.length,
-            itemCount: min2,
+            itemCount:
+                Provider.of<ThoughtsProvider>(context).brainBuffer.length,
             // itemCount: relatedThoughts.length,
             itemBuilder: (context, index) {
+              var buffer = Provider.of<ThoughtsProvider>(context).brainBuffer;
+              var thought = buffer[index];
+              bool isTopOfMind = index == buffer.length - 1;
               return Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                 child: MarkdownThought(
@@ -634,10 +653,11 @@ class _StreamState extends State<Stream> {
                   // The first thought (at the top) to display is at index 5 - 3 = 2.
                   // The last thought (at the bottom) to display is at index 5 - 1 = 4.
                   //
-                  thought: Provider.of<ThoughtsProvider>(context)
-                      .brainBuffer[overflow + index],
+                  thought: thought,
 
                   type: MarkdownDisplayType.topOfMind,
+
+                  showBody: isTopOfMind,
 
                   parentThought:
                       getTopOfMind(context)?.id, // Link to most recent thought
@@ -697,8 +717,10 @@ class _StreamState extends State<Stream> {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
             itemBuilder: (context, index) {
+              var thought =
+                  Provider.of<ThoughtsProvider>(context).thoughts[index];
               return MarkdownThought(
-                thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
+                thought: thought,
                 linkable: true,
                 parentThought: getTopOfMind(context)?.id,
               );

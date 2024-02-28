@@ -183,19 +183,19 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                           borderRadius:
                               BorderRadius.circular(ComindColors.bubbleRadius),
                         ),
-                        elevation: 1,
+                        elevation: 0,
                         // borderRadius:
                         //     BorderRadius.circular(ComindColors.bubbleRadius),
-                        // color: widget.thought.isPublic
-                        //     ? Provider.of<ComindColorsNotifier>(context).primary
-                        //     : Provider.of<ComindColorsNotifier>(context)
-                        //         .colorScheme
-                        //         .secondary,
+                        color: widget.thought.isPublic
+                            ? Provider.of<ComindColorsNotifier>(context).primary
+                            : Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .secondary,
 
-                        color: Provider.of<ComindColorsNotifier>(context)
-                            .currentColors
-                            .colorScheme
-                            .surface,
+                        // color: Provider.of<ComindColorsNotifier>(context)
+                        //     .currentColors
+                        //     .colorScheme
+                        //     .surface,
                         // color: Color.fromARGB(255, 21, 70, 138),
                         // surfaceTintColor:
                         //     Provider.of<ComindColorsNotifier>(context)
@@ -220,12 +220,12 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                 .addTopOfMind(context, widget.thought)
                           },
                           child: Card(
-                            elevation: 2,
+                            elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                   ComindColors.bubbleRadius),
                             ),
-                            color: Colors.transparent,
+                            color: Colors.red,
                             surfaceTintColor: Colors.transparent,
                             borderOnForeground: true,
                             shadowColor: Colors.transparent,

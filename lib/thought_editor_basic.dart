@@ -3,9 +3,11 @@ import 'package:comind/markdown_display_line.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/section.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/types/thought.dart';
 import 'package:comind/api.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 // Pre-loads a thought. This is used when we don't have a thought yet --
@@ -100,44 +102,50 @@ class _ThoughtEditorScreenState extends State<ThoughtEditorScreen> {
             ),
 
             // ListView for children
-            Section(
-              text: "Children",
-              waves: false,
-              children: ListView.builder(
-                shrinkWrap: true,
-                // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
-                itemCount: childThoughts
-                    .length, // Provider.of<ThoughtsProvider>(context).thoughts.length,
-                itemBuilder: (context, index) {
-                  return MarkdownThought(
-                    thought: childThoughts[
-                        index], // Provider.of<ThoughtsProvider>(context).thoughts[index],
-                    linkable: true,
-                    parentThought: getTopOfMind(context)?.id,
-                    // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
-                  );
-                },
+            Visibility(
+              visible: childThoughts.isNotEmpty,
+              child: Section(
+                text: "Children",
+                waves: false,
+                children: ListView.builder(
+                  shrinkWrap: true,
+                  // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+                  itemCount: childThoughts
+                      .length, // Provider.of<ThoughtsProvider>(context).thoughts.length,
+                  itemBuilder: (context, index) {
+                    return MarkdownThought(
+                      thought: childThoughts[
+                          index], // Provider.of<ThoughtsProvider>(context).thoughts[index],
+                      linkable: true,
+                      parentThought: getTopOfMind(context)?.id,
+                      // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
+                    );
+                  },
+                ),
               ),
             ),
 
             // ListView for parents
-            Section(
-              text: "Parents",
-              waves: false,
-              children: ListView.builder(
-                shrinkWrap: true,
-                // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
-                itemCount: parentThoughts
-                    .length, // Provider.of<ThoughtsProvider>(context).thoughts.length,
-                itemBuilder: (context, index) {
-                  return MarkdownThought(
-                    thought: parentThoughts[
-                        index], // Provider.of<ThoughtsProvider>(context).thoughts[index],
-                    linkable: true,
-                    parentThought: getTopOfMind(context)?.id,
-                    // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
-                  );
-                },
+            Visibility(
+              visible: parentThoughts.isNotEmpty,
+              child: Section(
+                text: "Parents",
+                waves: false,
+                children: ListView.builder(
+                  shrinkWrap: true,
+                  // itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+                  itemCount: parentThoughts
+                      .length, // Provider.of<ThoughtsProvider>(context).thoughts.length,
+                  itemBuilder: (context, index) {
+                    return MarkdownThought(
+                      thought: parentThoughts[
+                          index], // Provider.of<ThoughtsProvider>(context).thoughts[index],
+                      linkable: true,
+                      parentThought: getTopOfMind(context)?.id,
+                      // thought: Provider.of<ThoughtsProvider>(context).thoughts[index],
+                    );
+                  },
+                ),
               ),
             ),
           ],

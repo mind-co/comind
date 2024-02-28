@@ -2,9 +2,10 @@
 import 'dart:math';
 
 import 'package:comind/colors.dart';
-import 'package:comind/markdown_display.dart';
+import 'package:comind/markdown_display_line.dart';
 import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class ThoughtTable extends StatelessWidget {
@@ -20,93 +21,111 @@ class ThoughtTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 8, 4, 30),
+      padding: const EdgeInsets.fromLTRB(0, 32, 0, 30),
       child: Stack(clipBehavior: Clip.none, children: [
-        Container(
-          width: ComindColors.maxWidth,
-          height: 126,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-
-            // Left border only
-            border: Border.all(
-              style: BorderStyle.solid,
-              color: Provider.of<ComindColorsNotifier>(context)
-                  .colorScheme
-                  .onBackground
-                  .withAlpha(64),
-              width: 1.0,
-
-              // color: Provider.of<ComindColorsNotifier>(context)
-              //     .colorScheme
-              //     .onBackground
-              //     .withAlpha(64),
-            ),
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: ComindColors.maxWidth,
+            maxHeight: 800,
           ),
+          // decoration: BoxDecoration(
+          //   borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+
+          //   // Left border only
+          //   border: Border.all(
+          //     style: BorderStyle.solid,
+          //     color: Provider.of<ComindColorsNotifier>(context)
+          //         .colorScheme
+          //         .onBackground
+          //         .withAlpha(128),
+          //     width: 2.0,
+
+          //     // color: Provider.of<ComindColorsNotifier>(context)
+          //     //     .colorScheme
+          //     //     .onBackground
+          //     //     .withAlpha(64),
+          //   ),
+          // ),
 
           // If there are no thoughts, show a message
-          child: thoughts.isEmpty
-              ? Center(
-                  // "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
-                  // child: Text(
-                  //   "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
-                  //   style: Provider.of<ComindColorsNotifier>(context)
-                  //       .textTheme
-                  //       .bodyMedium,
-                  // ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
 
-                  // Using text span
-                  child: RichText(
-                    textAlign: TextAlign.start,
-                    text: TextSpan(
-                      text: "No thoughts found! \n\n",
-                      style: Provider.of<ComindColorsNotifier>(context)
-                          .textTheme
-                          .headlineMedium
-                          ?.copyWith(
-                            color: Provider.of<ComindColorsNotifier>(context)
-                                .colorScheme
-                                .onPrimary
-                                .withAlpha(180),
+              // Left border only
+              border: Border.all(
+                style: BorderStyle.solid,
+                color: Provider.of<ComindColorsNotifier>(context)
+                    .colorScheme
+                    .onBackground
+                    .withAlpha(128),
+                width: 2.0,
+
+                // color: Provider.of<ComindColorsNotifier>(context)
+                //     .colorScheme
+                //     .onBackground
+                //     .withAlpha(64),
+              ),
+            ),
+            child: thoughts.isEmpty
+                ? Center(
+                    // "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
+                    // child: Text(
+                    //   "No thoughts found! \n\nY'all should try making one. \n\nI know you're a smart cookie.",
+                    //   style: Provider.of<ComindColorsNotifier>(context)
+                    //       .textTheme
+                    //       .bodyMedium,
+                    // ),
+
+                    // Using text span
+                    child: RichText(
+                      textAlign: TextAlign.start,
+                      text: TextSpan(
+                        text: "No thoughts found! \n\n",
+                        style: Provider.of<ComindColorsNotifier>(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              color: Provider.of<ComindColorsNotifier>(context)
+                                  .colorScheme
+                                  .onPrimary
+                                  .withAlpha(180),
+                            ),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: "Y'all should make some. \n\n",
+                            style: Provider.of<ComindColorsNotifier>(context)
+                                .textTheme
+                                .bodyLarge,
                           ),
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: "Y'all should make some. \n\n",
-                          style: Provider.of<ComindColorsNotifier>(context)
-                              .textTheme
-                              .bodyLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              "I would. But I am just a lame, boring computer.\n\n",
-                          style: Provider.of<ComindColorsNotifier>(context)
-                              .textTheme
-                              .bodyLarge,
-                        ),
-                      ],
+                          TextSpan(
+                            text:
+                                "I would. But I am just a lame, boring computer.\n\n",
+                            style: Provider.of<ComindColorsNotifier>(context)
+                                .textTheme
+                                .bodyLarge,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                )
-              // Otherwise, show everything
-              : Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: ListView.builder(
-                      itemCount: max(3, thoughts.length + 1),
-                      itemBuilder: (context, index) {
-                        if (index < 3) {
+                  )
+                // Otherwise, show everything
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                    child: ListView.builder(
+                        itemCount: thoughts.length,
+                        itemBuilder: (context, index) {
                           return MarkdownThought(
-                              type: MarkdownDisplayType.searchResult,
                               thought: thoughts[index],
                               parentThought: parentThought?.id);
-                        }
-                        return null;
-                      }),
-                ),
+                        }),
+                  ),
+          ),
         ),
 
         // Display ("Search results") at top left corner
         Positioned(
-          top: -8,
+          top: -12,
           left: 10,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(2, 0, 0, 0),

@@ -83,7 +83,7 @@ class ComindColors {
     secondary: secondaryColorDefault,
     tertiary: tertiaryColorDefault,
     surface: Color.fromRGBO(43, 43, 43, 1), //Color.fromRGBO(43, 34, 34, 1),
-    background: Color.fromRGBO(0, 0, 0, 1),
+    background: Color.fromRGBO(13, 16, 29, 1),
     error: secondaryColorDefault,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
