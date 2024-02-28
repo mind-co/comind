@@ -89,8 +89,8 @@ class _MainTextFieldState extends State<MainTextField> {
   TextFieldMode textFieldMode = TextFieldMode.think;
 
   List<Thought> searchResults = [
-    Thought.fromString("Or, maybe not. We'll never know.", "cameron", true,
-        title: "This could be what you're looking for")
+    // Thought.fromString("Or, maybe not. We'll never know.", "cameron", true,
+    //     title: "This could be what you're looking for")
   ];
 
   // Things to track textfield keys
