@@ -3,15 +3,13 @@ import 'dart:math';
 import 'package:comind/api.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/misc/util.dart';
-import 'package:comind/providers.dart';
 import 'package:comind/think_button.dart';
 import 'package:comind/thought_table.dart';
 import 'package:flutter/material.dart';
 import 'package:comind/types/thought.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:easy_debounce/easy_debounce.dart';
 
 // Enums for type of text field
 enum TextFieldType { main, edit, fullscreen, inline, newThought }
@@ -102,13 +100,40 @@ class _MainTextFieldState extends State<MainTextField> {
   // Perform semantic search and add the results to the search results
   void performSearch(String query) {
     //
-    searchThoughts(context, query).then((value) => setState(() {
-          searchResults = value;
-        }));
+    EasyDebounce.debounce(
+        'my-debouncer', // <-- An ID for this particular debouncer
+        Duration(milliseconds: 1000), // <-- The debounce duration
+        () {
+      searchThoughts(context, query).then((value) => setState(() {
+            searchResults = value;
+          }));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Set up a listener for the controller
+    widget._primaryController.addListener(() {
+      // If the value starts with '/', then we're in search mode
+      // "." is think mode
+      final value = widget._primaryController.text;
+      if (value.length == 1) {
+        if (value.startsWith("/") && !isSearchMode(textFieldMode)) {
+          widget._primaryController.clear();
+          setState(() {
+            textFieldMode = TextFieldMode.search;
+          });
+        } else if (value.startsWith(".") && !isThinkMode(textFieldMode)) {
+          widget._primaryController.clear();
+          setState(() {
+            textFieldMode = TextFieldMode.think;
+          });
+        }
+      } else if (value.length > 1 && isSearchMode(textFieldMode)) {
+        performSearch(value);
+      }
+    });
+
     //
     // DECORATION FOR THE MAIN TEXT FIELD
     //
@@ -368,34 +393,6 @@ class _MainTextFieldState extends State<MainTextField> {
                         // breaks backspacing on android/linux.
                         // see https://stackoverflow.com/questions/71783012/backspace-text-field-flutter-on-android-devices-not-working
                         // onChanged: ... // do all the command processing stuff
-                        onChanged: (value) => {
-                          // If the value starts with '/', then we're in search mode
-                          // "." is think mode
-                          if (value.length == 1)
-                            {
-                              if (value.startsWith("/") &&
-                                  !isSearchMode(textFieldMode))
-                                {
-                                  widget._primaryController.clear(),
-                                  setState(() {
-                                    textFieldMode = TextFieldMode.search;
-                                  })
-                                }
-                              else if (value.startsWith(".") &&
-                                  !isThinkMode(textFieldMode))
-                                {
-                                  widget._primaryController.clear(),
-                                  setState(() {
-                                    textFieldMode = TextFieldMode.think;
-                                  })
-                                }
-                            }
-                          else if (value.length > 1 &&
-                              isSearchMode(textFieldMode))
-                            {
-                              performSearch(value),
-                            }
-                        },
 
                         // Cursor stuff
                         cursorWidth: 8,

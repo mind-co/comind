@@ -44,6 +44,7 @@ dependencies:
   line_icons: ^2.0.2
   cyclop: ^0.7.0
   web_socket_channel: ^2.4.3
+  easy_debounce: ^2.0.3
 
 dev_dependencies:
   flutter_test:
