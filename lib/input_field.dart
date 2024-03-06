@@ -155,30 +155,24 @@ class _MainTextFieldState extends State<MainTextField> {
       labelStyle: TextStyle(
         color: widget.colors.colorScheme.onPrimary.withAlpha(180),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(8, 22, 38, 22),
+      contentPadding: const EdgeInsets.fromLTRB(12, 16, 38, 16),
 
       // Top and bottom border only.
       // This is handled by the decoration for the container
       // wrapping the text field.
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-        // borderSide: BorderSide(
-        //   width: 0,
-        //   color: widget.colors
-        //       .colorScheme
-        //       .onBackground
-        //       .withAlpha(32),
-        // ),
+        borderSide: BorderSide(
+          width: 0,
+          color: widget.colors.colorScheme.onBackground.withAlpha(64),
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-        // borderSide: BorderSide(
-        //   width: 1,
-        //   color: widget.colors
-        //       .colorScheme
-        //       .onBackground
-        //       .withAlpha(64),
-        // ),
+        borderSide: BorderSide(
+          width: 1,
+          color: widget.colors.colorScheme.onBackground.withAlpha(128),
+        ),
       ),
     );
 
@@ -207,7 +201,7 @@ class _MainTextFieldState extends State<MainTextField> {
         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
         borderSide: BorderSide(
           width: 1,
-          color: widget.colors.colorScheme.onPrimary.withAlpha(64),
+          color: widget.colors.colorScheme.onPrimary.withAlpha(32),
         ),
       ),
       focusedBorder: OutlineInputBorder(
@@ -225,7 +219,7 @@ class _MainTextFieldState extends State<MainTextField> {
     var newInputDecoration = mainInputDecoration;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+      padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
       child: SizedBox(
         width: widget.type != TextFieldType.newThought
             ? min(ComindColors.maxWidth, MediaQuery.of(context).size.width)
@@ -294,111 +288,62 @@ class _MainTextFieldState extends State<MainTextField> {
               children: [
                 // Text box
                 Material(
-                  elevation: 6,
+                  elevation: 0,
                   borderRadius:
                       BorderRadius.circular(ComindColors.bubbleRadius),
-                  child: Container(
-                    // Bordered
-                    decoration: BoxDecoration(
-                      // borderRadius:
-                      //     BorderRadius.circular(ComindColors.bubbleRadius),
-                      // border: Border(
-                      //   // left: BorderSide(
-                      //   //   width: 1,
-                      //   //   color: widget.colors.onPrimary.withAlpha(128),
-                      //   // ),
-                      //   // top: BorderSide(
-                      //   //   width: 1,
-                      //   //   color:
-                      //   //       widget.colors.colorScheme.primary.withAlpha(128),
-                      //   // ),
-                      //   // bottom: BorderSide(
-                      //   //   width: 1,
-                      //   //   color: widget.colors.colorScheme.onPrimary
-                      //   //       .withAlpha(128),
-                      //   // ),
-                      // ),
-
-                      border: Border.all(
-                        width: 2,
-                        color:
-                            widget.colors.colorScheme.onPrimary.withAlpha(128),
-                      ),
-
-                      // Fill color
-                      // color: widget.colors
-                      //     .colorScheme
-                      //     .surface,
-                      borderRadius:
-                          BorderRadius.circular(ComindColors.bubbleRadius),
-
-                      // Fill color
-                      // color: widget.colors
-                      //     .colorScheme
-                      //     .surface,
-                    ),
-
-                    // decoration: BoxDecoration(
-                    // borderRadius:
-                    //     BorderRadius.circular(ComindColors.bubbleRadius),
-                    // color: widget.colors
-                    //     .colorScheme
-                    //     .surface
-                    //     .withAlpha(30)),
-                    child: KeyboardListener(
-                      focusNode: focusNode,
-                      onKeyEvent: (KeyEvent event) {
-                        if (focusNode.hasFocus) {
-                          if (event.logicalKey ==
-                                  LogicalKeyboardKey.controlLeft &&
-                              event is KeyDownEvent) {
-                            controlPressed = true;
-                          } else if (event.logicalKey ==
-                                  LogicalKeyboardKey.controlLeft &&
-                              event is KeyUpEvent) {
-                            controlPressed = false;
-                          }
-
-                          if (event.logicalKey == LogicalKeyboardKey.enter &&
-                              controlPressed) {
-                            _submit(context)();
-                            widget._primaryController.clear();
-                          }
+                  child: KeyboardListener(
+                    focusNode: focusNode,
+                    onKeyEvent: (KeyEvent event) {
+                      if (focusNode.hasFocus) {
+                        if (event.logicalKey ==
+                                LogicalKeyboardKey.controlLeft &&
+                            event is KeyDownEvent) {
+                          controlPressed = true;
+                        } else if (event.logicalKey ==
+                                LogicalKeyboardKey.controlLeft &&
+                            event is KeyUpEvent) {
+                          controlPressed = false;
                         }
+
+                        if (event.logicalKey == LogicalKeyboardKey.enter &&
+                            controlPressed) {
+                          _submit(context)();
+                          widget._primaryController.clear();
+                        }
+                      }
+                    },
+                    child: TextField(
+                      scrollController: _scrollController,
+                      // keyboardType: TextInputType.multiline,
+                      maxLines: 20,
+                      minLines: 1,
+                      // textInputAction: TextInputAction.send,
+                      style: widget.colors.textTheme.bodyMedium,
+
+                      // Autofocus if main text field or a new thought,
+                      // since the user
+                      autofocus: widget.type == TextFieldType.main ||
+                          widget.type == TextFieldType.newThought,
+                      controller: widget._primaryController,
+                      textInputAction: TextInputAction.newline,
+
+                      onSubmitted: (value) => {
+                        _submit(context)(),
+                        // Clear the text field because sometimes random newline chars
+                        // get added
+                        widget._primaryController.clear(),
                       },
-                      child: TextField(
-                        scrollController: _scrollController,
-                        // keyboardType: TextInputType.multiline,
-                        maxLines: 20,
-                        minLines: 1,
-                        // textInputAction: TextInputAction.send,
-                        style: widget.colors.textTheme.bodyMedium,
 
-                        // Autofocus if main text field or a new thought,
-                        // since the user
-                        autofocus: widget.type == TextFieldType.main ||
-                            widget.type == TextFieldType.newThought,
-                        controller: widget._primaryController,
-                        textInputAction: TextInputAction.newline,
-
-                        onSubmitted: (value) => {
-                          _submit(context)(),
-                          // Clear the text field because sometimes random newline chars
-                          // get added
-                          widget._primaryController.clear(),
-                        },
-
-                        // Cursor stuff
-                        cursorWidth: 8,
-                        cursorColor: widget.colors.colorScheme.onBackground,
-                        decoration: widget.type == TextFieldType.main
-                            ? mainInputDecoration
-                            : widget.type == TextFieldType.edit
-                                ? editInputDecoration
-                                : widget.type == TextFieldType.inline
-                                    ? inlineInputDecoration
-                                    : newInputDecoration,
-                      ),
+                      // Cursor stuff
+                      cursorWidth: 10,
+                      cursorColor: widget.colors.colorScheme.onBackground,
+                      decoration: widget.type == TextFieldType.main
+                          ? mainInputDecoration
+                          : widget.type == TextFieldType.edit
+                              ? editInputDecoration
+                              : widget.type == TextFieldType.inline
+                                  ? inlineInputDecoration
+                                  : newInputDecoration,
                     ),
                   ),
                 ),

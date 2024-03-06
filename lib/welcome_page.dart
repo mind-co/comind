@@ -1,5 +1,5 @@
 import 'package:comind/main_layout.dart';
-import 'package:comind/markdown_display.dart';
+import 'package:comind/markdown_display_line.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';

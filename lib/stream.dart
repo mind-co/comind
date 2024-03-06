@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:comind/menu_bar.dart';
 import 'package:comind/notification_display.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/widgets.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:logging/logging.dart';
 import 'package:comind/api.dart';
@@ -621,6 +622,7 @@ class _StreamState extends State<Stream> {
       direction: Axis.vertical,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
       children: [
         // Top of mind builder (use brainbuffer)
         Visibility(
@@ -657,7 +659,9 @@ class _StreamState extends State<Stream> {
 
                   type: MarkdownDisplayType.topOfMind,
 
-                  showBody: isTopOfMind,
+                  // Uncomment to hide the body unless it's the
+                  // top of mind.
+                  // showBody: isTopOfMind,
 
                   parentThought:
                       getTopOfMind(context)?.id, // Link to most recent thought

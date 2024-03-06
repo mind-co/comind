@@ -10,7 +10,9 @@ import 'package:comind/soul_blob.dart';
 import 'package:comind/text_button.dart';
 import 'package:comind/thought_editor_basic.dart';
 import 'package:comind/thought_table.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -117,14 +119,26 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
   @override
   Widget build(BuildContext context) {
+    // Status item text style
+    var statusStyle = Provider.of<ComindColorsNotifier>(context)
+        .textTheme
+        .labelSmall!
+        .copyWith(
+            fontSize: 10,
+            color: Provider.of<ComindColorsNotifier>(context)
+                .colorScheme
+                .onSurface
+                .withOpacity(0.5));
+
+    // ∘ separator for the status items
+    var delimiter = Text(
+      " ∘ ",
+      style: statusStyle,
+    );
+
+    // OnBackground color
     var onBackground =
         Provider.of<ComindColorsNotifier>(context).colorScheme.onBackground;
-
-    // // Return just a textbox for debug
-    // return Text(
-    //   widget.thought.body,
-    //   style: Provider.of<ComindColorsNotifier>(context).textTheme.bodyMedium,
-    // );
 
     // The stack is here to lay the dismiss button on top
     // of the main text box.
@@ -139,19 +153,27 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             // The title
             Visibility(
               visible: !widget.noTitle,
-              child: Material(
-                child: InkWell(
-                  onTap: () {
-                    // Collapse the body
-                    setState(() {
-                      widget.showBody = !widget.showBody;
-                    });
-                  },
-                  child: SizedBox(
-                    width: ComindColors.maxWidth,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: titleBar(context),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  child: InkWell(
+                    onTap: () {
+                      // Collapse the body
+                      setState(() {
+                        widget.showBody = !widget.showBody;
+                      });
+                    },
+                    child: SizedBox(
+                      width: ComindColors.maxWidth,
+                      child: Column(
+                        children: [
+                          // Title bar
+                          // titleBar(context),
+
+                          // Status row
+                          // statusRow(statusStyle, delimiter),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -162,25 +184,10 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-                color: Provider.of<ComindColorsNotifier>(context)
-                    .currentColors
-                    .colorScheme
-                    .surface,
-                // gradient: LinearGradient(
-                //   transform: GradientRotation(0.9),
-                //   begin: Alignment.topLeft,
-                //   end: Alignment.bottomRight,
-                //   colors: [
-                //     Provider.of<ComindColorsNotifier>(context)
-                //         .colorScheme
-                //         .primary
-                //         .withAlpha(64),
-                //     Provider.of<ComindColorsNotifier>(context)
-                //         .colorScheme
-                //         .secondary
-                //         .withAlpha(64),
-                //   ],
-                // ),
+                // color: Provider.of<ComindColorsNotifier>(context)
+                //     .currentColors
+                //     .colorScheme
+                //     .surface,
               ),
               child: Visibility(
                 visible: widget.showBody,
@@ -327,6 +334,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                             ),
                           ),
                         ),
+                        // statusRow(statusStyle, delimiter),
 
                         // Alternative action row
                         Visibility(
@@ -344,97 +352,54 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             ),
           ],
         ),
-
-        // Dismiss button
-        // Positioned(
-        //   top: 0,
-        //   right: 0,
-        //   child: Row(
-        //     children: [
-        //       //
-        //       // Minimize
-        //       //
-        //       Material(
-        //         elevation: 0,
-        //         borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-        //         color: Provider.of<ComindColorsNotifier>(context)
-        //             .colorScheme
-        //             .surface,
-        //         child: InkWell(
-        //           borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-        //           onTap: () {
-        //             // Toggle the body
-        //             setState(() {
-        //               widget.showBody = !widget.showBody;
-
-        //               // Make disappear in 3 seconds
-        //               Future.delayed(const Duration(seconds: 3), () {
-        //                 // Kill the thought
-        //                 setState(() {
-        //                   widget.toBeDismissed = true;
-
-        //                   // Remove the thought from the list
-        //                   Provider.of<ThoughtsProvider>(context, listen: false)
-        //                       .removeThought(widget.thought);
-        //                 });
-        //               });
-        //             });
-        //           },
-        //           child: Container(
-        //             decoration: BoxDecoration(
-        //               borderRadius:
-        //                   BorderRadius.circular(ComindColors.bubbleRadius),
-        //               // color: Provider.of<ComindColorsNotifier>(context)
-        //               //     .colorScheme
-        //               //     .primary
-        //               //     .withAlpha(164),
-
-        //               // Colored border
-        //               // border: Border.all(
-        //               //   color: Provider.of<ComindColorsNotifier>(context)
-        //               //       .colorScheme
-        //               //       .primary
-        //               //       .withAlpha(64),
-        //               //   width: 2,
-        //               // ),
-        //             ),
-
-        //             // Textbuttonsimple version
-        //             child: TextButtonSimple(
-        //               text: "x",
-        //               // isHighlighted: true,
-        //               onPressed: () {
-        //                 // Toggle the body
-        //                 setState(() {
-        //                   widget.showBody = !widget.showBody;
-
-        //                   // Make disappear in 3 seconds
-        //                   Future.delayed(const Duration(seconds: 3), () {
-        //                     // Kill the thought
-        //                     setState(() {
-        //                       widget.toBeDismissed = true;
-
-        //                       // Remove the thought from the list
-        //                       Provider.of<ThoughtsProvider>(context,
-        //                               listen: false)
-        //                           .removeThought(widget.thought);
-        //                     });
-        //                   });
-        //                 });
-        //               },
-        //             ),
-
-        //             // child: Padding(
-        //             //     padding: const EdgeInsets.all(8),
-        //             //     child: Text(widget.showBody ? "x" : "o",
-        //             //         style: getTextTheme(context).titleSmall)),
-        //           ),
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // )
       ]),
+    );
+  }
+
+  Row statusRow(TextStyle statusStyle, Text delimiter) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        // Time since
+        Padding(
+          // Left padding is to line up with color dot
+          padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+          child: Text(formatTimestamp(widget.thought.dateCreated),
+              style: statusStyle),
+        ),
+
+        // Delimiter ∘
+        delimiter,
+
+        // username
+        Text(
+          widget.thought.username,
+          style: statusStyle,
+        ),
+
+        // delimiter ∘
+        delimiter,
+
+        // Public/private
+        Visibility(
+          visible: !widget.viewOnly,
+          child: Text(
+            widget.thought.isPublic ? "public" : "private",
+            style: statusStyle,
+          ),
+        ),
+
+        // delimiter ∘
+        delimiter,
+
+        // Link count
+        Visibility(
+          child: Text(
+            formatLinks(widget.thought.numLinks),
+            style: statusStyle,
+          ),
+        ),
+      ],
     );
   }
 
@@ -444,22 +409,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   bool hoveredPublic = false;
   bool hoveredLinks = false;
 
-  Widget titleBar(BuildContext context) {
-    var textSpan = TextSpan(
-        text: " ∘ ",
-        style: Provider.of<ComindColorsNotifier>(context)
-            .textTheme
-            .bodySmall!
-            .copyWith(
-                // color: Provider.of<ComindColorsNotifier>(context)
-                //     .colorScheme
-                //     .onSurface
-                //     .withOpacity(0.5),
-                ));
-
-    // Settings for the color line
-    const double height = 2;
-    var a = 255;
+  Stack titleBar(BuildContext context) {
     return Stack(clipBehavior: Clip.none, children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -488,7 +438,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                       child: Opacity(
-                        opacity: 0.6,
+                        opacity: .6,
                         child: RichText(
                           overflow: TextOverflow.clip,
                           maxLines: 1,
@@ -499,59 +449,13 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                                 text: widget.thought.title.isNotEmpty
                                     ? widget.thought.title.toLowerCase()
                                     : "(we're still making a title)",
-                                // style: Provider.of<ComindColorsNotifier>(
-                                //         context,
-                                //         listen: false)
-                                //     .textTheme
-                                //     .titleMedium!
-                                //     .copyWith(
-                                //       height: 1,
-                                //       // color: Provider.of<ComindColorsNotifier>(
-                                //       //         context,
-                                //       //         listen: false)
-                                //       //     .colorScheme
-                                //       //     .onBackground
-                                //       //     .withOpacity(0.7)
-                                //     ),
-
-                                // Trying out body large
-                                // style:
-                                //     Provider.of<ComindColorsNotifier>(context)
-                                //         .textTheme
-                                //         .bodyLarge!
-                                //         .copyWith(
-                                //           height: 1,
-                                //         ),
-
-                                // An attempt with a different font
-                                // style: GoogleFonts.josefinSans(
-                                //   fontSize: 18,
-                                //   fontWeight: FontWeight.w400,
-                                //   color:
-                                //       Provider.of<ComindColorsNotifier>(context)
-                                //           .colorScheme
-                                //           .onBackground
-                                //           .withOpacity(0.7),
-                                // ),
-
-                                // style: GoogleFonts.comfortaa(
-                                //   fontSize: 18,
-                                //   fontWeight: FontWeight.w400,
-                                //   color:
-                                //       Provider.of<ComindColorsNotifier>(context)
-                                //           .colorScheme
-                                //           .onBackground
-                                //           .withOpacity(0.7),
-                                // ),
-
-                                style: GoogleFonts.silkscreen(
+                                style: GoogleFonts.bungee(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w400,
                                   color:
                                       Provider.of<ComindColorsNotifier>(context)
                                           .colorScheme
-                                          .onBackground
-                                          .withOpacity(0.7),
+                                          .onBackground,
                                 ),
                               ),
                             ],
@@ -768,7 +672,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
     // Edit button
     var editThoughtButton = HoverIconButton(
-      icon: LineIcons.pen,
+      icon: widget.showTextBox ? LineIcons.crosshairs : LineIcons.pen,
       onPressed: () {
         // Update the edit box with the thought
         _editController.text = widget.thought.body;
@@ -799,152 +703,77 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       },
     );
 
-    // the action row
-    var delimiter = Text(
-      " ∘ ",
-      style: Provider.of<ComindColorsNotifier>(context)
-          .textTheme
-          .labelSmall!
-          .copyWith(
-              color: Provider.of<ComindColorsNotifier>(context)
-                  .colorScheme
-                  .onBackground
-                  .withOpacity(0.5)),
-    );
     return Container(
-      child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-        // Time since
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-          child: Text(
-            formatTimestamp(widget.thought.dateCreated),
-            style: Provider.of<ComindColorsNotifier>(context)
-                .textTheme
-                .labelSmall!
-                .copyWith(
-                    color: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .onBackground
-                        .withOpacity(hoveredTimestamp ? 1 : 0.5),
-                    decorationColor: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .onBackground,
-                    decoration: hoveredTimestamp
-                        ? TextDecoration.underline
-                        : TextDecoration.none),
-          ),
-        ),
+      // color: Colors.red,
+      child: Row(
+          // Row alignment
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.max,
 
-        // Delimiter ∘
-        delimiter,
+          // Children
+          children: [
+            // Column with user/date info
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.thought.username,
+                    style: colors.textTheme.labelSmall),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: Opacity(
+                    opacity: 0.5,
+                    child: Text(formatTimestamp(widget.thought.dateUpdated),
+                        style: colors.textTheme.labelSmall),
+                  ),
+                )
+              ],
+            ),
 
-        // username
-        Text(
-          widget.thought.username,
-          style: Provider.of<ComindColorsNotifier>(context)
-              .textTheme
-              .labelSmall!
-              .copyWith(
-                  color: Provider.of<ComindColorsNotifier>(context)
-                      .colorScheme
-                      .onBackground
-                      .withOpacity(hoveredUsername ? 1 : 0.5),
-                  decorationColor: Provider.of<ComindColorsNotifier>(context)
-                      .colorScheme
-                      .onBackground,
-                  decoration: hoveredUsername
-                      ? TextDecoration.underline
-                      : TextDecoration.none),
-        ),
+            // Expanded divider
+            Expanded(
+                child: Container(
+              height: 2,
+              color: onBackground.withAlpha(32),
+            )),
 
-        // delimiter ∘
-        delimiter,
+            // Lock icon
+            Visibility(
+                visible:
+                    !widget.viewOnly && !widget.relatedMode && !newThoughtOpen,
+                child: lockButton),
 
-        // Public/private
-        Visibility(
-          visible: !widget.viewOnly,
-          child: Text(
-            widget.thought.isPublic ? "public" : "private",
-            style: Provider.of<ComindColorsNotifier>(context)
-                .textTheme
-                .labelSmall!
-                .copyWith(
-                    color: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .onBackground
-                        .withOpacity(hoveredPublic ? 1 : 0.5),
-                    decorationColor: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .onBackground,
-                    decoration: hoveredPublic
-                        ? TextDecoration.underline
-                        : TextDecoration.none),
-          ),
-        ),
+            // Buttons
+            Visibility(
+                visible: widget.showTextBox &&
+                    !widget.relatedMode &&
+                    !newThoughtOpen &&
+                    !widget.viewOnly,
+                child: deleteButton),
 
-        // delimiter ∘
-        delimiter,
+            // Edit button
+            Visibility(
+                visible: !widget.viewOnly &&
+                    !widget.relatedMode &&
+                    !newThoughtOpen &&
+                    widget.thought.username ==
+                        Provider.of<AuthProvider>(context).username,
+                child: editThoughtButton),
 
-        // Link count
-        Visibility(
-          visible: widget.thought.numLinks != null,
-          child: Text(
-            "${widget.thought.numLinks} links",
-            style: Provider.of<ComindColorsNotifier>(context)
-                .textTheme
-                .labelSmall!
-                .copyWith(
-                    color: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .onBackground
-                        .withOpacity(hoveredLinks ? 1 : 0.5),
-                    decorationColor: Provider.of<ComindColorsNotifier>(context)
-                        .colorScheme
-                        .onBackground,
-                    decoration: hoveredLinks
-                        ? TextDecoration.underline
-                        : TextDecoration.none),
-          ),
-        ),
+            // Info button
+            Visibility(
+                visible:
+                    !widget.relatedMode && !newThoughtOpen && !widget.viewOnly,
+                child: infoButton),
 
-        // Expanded divider
-        Expanded(child: Container()),
+            fullscreenButton,
 
-        // Lock icon
-        Visibility(
-            visible: !widget.viewOnly && !widget.relatedMode && !newThoughtOpen,
-            child: lockButton),
+            // Link button
+            linkButton,
 
-        // Buttons
-        Visibility(
-            visible: !widget.showTextBox &&
-                !widget.relatedMode &&
-                !newThoughtOpen &&
-                !widget.viewOnly,
-            child: deleteButton),
-
-        // Edit button
-        Visibility(
-            visible: !widget.viewOnly &&
-                !widget.relatedMode &&
-                !newThoughtOpen &&
-                widget.thought.username ==
-                    Provider.of<AuthProvider>(context).username,
-            child: editThoughtButton),
-
-        // Info button
-        Visibility(
-            visible: !widget.relatedMode && !newThoughtOpen && !widget.viewOnly,
-            child: infoButton),
-
-        fullscreenButton,
-
-        // Link button
-        linkButton,
-
-        // Save button
-        saveButton,
-      ]),
+            // Save button
+            saveButton,
+          ]),
     );
   }
 
@@ -1005,20 +834,21 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
   SingleChildScrollView thoughtBody(BuildContext context) {
     // Color bar vars
-    const double height = 2;
-    var a = 255;
+    // const double height = 2;
+    // var a = 255;
 
-    var textSpan = TextSpan(
-        text: " ∘ ",
-        style: Provider.of<ComindColorsNotifier>(context)
-            .textTheme
-            .bodySmall!
-            .copyWith(
-              color: Provider.of<ComindColorsNotifier>(context)
-                  .colorScheme
-                  .onSurface
-                  .withOpacity(0.5),
-            ));
+    // var textSpan = TextSpan(
+    //     text: " ∘ ",
+    //     style: Provider.of<ComindColorsNotifier>(context)
+    //         .textTheme
+    //         .bodySmall!
+    //         .copyWith(
+    //           height: 0.5,
+    //           color: Provider.of<ComindColorsNotifier>(context)
+    //               .colorScheme
+    //               .onSurface
+    //               .withOpacity(0.5),
+    //         ));
 
     return SingleChildScrollView(
       child: Column(
@@ -1058,7 +888,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
                   // Markdown body
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TheMarkdownBox(
                         text: widget.thought.body,
                         fullHeight:
