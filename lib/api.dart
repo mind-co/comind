@@ -765,3 +765,21 @@ Future<void> saveBrainstackMetadata(BuildContext context, String id,
     throw Exception('Failed to save brainstack');
   }
 }
+
+// Delete a brainstack
+Future<void> deleteBrainstack(BuildContext context, String id) async {
+  final url = Uri.parse(endpoint('/api/brainstacks/$id'));
+
+  final headers = getBaseHeaders(context);
+
+  final response = await dio.delete(
+    url.toString(),
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to delete brainstack');
+  }
+}

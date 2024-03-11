@@ -8,11 +8,12 @@ class Brainstack {
   final String description;
   final String brainstackId;
   final String? groupId; // group id for shared stacks, not currently used
-  final List<String> thoughtIds;
+  final List<String>? thoughtIds;
   final List<Thought>? thoughts;
   final Color color;
 
-  get length => thoughtIds.length;
+  // get length => thoughtIds.length;
+  get length => -1; // TODO: implement this
 
   const Brainstack({
     required this.title,

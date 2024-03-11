@@ -6,11 +6,7 @@ import 'package:comind/hover_icon_button.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/text_button_simple.dart';
 import 'package:comind/types/brainstacks.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 
 class BrainStackListView extends StatefulWidget {
@@ -94,7 +90,7 @@ class _BrainStackListViewState extends State<BrainStackListView> {
   @override
   void initState() {
     super.initState();
-    // getBrainstacks();
+    getBrainstacks();
   }
 
   @override
@@ -105,6 +101,31 @@ class _BrainStackListViewState extends State<BrainStackListView> {
     // Return the brainstacks
     return Scaffold(
       appBar: comindAppBar(context, title: appBarTitle("Brainstacks", context)),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FloatingActionButton(
+              backgroundColor: colors.colorScheme.surface,
+              onPressed: () {
+                // addBrainstack();
+              },
+              child: Icon(Icons.add),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FloatingActionButton(
+              backgroundColor: colors.colorScheme.surface,
+              onPressed: () {
+                getBrainstacks();
+              },
+              child: Icon(Icons.refresh),
+            ),
+          ),
+        ],
+      ),
       body: Center(
         child: SizedBox(
           width: ComindColors.maxWidth,
@@ -159,6 +180,9 @@ class _BrainstackDisplayState extends State<BrainstackDisplay> {
   bool _titleEditable = false;
   bool _descriptionEditable = false;
 
+  get actionBarFontScalar => 1.0;
+  get actionBarOutlined => false;
+
   @override
   void initState() {
     super.initState();
@@ -191,7 +215,7 @@ class _BrainstackDisplayState extends State<BrainstackDisplay> {
 
     var title = widget.brainstack.title;
     var description = widget.brainstack.description;
-    var numThoughts = widget.brainstack.thoughtIds.length;
+    var numThoughts = widget.brainstack.length;
 
     var titleOrEditable = _titleEditable
         ? TextField(
@@ -274,79 +298,44 @@ class _BrainstackDisplayState extends State<BrainstackDisplay> {
           );
 
     return SizedBox(
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      color: colors.colorScheme.onBackground, width: 1),
-                  // color: widget.backgroundColor,
-                  borderRadius: BorderRadius.all(
-                      Radius.circular(ComindColors.bubbleRadius)),
+        child: Card(
+      color: widget.backgroundColor.withOpacity(0.5),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: titleOrEditable,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: descriptionOrEditable,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text(
+                  "$numThoughts thoughts",
+                  style: widget.footerStyle,
                 ),
-                child: ListTile(
-                  title: titleOrEditable,
-                  subtitle: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                        child: descriptionOrEditable,
-                      ),
-                      Text('$numThoughts thoughts', style: widget.footerStyle),
-                    ],
-                  ),
-                  // trailing: TextButtonSimple(
-                  //   text: "Edit",
-                  //   onPressed: () {
-                  //     setState(() {
-                  //       _titleEditable = !_titleEditable;
-                  //       _descriptionEditable = !_descriptionEditable;
-                  //     });
-                  //   },
-                  // ),
-                  isThreeLine: true,
-                ),
-              ),
-            ),
+                Spacer(),
 
-            // Add button row
-            Visibility(
-              visible: _descriptionEditable,
-              child: Positioned(
-                bottom: 0,
-                right: 16,
-                child: Row(
-                  children: [
-                    HoverIconButton(
-                      icon: LineIcons.times,
-                      onPressed: () => {},
-                      unhoveredOpacity: 1.0,
-                      backgroundColor: colors.colorScheme.background,
-                      outlineColor: colors.colorScheme.onBackground,
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    HoverIconButton(
-                      icon: LineIcons.check,
-                      onPressed: () => {},
-                      unhoveredOpacity: 1.0,
-                      backgroundColor: colors.colorScheme.background,
-                      outlineColor: colors.colorScheme.onBackground,
-                    ),
-                  ],
+                // Delete button
+                TextButtonSimple(
+                  onPressed: () {
+                    // Delete the brainstack
+                    // deleteBrainstack(context, widget.brainstack.brainstackId);
+                  },
+                  fontScalar: actionBarFontScalar,
+                  outlined: actionBarOutlined,
+                  text: "Delete",
+                  // style: widget.footerStyle,
                 ),
-              ),
-            )
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
-    );
+    ));
   }
 }
