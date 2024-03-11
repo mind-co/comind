@@ -57,6 +57,8 @@ class _StreamState extends State<Stream> {
 
   Mode mode = Mode.begin;
 
+  get actionBarButtonFontScalar => 0.8;
+
   // Fetch user thoughts
   void fetchUserThoughts() async {
     while (mounted &&
@@ -411,29 +413,48 @@ class _StreamState extends State<Stream> {
     // Cosmetic settings
     const double actionIconSize = 28;
 
+    // Get the color notifier
+    var colorNotifier =
+        Provider.of<ComindColorsNotifier>(context, listen: false);
+
     // The action bar container
     var container = Container(
       padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 6.0),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.max,
+        child: Wrap(
+          alignment: WrapAlignment.start,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          runSpacing: 0,
+          runAlignment: WrapAlignment.start,
+
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // mainAxisSize: MainAxisSize.max,
           // verticalDirection: VerticalDirection.down,
           children: [
-            // Settings button
-            HoverIconButton(
-              size: actionIconSize,
-              icon: LineIcons.cog,
-              onPressed: () {
-                // TODO: #18 Implement settings and user preferences
-              },
+            // SOUL BLOB BABY
+            Material(
+              borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () async {
+                  await colorDialog(context);
+                },
+                borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+                child: // Soul blob
+                    Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SoulBlob(
+                    comindColors: colorNotifier.currentColors,
+                  ),
+                ),
+              ),
             ),
 
             // Notifications
-            HoverIconButton(
-              size: actionIconSize,
-              icon: LineIcons.bell,
+            TextButtonSimple(
+              text: "Pings",
+              fontScalar: actionBarButtonFontScalar,
               onPressed: () {
                 // Set the mode to notifications
                 mode = Mode.notifications;
@@ -447,18 +468,18 @@ class _StreamState extends State<Stream> {
             ),
 
             // Concept button
-            HoverIconButton(
-              size: actionIconSize,
-              icon: LineIcons.hashtag,
+            TextButtonSimple(
+              text: "Concepts",
+              fontScalar: actionBarButtonFontScalar,
               onPressed: () {
                 Navigator.pushNamed(context, "/concepts");
               },
             ),
 
             // Most recent button
-            HoverIconButton(
-                size: actionIconSize,
-                icon: LineIcons.clock,
+            TextButtonSimple(
+                text: "Everything",
+                fontScalar: actionBarButtonFontScalar,
                 onPressed: () {
                   // Clear top of mind
                   Provider.of<ThoughtsProvider>(context, listen: false).clear();
@@ -470,29 +491,10 @@ class _StreamState extends State<Stream> {
                   mode = Mode.myThoughts;
                 }),
 
-            Material(
-              borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () async {
-                  await colorDialog(context);
-                },
-                borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-                child: // Soul blob
-                    Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SoulBlob(
-                    comindColors: Provider.of<ComindColorsNotifier>(context)
-                        .currentColors,
-                  ),
-                ),
-              ),
-            ),
-
             // Public thoughts button
-            HoverIconButton(
-              size: actionIconSize,
-              icon: LineIcons.stream,
+            TextButtonSimple(
+              text: "Recent",
+              fontScalar: actionBarButtonFontScalar,
               onPressed: () {
                 // Clear top of mind
                 Provider.of<ThoughtsProvider>(context, listen: false).clear();
@@ -506,41 +508,29 @@ class _StreamState extends State<Stream> {
             ),
 
             // Dark mode button
-            HoverIconButton(
-              size: actionIconSize,
-              icon: Provider.of<ComindColorsNotifier>(context).darkMode
-                  ? LineIcons.moon
-                  : LineIcons.sun,
+            TextButtonSimple(
+              text: colorNotifier.darkMode ? "Light" : "Dark",
+              fontScalar: actionBarButtonFontScalar,
               onPressed: () {
-                Provider.of<ComindColorsNotifier>(context, listen: false)
-                    .toggleTheme(!Provider.of<ComindColorsNotifier>(context,
-                            listen: false)
-                        .darkMode);
+                colorNotifier.toggleTheme(!colorNotifier.darkMode);
               },
             ),
 
             // Public / private button
-            HoverIconButton(
-              // hoverText: Provider.of<ComindColorsNotifier>(context).publicMode
-              //     ? "Public mode"
-              //     : "Private mode",
-              size: actionIconSize,
-              icon: Provider.of<ComindColorsNotifier>(context).publicMode
-                  ? LineIcons.globe
-                  : LineIcons.lock,
+            TextButtonSimple(
+              text: colorNotifier.publicMode ? "Public" : "Private",
+              fontScalar: actionBarButtonFontScalar,
               onPressed: () {
-                Provider.of<ComindColorsNotifier>(context, listen: false)
-                    .togglePublicMode(!Provider.of<ComindColorsNotifier>(
-                            context,
-                            listen: false)
+                colorNotifier.togglePublicMode(
+                    !Provider.of<ComindColorsNotifier>(context, listen: false)
                         .publicMode);
               },
             ),
 
             // Clear button
-            HoverIconButton(
-              size: actionIconSize,
-              icon: LineIcons.broom,
+            TextButtonSimple(
+              text: "Clear",
+              fontScalar: actionBarButtonFontScalar,
               onPressed: () {
                 Provider.of<ThoughtsProvider>(context, listen: false).clear();
               },
@@ -552,7 +542,7 @@ class _StreamState extends State<Stream> {
             //   icon: Icons.color_lens,
             //   onPressed: () async {
             //     colorDialog(context).then((value) {
-            //       Provider.of<ComindColorsNotifier>(context, listen: false)
+            //       colorNotifier
             //           .modifyColors(value);
             //     });
             //   },
