@@ -1,10 +1,10 @@
 // Dispatches the user to where the need to go.
 // If not logged in, send them to the login page.
 // If logged in, send them to the home page.
+import 'package:comind/brainstack_list_view.dart';
 import 'package:comind/concept_page.dart';
 import 'package:comind/home.dart';
 import 'package:comind/login.dart';
-import 'package:comind/main.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/stream.dart';
 import 'package:comind/thought_editor_basic.dart';
@@ -46,6 +46,13 @@ class Dispatch extends StatelessWidget {
           if (settings.name == '/concepts') {
             return MaterialPageRoute(
               builder: (context) => const ConceptPage(),
+            );
+          }
+
+          // Handle /brainstacks
+          if (settings.name == '/brainstacks') {
+            return MaterialPageRoute(
+              builder: (context) => const BrainStackListView(),
             );
           }
 
@@ -91,6 +98,12 @@ class Dispatch extends StatelessWidget {
             const MaterialPage(
               child: Stream(),
             ),
+
+          // // Brainstack page
+          // if (authProvider.isLoggedIn)
+          //   MaterialPage(
+          //     child: const BrainStackView(),
+          //   ),
         ],
         onPopPage: (route, result) => route.didPop(result),
       );

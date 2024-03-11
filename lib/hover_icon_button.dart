@@ -6,12 +6,22 @@ class HoverIconButton extends StatefulWidget {
   final IconData icon;
   final VoidCallback onPressed;
   final double size;
+  final Color backgroundColor;
+  final Color outlineColor;
+  final double unhoveredOpacity;
+  final Text? hoverText;
+  final bool alwaysShowText;
 
   const HoverIconButton(
       {super.key,
       required this.icon,
       required this.onPressed,
-      this.size = 18.0});
+      this.alwaysShowText = false,
+      this.hoverText = const Text(""),
+      this.size = 18.0,
+      this.unhoveredOpacity = 0.5,
+      this.outlineColor = Colors.transparent,
+      this.backgroundColor = Colors.transparent});
 
   @override
   HoverIconButtonState createState() => HoverIconButtonState();
@@ -29,15 +39,15 @@ class HoverIconButtonState extends State<HoverIconButton> {
         padding: const EdgeInsets.all(0.0),
         child: IconButton(
           style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(widget.backgroundColor),
+
             shape: MaterialStateProperty.all(
               RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                // side: BorderSide(
-                //   color: Provider.of<ComindColorsNotifier>(context)
-                //       .primary
-                //       .withAlpha(64),
-                //   width: 1.0, // Set the outline width
-                // ),
+                borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+                side: BorderSide(
+                  color: widget.outlineColor,
+                  width: 1.0, // Set the outline width
+                ),
               ),
             ),
             // shape: MaterialStateProperty.all(ContinuousRectangleBorder(
@@ -50,13 +60,14 @@ class HoverIconButtonState extends State<HoverIconButton> {
             //         .withAlpha(200)
             //         ),
           ),
-          hoverColor:
-              Provider.of<ComindColorsNotifier>(context).primary.withAlpha(164),
+          hoverColor: Provider.of<ComindColorsNotifier>(context).primary,
           padding: EdgeInsets.zero,
           onPressed: widget.onPressed,
           visualDensity: VisualDensity.comfortable,
           icon: Opacity(
-              opacity: _isHovering ? 1.0 : 0.5, // Change opacity on hover
+              opacity: _isHovering
+                  ? 1.0
+                  : widget.unhoveredOpacity, // Change opacity on hover
               child: Icon(
                 widget.icon,
                 color: _isHovering

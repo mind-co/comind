@@ -39,7 +39,7 @@ String exactTimestamp(String timestamp) {
 Text appBarTitle(String title, BuildContext context) {
   return Text(
     title,
-    style: getTextTheme(context).displayMedium,
+    style: getTextTheme(context).headlineMedium,
   );
 }
 
@@ -83,18 +83,7 @@ AppBar comindAppBar(BuildContext context, {Widget? title}) {
 
     // Add toolbar
     toolbarHeight: appBarHeight,
-    actions: [
-      // Add dark mode toggle
-      // IconButton(
-      //   icon: colors.darkMode
-      //       ? const Icon(Icons.dark_mode)
-      //       : const Icon(Icons.light_mode),
-      //   onPressed: () {
-      //     Provider.of<ComindColorsNotifier>(context, listen: false)
-      //         .toggleTheme(!colors.darkMode);
-      //   },
-      // ),
-    ],
+    // actions: [],
   );
 }
 

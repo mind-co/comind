@@ -1,8 +1,8 @@
-import 'package:comind/colors.dart';
-import 'package:comind/main.dart';
-import 'package:comind/providers.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import "package:comind/colors.dart";
+import "package:comind/main.dart";
+import "package:comind/providers.dart";
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 
 class MenuDrawer extends StatelessWidget {
   @override
@@ -16,7 +16,7 @@ class MenuDrawer extends StatelessWidget {
               color: Provider.of<ComindColorsNotifier>(context).background,
             ),
             child: Text(
-              'Menu',
+              "Menu",
               style: Provider.of<ComindColorsNotifier>(context)
                   .textTheme
                   .displaySmall,
@@ -24,13 +24,20 @@ class MenuDrawer extends StatelessWidget {
           ),
           // Navigate back to the stream
           ListTile(
-            title: Text('Stream'),
+            title: const Text("Stream"),
             onTap: () {
-              Navigator.pushNamed(context, '/');
+              Navigator.pushNamed(context, "/");
+            },
+          ),
+          // Navigate back to the stream
+          ListTile(
+            title: const Text("Brainstacks"),
+            onTap: () {
+              Navigator.pushNamed(context, "/brainstacks");
             },
           ),
           ListTile(
-            title: Text('Color Dialog'),
+            title: const Text("Colors"),
             onTap: () async {
               Color color = await colorDialog(context);
               Provider.of<ComindColorsNotifier>(context, listen: false)
@@ -38,7 +45,7 @@ class MenuDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text('Dark Mode'),
+            title: const Text("Dark Mode"),
             onTap: () {
               Provider.of<ComindColorsNotifier>(context, listen: false)
                   .toggleTheme(
@@ -49,18 +56,18 @@ class MenuDrawer extends StatelessWidget {
           Visibility(
             visible: !Provider.of<AuthProvider>(context).isLoggedIn,
             child: ListTile(
-              title: Text('Log in'),
+              title: const Text("Log in"),
               onTap: () {
-                Navigator.pushNamed(context, '/login');
+                Navigator.pushNamed(context, "/login");
               },
             ),
           ),
           Visibility(
             visible: !Provider.of<AuthProvider>(context).isLoggedIn,
             child: ListTile(
-              title: Text('Sign up'),
+              title: const Text("Sign up"),
               onTap: () {
-                Navigator.pushNamed(context, '/signup');
+                Navigator.pushNamed(context, "/signup");
               },
             ),
           ),
@@ -69,7 +76,7 @@ class MenuDrawer extends StatelessWidget {
           Visibility(
             visible: Provider.of<AuthProvider>(context).isLoggedIn,
             child: ListTile(
-              title: Text('Log out'),
+              title: const Text("Log out"),
               onTap: () {
                 Provider.of<AuthProvider>(context, listen: false).logout();
               },
@@ -96,7 +103,7 @@ class MenuDrawer extends StatelessWidget {
 //                     child:
 //                         Text("Menu", style: getTextTheme(context).titleMedium)),
 
-//                 // fills the left column so that button expansions don't do anything
+//                 // fills the left column so that button expansions don"t do anything
 //                 const SizedBox(height: 0, width: 200),
 
 //                 // Public/private button
@@ -226,7 +233,7 @@ class MenuDrawer extends StatelessWidget {
 //                       onPressed: () {
 //                         Provider.of<ThoughtsProvider>(context, listen: false)
 //                             .addTopOfMind(Thought.fromString(
-//                                 "I'm happy to have you here :smiley:",
+//                                 "I"m happy to have you here :smiley:",
 //                                 "Co",
 //                                 true,
 //                                 title: "Welcome to comind"));

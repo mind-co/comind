@@ -142,7 +142,7 @@ class ComindColors {
   );
 
   static final labelStyle = GoogleFonts.ibmPlexMono(
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w400,
     fontSize: 20,
   );
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:comind/colors.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
+import 'package:comind/types/brainstacks.dart';
 import 'package:comind/types/concept.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -698,5 +699,69 @@ Future<Thought> fetchStartPageThought(BuildContext context) async {
     return Thought.fromJson(jsonResponse['start_thoughts']);
   } else {
     throw Exception('Failed to load start page thought');
+  }
+}
+
+// Retrieve brainstacks for a user
+Future<Brainstacks> fetchBrainstacks(BuildContext context) async {
+  final url = Uri.parse(endpoint('/api/brainstacks/'));
+
+  final headers = getBaseHeaders(context);
+  headers['ComindPageNo'] = '0';
+  headers['ComindLimit'] = '10';
+
+  final response = await dio.get(
+    url.toString(),
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  print(response.data);
+
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.data);
+    return Brainstacks.fromJson(jsonResponse);
+  } else {
+    throw Exception('Failed to load brainstacks');
+  }
+}
+
+// Save brainstack metadata (title, description, color)
+Future<void> saveBrainstackMetadata(BuildContext context, String id,
+    {String? title, String? description, Color? color}) async {
+  final url = Uri.parse(endpoint('/api/brainstacks/'));
+
+  final headers = getBaseHeaders(context);
+
+  var body_map = <String, dynamic>{
+    'id': id,
+  };
+
+  // Add the values if they are not null
+  if (title != null) {
+    body_map['title'] = title;
+  }
+
+  if (description != null) {
+    body_map['description'] = description;
+  }
+
+  if (color != null) {
+    body_map['color'] = color.value.toRadixString(16);
+  }
+
+  final body = jsonEncode(body_map);
+
+  final response = await dio.post(
+    url.toString(),
+    data: body,
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to save brainstack');
   }
 }
