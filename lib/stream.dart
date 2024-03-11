@@ -481,9 +481,6 @@ class _StreamState extends State<Stream> {
                 text: "Everything",
                 fontScalar: actionBarButtonFontScalar,
                 onPressed: () {
-                  // Clear top of mind
-                  Provider.of<ThoughtsProvider>(context, listen: false).clear();
-
                   // Fetch related thoughts
                   fetchUserThoughts();
 
@@ -496,9 +493,6 @@ class _StreamState extends State<Stream> {
               text: "Recent",
               fontScalar: actionBarButtonFontScalar,
               onPressed: () {
-                // Clear top of mind
-                Provider.of<ThoughtsProvider>(context, listen: false).clear();
-
                 // Fetch related thoughts
                 _fetchStream(context);
 
@@ -532,7 +526,17 @@ class _StreamState extends State<Stream> {
               text: "Clear",
               fontScalar: actionBarButtonFontScalar,
               onPressed: () {
-                Provider.of<ThoughtsProvider>(context, listen: false).clear();
+                Provider.of<ThoughtsProvider>(context, listen: false)
+                    .clearBrainBuffer();
+              },
+            ),
+
+            // Brainstacks button
+            TextButtonSimple(
+              text: "Brainstacks",
+              fontScalar: actionBarButtonFontScalar,
+              onPressed: () {
+                Navigator.pushNamed(context, "/brainstacks");
               },
             ),
 
@@ -709,7 +713,8 @@ class _StreamState extends State<Stream> {
             shrinkWrap: true,
             dragStartBehavior: DragStartBehavior.start,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: Provider.of<ThoughtsProvider>(context).thoughts.length,
+            itemCount:
+                max(20, Provider.of<ThoughtsProvider>(context).thoughts.length),
             itemBuilder: (context, index) {
               var thought =
                   Provider.of<ThoughtsProvider>(context).thoughts[index];

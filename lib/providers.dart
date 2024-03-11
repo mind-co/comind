@@ -207,6 +207,12 @@ class ThoughtsProvider extends ChangeNotifier {
   }
 
   // Remove all thoughts/brain buffer
+  void clearBrainBuffer() {
+    brainBuffer.clear();
+    notifyListeners();
+  }
+
+  // Clear EVERYTHING
   void clear() {
     _thoughts.clear();
     brainBuffer.clear();

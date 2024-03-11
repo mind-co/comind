@@ -45,8 +45,15 @@ class _NotificationDisplayState extends State<NotificationDisplay> {
     //     // .withOpacity(0.7),
     //     );
 
-    final titleStyle =
-        Provider.of<ComindColorsNotifier>(context).textTheme.titleSmall;
+    final titleStyle = Provider.of<ComindColorsNotifier>(context)
+        .textTheme
+        .bodyMedium!
+        .copyWith(
+          fontWeight: FontWeight.w600,
+          color: Provider.of<ComindColorsNotifier>(context)
+              .colorScheme
+              .onBackground,
+        );
 
     return Material(
       child: InkWell(
@@ -71,9 +78,8 @@ class _NotificationDisplayState extends State<NotificationDisplay> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(0.0),
-                        child: Wrap(
-                          alignment: WrapAlignment.start,
-                          crossAxisAlignment: WrapCrossAlignment.center,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // trying title with some google fonts stuff
                             Text(widget.notification.linkingTitle,

@@ -8,6 +8,7 @@ import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:comind/soul_blob.dart';
 import 'package:comind/text_button.dart';
+import 'package:comind/text_button_simple.dart';
 import 'package:comind/thought_editor_basic.dart';
 import 'package:comind/thought_table.dart';
 import 'package:flutter/cupertino.dart';
@@ -100,6 +101,9 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
   // Whether the "new thought" editor is open
   bool newThoughtOpen = false;
+
+  get actionRowFontScalar => 0.8;
+  get actionRowOutlined => false;
 
   // Set initial state
   @override
@@ -338,12 +342,16 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
                         // Alternative action row
                         Visibility(
-                            visible: widget.showBody,
+                          visible: widget.showBody,
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width,
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                               child:
                                   alternativeActionRow(context, onBackground),
-                            )),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -353,53 +361,6 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           ],
         ),
       ]),
-    );
-  }
-
-  Row statusRow(TextStyle statusStyle, Text delimiter) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        // Time since
-        Padding(
-          // Left padding is to line up with color dot
-          padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-          child: Text(formatTimestamp(widget.thought.dateCreated),
-              style: statusStyle),
-        ),
-
-        // Delimiter ∘
-        delimiter,
-
-        // username
-        Text(
-          widget.thought.username,
-          style: statusStyle,
-        ),
-
-        // delimiter ∘
-        delimiter,
-
-        // Public/private
-        Visibility(
-          visible: !widget.viewOnly,
-          child: Text(
-            widget.thought.isPublic ? "public" : "private",
-            style: statusStyle,
-          ),
-        ),
-
-        // delimiter ∘
-        delimiter,
-
-        // Link count
-        Visibility(
-          child: Text(
-            formatLinks(widget.thought.numLinks),
-            style: statusStyle,
-          ),
-        ),
-      ],
     );
   }
 
@@ -540,25 +501,15 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
   }
 
   // The action row
-  Container alternativeActionRow(BuildContext context, Color onBackground) {
-    // The expand button
-    var expandButton = newButton(
-        onBackground, context, widget.showBody ? "Close" : "View", () {
-      // Show the full thought
-      setState(() {
-        widget.showBody = !widget.showBody;
-      });
-    });
-
+  Widget alternativeActionRow(BuildContext context, Color onBackground) {
     var linkButton = Visibility(
       visible: widget.type != MarkdownDisplayType.topOfMind,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-        child: ComindTextButton(
+        child: TextButtonSimple(
           text: "Think",
-          opacity: 0.4,
-          fontSize: 12,
-          colorIndex: 2,
+          fontScalar: actionRowFontScalar,
+          outlined: actionRowOutlined,
           onPressed: () {
             // Add it to top of mind
             Provider.of<ThoughtsProvider>(context, listen: false)
@@ -570,7 +521,10 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
 
     var saveButton = Visibility(
       visible: widget.showTextBox,
-      child: HoverIconButton(
+      child: TextButtonSimple(
+        text: "Save",
+        fontScalar: actionRowFontScalar,
+        outlined: actionRowOutlined,
         onPressed: () {
           // Update the thought
           widget.thought.body = _editController.text;
@@ -581,30 +535,13 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
             widget.showTextBox = false;
           });
         },
-        icon: LineIcons.save,
       ),
     );
 
-    var moreButton = Visibility(
-      visible: !widget.viewOnly && !widget.showTextBox,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-        child: ComindTextButton(
-          text: "More",
-          opacity: 0.4,
-          fontSize: 12,
-          colorIndex: 3,
-          onPressed: () {
-            moreClicked = !moreClicked;
-
-            // Go to the viewing page for this thought
-            Navigator.pushNamed(context, '/thoughts/${widget.thought.id}');
-          },
-        ),
-      ),
-    );
-
-    var lockButton = HoverIconButton(
+    var lockButton = TextButtonSimple(
+      text: widget.thought.isPublic ? "public" : "private",
+      fontScalar: actionRowFontScalar,
+      outlined: actionRowOutlined,
       onPressed: () {
         // Toggle public/private
         setState(() {
@@ -612,67 +549,71 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           // thought.isPublic = !thought.isPublic;
         });
       },
-      icon: widget.thought.isPublic ? LineIcons.globe : LineIcons.lock,
     );
 
-    var deleteButton = HoverIconButton(
-        onPressed: () async {
-          bool? shouldDelete = await showDialog<bool>(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                // backgroundColor: Provider.of<ComindColorsNotifier>(context)
-                //     .colorScheme
-                //     .background,
-                // surfaceTintColor: Provider.of<ComindColorsNotifier>(context)
-                //     .colorScheme
-                //     .secondary
-                //     .withAlpha(64),
-                title: Text(
-                  'Delete thought?',
-                  style: getTextTheme(context).titleSmall,
+    var deleteButton = TextButtonSimple(
+      text: "Delete",
+      fontScalar: actionRowFontScalar,
+      outlined: actionRowOutlined,
+      onPressed: () async {
+        bool? shouldDelete = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              // backgroundColor: Provider.of<ComindColorsNotifier>(context)
+              //     .colorScheme
+              //     .background,
+              // surfaceTintColor: Provider.of<ComindColorsNotifier>(context)
+              //     .colorScheme
+              //     .secondary
+              //     .withAlpha(64),
+              title: Text(
+                'Delete thought?',
+                style: getTextTheme(context).titleSmall,
+              ),
+              content: const Text(
+                  'You sure you wanna delete this note? Cameron is really, really bad at making undo buttons. \n\nIf you delete this it will prolly be gone forever.'),
+              actions: <Widget>[
+                ComindTextButton(
+                  text: "Cancel",
+                  opacity: 1,
+                  fontSize: 18,
+                  colorIndex: 1,
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
                 ),
-                content: const Text(
-                    'You sure you wanna delete this note? Cameron is really, really bad at making undo buttons. \n\nIf you delete this it will prolly be gone forever.'),
-                actions: <Widget>[
-                  ComindTextButton(
-                    text: "Cancel",
-                    opacity: 1,
-                    fontSize: 18,
-                    colorIndex: 1,
-                    onPressed: () {
-                      Navigator.of(context).pop(false);
-                    },
-                  ),
-                  ComindTextButton(
-                    text: "Delete",
-                    opacity: 1,
-                    fontSize: 18,
-                    colorIndex: 3,
-                    onPressed: () {
-                      Navigator.of(context).pop(true);
-                    },
-                  ),
-                ],
-                actionsAlignment: MainAxisAlignment.spaceBetween,
-              );
-            },
-          );
+                ComindTextButton(
+                  text: "Delete",
+                  opacity: 1,
+                  fontSize: 18,
+                  colorIndex: 3,
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+            );
+          },
+        );
 
-          if (shouldDelete == true) {
-            // ignore: use_build_context_synchronously
-            deleteThought(context, widget.thought.id);
+        if (shouldDelete == true) {
+          // ignore: use_build_context_synchronously
+          deleteThought(context, widget.thought.id);
 
-            // Remove the thought from the list
-            Provider.of<ThoughtsProvider>(context, listen: false)
-                .removeThought(widget.thought);
-          }
-        },
-        icon: LineIcons.trash);
+          // Remove the thought from the list
+          Provider.of<ThoughtsProvider>(context, listen: false)
+              .removeThought(widget.thought);
+        }
+      },
+    );
 
     // Edit button
-    var editThoughtButton = HoverIconButton(
-      icon: widget.showTextBox ? LineIcons.crosshairs : LineIcons.pen,
+    var editThoughtButton = TextButtonSimple(
+      text: widget.showTextBox ? "Close" : "Edit",
+      fontScalar: actionRowFontScalar,
+      outlined: actionRowOutlined,
       onPressed: () {
         // Update the edit box with the thought
         _editController.text = widget.thought.body;
@@ -685,16 +626,20 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
     );
 
     // Fullscreen button
-    var fullscreenButton = HoverIconButton(
-      icon: LineIcons.expand,
+    var fullscreenButton = TextButtonSimple(
+      text: "Expand",
+      fontScalar: actionRowFontScalar,
+      outlined: actionRowOutlined,
       onPressed: () {
         // Go to the viewing page for this thought
         Navigator.pushNamed(context, '/thoughts/${widget.thought.id}');
       },
     );
 
-    var infoButton = HoverIconButton(
-      icon: widget.infoMode ? LineIcons.windowClose : LineIcons.infoCircle,
+    var infoButton = TextButtonSimple(
+      text: widget.infoMode ? "Close" : "Info",
+      fontScalar: actionRowFontScalar,
+      outlined: actionRowOutlined,
       onPressed: () {
         // Toggle info mode
         setState(() {
@@ -703,78 +648,65 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
       },
     );
 
-    return Container(
-      // color: Colors.red,
-      child: Row(
-          // Row alignment
-          mainAxisAlignment: MainAxisAlignment.end,
-          mainAxisSize: MainAxisSize.max,
+    return Wrap(
+        // Row alignment
+        alignment: WrapAlignment.start,
+        direction: Axis.horizontal,
+        crossAxisAlignment: WrapCrossAlignment.center,
 
-          // Children
-          children: [
-            // Column with user/date info
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.thought.username,
-                    style: colors.textTheme.labelSmall),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: Opacity(
-                    opacity: 0.5,
-                    child: Text(formatTimestamp(widget.thought.dateUpdated),
-                        style: colors.textTheme.labelSmall),
-                  ),
-                )
-              ],
-            ),
+        // Children
+        children: [
+          Column(
+            children: [
+              Text(widget.thought.username, style: colors.textTheme.labelSmall),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: Opacity(
+                  opacity: 0.5,
+                  child: Text(formatTimestamp(widget.thought.dateUpdated),
+                      style: colors.textTheme.labelSmall),
+                ),
+              ),
+            ],
+          ),
 
-            // Expanded divider
-            Expanded(
-                child: Container(
-              height: 2,
-              color: onBackground.withAlpha(32),
-            )),
+          // Lock icon
+          Visibility(
+              visible:
+                  !widget.viewOnly && !widget.relatedMode && !newThoughtOpen,
+              child: lockButton),
 
-            // Lock icon
-            Visibility(
-                visible:
-                    !widget.viewOnly && !widget.relatedMode && !newThoughtOpen,
-                child: lockButton),
+          // Buttons
+          Visibility(
+              visible: widget.showTextBox &&
+                  !widget.relatedMode &&
+                  !newThoughtOpen &&
+                  !widget.viewOnly,
+              child: deleteButton),
 
-            // Buttons
-            Visibility(
-                visible: widget.showTextBox &&
-                    !widget.relatedMode &&
-                    !newThoughtOpen &&
-                    !widget.viewOnly,
-                child: deleteButton),
+          // Edit button
+          Visibility(
+              visible: !widget.viewOnly &&
+                  !widget.relatedMode &&
+                  !newThoughtOpen &&
+                  widget.thought.username ==
+                      Provider.of<AuthProvider>(context).username,
+              child: editThoughtButton),
 
-            // Edit button
-            Visibility(
-                visible: !widget.viewOnly &&
-                    !widget.relatedMode &&
-                    !newThoughtOpen &&
-                    widget.thought.username ==
-                        Provider.of<AuthProvider>(context).username,
-                child: editThoughtButton),
+          // Info button
+          Visibility(
+              visible:
+                  !widget.relatedMode && !newThoughtOpen && !widget.viewOnly,
+              child: infoButton),
 
-            // Info button
-            Visibility(
-                visible:
-                    !widget.relatedMode && !newThoughtOpen && !widget.viewOnly,
-                child: infoButton),
+          fullscreenButton,
 
-            fullscreenButton,
+          // Link button
+          linkButton,
 
-            // Link button
-            linkButton,
-
-            // Save button
-            saveButton,
-          ]),
-    );
+          // Save button
+          saveButton,
+        ]);
   }
 
   IconButton newIconButton(

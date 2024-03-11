@@ -49,8 +49,8 @@ class TextButtonSimple extends StatelessWidget {
                 return BorderSide(
                   color: colors.onBackground.withOpacity(
                       states.contains(MaterialState.hovered) || isHighlighted
-                          ? opacityOnHover
-                          : opacity),
+                          ? opacityOnHover * 0.7
+                          : opacity * 0.7), // Extra opacity for border
                   width: 1,
                 );
               }
