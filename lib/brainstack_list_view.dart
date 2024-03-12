@@ -189,7 +189,7 @@ class _BrainStackListViewState extends State<BrainStackListView> {
                     : index == 1
                         ? ComindColors.secondaryColorDefault
                         : index == 2
-                            ? ComindColors.tertiaryColorDefault
+                            ? Color(0xFF009877)
                             : Colors.deepPurple,
                 style: colors.textTheme.titleMedium!,
                 bodyStyle: colors.textTheme.bodyMedium!,
