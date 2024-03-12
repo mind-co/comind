@@ -128,10 +128,12 @@ class ThoughtsProvider extends ChangeNotifier {
 
     // Any time the top of mind changes, we want to fetch related thoughts.
     _relatedThoughts.clear();
-    // fetchRelatedThoughts(context);
 
     // Similarly, we want to send our current top of mind to the server.
     sendTopOfMind(context);
+
+    // Update related thoughts
+    fetchRelatedThoughts(context);
 
     notifyListeners();
   }
@@ -176,6 +178,9 @@ class ThoughtsProvider extends ChangeNotifier {
 
     // Clear the related thoughts
     _relatedThoughts.clear();
+
+    // Set the related thoughts
+    _relatedThoughts.addAll(relatedThoughts);
 
     // Add the related thoughts to the provider
     Provider.of<ThoughtsProvider>(context, listen: false)

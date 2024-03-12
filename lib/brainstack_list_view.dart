@@ -109,7 +109,56 @@ class _BrainStackListViewState extends State<BrainStackListView> {
             child: FloatingActionButton(
               backgroundColor: colors.colorScheme.surface,
               onPressed: () {
-                // addBrainstack();
+                // Controllers for title + description
+                TextEditingController titleController = TextEditingController();
+                TextEditingController descriptionController =
+                    TextEditingController();
+
+                // Make a dialog with a text field for the title
+                // and a text field for the description
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text("Create a new brainstack"),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            controller: titleController,
+                            decoration: InputDecoration(
+                              labelText: "Title",
+                            ),
+                          ),
+                          TextField(
+                            controller: descriptionController,
+                            decoration: InputDecoration(
+                              labelText: "Description",
+                            ),
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            // Create the brainstack
+                            createBrainstack(context, titleController.text,
+                                description: descriptionController.text,
+                                color: colors.primaryColor);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Create"),
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
               child: Icon(Icons.add),
             ),

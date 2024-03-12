@@ -783,3 +783,44 @@ Future<void> deleteBrainstack(BuildContext context, String id) async {
     throw Exception('Failed to delete brainstack');
   }
 }
+
+// Create a brainstack
+Future<void> createBrainstack(BuildContext context, String title,
+    {String? description, Color? color, List<Thought>? thoughts}) async {
+  final url = Uri.parse(endpoint('/api/brainstacks/'));
+
+  final headers = getBaseHeaders(context);
+
+  var body_map = <String, dynamic>{
+    'title': title,
+  };
+
+  // Add the values if they are not null
+  if (description != null) {
+    body_map['description'] = description;
+  }
+
+  if (color != null) {
+    body_map['color'] = color.value.toRadixString(16);
+  }
+
+  if (thoughts != null) {
+    body_map['thoughts'] = thoughts.map((thought) => thought.id).toList();
+  } else {
+    body_map['thoughts'] = [];
+  }
+
+  final body = jsonEncode(body_map);
+
+  final response = await dio.post(
+    url.toString(),
+    data: body,
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to create brainstack');
+  }
+}

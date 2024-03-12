@@ -133,8 +133,6 @@ class _StreamState extends State<Stream> {
         // Drawer
         drawer: MenuDrawer(),
 
-        // Bottom sheet
-        bottomSheet: mode == Mode.begin ? const ComindBottomSheet() : null,
         // bottomSheet: Container(
         //   color: Colors.red,
         //   height: 120,
@@ -195,6 +193,27 @@ class _StreamState extends State<Stream> {
                 );
               },
             ),
+
+            // Debug mode on the bottom. Show UI mode
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text("Mode: ${modeToTitle[mode] ?? "Unknown"}"),
+                    Text(
+                        "Num related thoughts: ${Provider.of<ThoughtsProvider>(context).relatedThoughts.length}"),
+                    Text(
+                        "Num brain buffer thoughts: ${Provider.of<ThoughtsProvider>(context).brainBuffer.length}"),
+                    Text(
+                        "Num thoughts: ${Provider.of<ThoughtsProvider>(context).thoughts.length}"),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       );
@@ -237,6 +256,7 @@ class _StreamState extends State<Stream> {
                 // Public/private button
                 TextButtonSimple(
                     noBackground: true,
+                    outlined: false,
                     text: Provider.of<ComindColorsNotifier>(context).publicMode
                         ? "Public"
                         : "Private",
@@ -248,41 +268,10 @@ class _StreamState extends State<Stream> {
                               .publicMode);
                     }),
 
-                // // Load public thoughts
-                // TextButtonSimple(
-                //     noBackground: true,
-                //     text: "Load public",
-                //     onPressed: () {
-                //       // Clear top of mind
-                //       Provider.of<ThoughtsProvider>(context, listen: false)
-                //           .clear();
-
-                //       // Fetch related thoughts
-                //       _fetchStream(context);
-
-                //       // Set mode to stream
-                //       mode = Mode.public;
-                //     }),
-
-                // // My thoughts
-                // TextButtonSimple(
-                //     noBackground: true,
-                //     text: "My thoughts",
-                //     onPressed: () {
-                //       // Clear top of mind
-                //       Provider.of<ThoughtsProvider>(context, listen: false)
-                //           .clear();
-
-                //       // Fetch related thoughts
-                //       fetchUserThoughts();
-
-                //       // Set mode to mythoughts
-                //       mode = Mode.myThoughts;
-                //     }),
-
                 // Clear top of mind
                 TextButtonSimple(
                     noBackground: true,
+                    outlined: false,
                     text: "Clear",
                     onPressed: () {
                       Provider.of<ThoughtsProvider>(context, listen: false)
@@ -291,6 +280,7 @@ class _StreamState extends State<Stream> {
 
                 // Color picker button
                 TextButtonSimple(
+                    outlined: false,
                     noBackground: true,
                     text: "Color",
                     onPressed: () async {
@@ -309,6 +299,7 @@ class _StreamState extends State<Stream> {
 
                 // Dark mode
                 TextButtonSimple(
+                    outlined: false,
                     noBackground: true,
                     text: "Dark mode",
                     onPressed: () {
@@ -323,6 +314,7 @@ class _StreamState extends State<Stream> {
                 Visibility(
                   visible: !Provider.of<AuthProvider>(context).isLoggedIn,
                   child: TextButtonSimple(
+                      outlined: false,
                       noBackground: true,
                       text: "Log in",
                       // Navigate to login page.
@@ -335,6 +327,7 @@ class _StreamState extends State<Stream> {
                 Visibility(
                   visible: !Provider.of<AuthProvider>(context).isLoggedIn,
                   child: TextButtonSimple(
+                      outlined: false,
                       noBackground: true,
                       text: "Sign up",
                       // Navigate to sign up page.
@@ -342,41 +335,6 @@ class _StreamState extends State<Stream> {
                         Navigator.pushNamed(context, "/signup");
                       }),
                 ),
-
-                // Settings
-                // Visibility(
-                //   child: ComindTextButton(
-                // lineLocation: LineLocation.left,
-                //       text: "Settings",
-                //       onPressed: () {
-                //         Navigator.pushNamed(
-                //             context, "/settings");
-                //       }),
-                // ),
-
-                // const SizedBox(height: 20),
-                // Opacity(
-                //     opacity: .7,
-                //     child: Text("Dev buttons",
-                //         style: getTextTheme(context).titleMedium)),
-
-                // // Debug button to add a top of mind thought
-                // Visibility(
-                //   visible: true,
-                //   child: TextButtonSimple(
-                //       text: "TOM",
-                //       noBackground: true,
-                //       onPressed: () {
-                //         Provider.of<ThoughtsProvider>(context, listen: false)
-                //             .addTopOfMind(
-                //                 context,
-                //                 Thought.fromString(
-                //                     "I'm happy to have you here :smiley:",
-                //                     "Co",
-                //                     true,
-                //                     title: "Welcome to comind"));
-                //       }),
-                // ),
 
                 const SizedBox(height: 20),
                 Opacity(
@@ -389,6 +347,7 @@ class _StreamState extends State<Stream> {
                   visible: Provider.of<AuthProvider>(context).isLoggedIn,
                   child: TextButtonSimple(
                       text: "Log out",
+                      outlined: false,
                       noBackground: true,
                       onPressed: () => {
                             // Clear all thoughts
@@ -713,11 +672,11 @@ class _StreamState extends State<Stream> {
             shrinkWrap: true,
             dragStartBehavior: DragStartBehavior.start,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount:
-                max(20, Provider.of<ThoughtsProvider>(context).thoughts.length),
+            itemCount: min(20,
+                Provider.of<ThoughtsProvider>(context).relatedThoughts.length),
             itemBuilder: (context, index) {
               var thought =
-                  Provider.of<ThoughtsProvider>(context).thoughts[index];
+                  Provider.of<ThoughtsProvider>(context).relatedThoughts[index];
               return MarkdownThought(
                 thought: thought,
                 linkable: true,
@@ -840,11 +799,20 @@ class _StreamState extends State<Stream> {
                   // Log the new ID
                   Logger.root.info("{'new_id':${thought.id}}, 'body':'$body'");
 
+                  // Set the mode to stream if it is in begin mode
+                  if (mode == Mode.begin) {
+                    mode = Mode.stream;
+                  }
+
                   // Send the thought, add it to the top of mind
                   saveThought(context, thought, newThought: true).then((value) {
                     // Add the thought to the provider
                     Provider.of<ThoughtsProvider>(context, listen: false)
                         .addThought(thought);
+
+                    // Search for related thoughts
+                    Provider.of<ThoughtsProvider>(context, listen: false)
+                        .fetchRelatedThoughts(context);
 
                     // Lastly, update the UI
                     setState(() {
