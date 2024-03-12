@@ -15,7 +15,7 @@
 import 'package:comind/api.dart';
 import 'package:comind/bottom_sheet.dart';
 import 'package:comind/colors.dart';
-import 'package:comind/markdown_display.dart';
+import 'package:comind/markdown_display_line.dart';
 import 'package:comind/misc/comind_logo.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
@@ -171,6 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: 1.0,
                             style: BorderStyle.solid),
                       ),
+
                       // icon: Icon(
                       //   Icons.mail,
                       //   color: Colors.grey,
@@ -267,6 +268,52 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 // sorry(),
+
+                // Secret passphrase box
+                Divider(),
+                coThought(
+                    context,
+                    "If you have the super secret code, you can sign up.",
+                    "Secrets"),
+                Padding(
+                  padding: edgeInsets,
+                  child: TextFormField(
+                    cursorWidth: cursorWidth,
+                    onChanged: (value) => setState(() {
+                      // signUpMode = value.contains('@');
+                      if (value == "Fuck yeah secret password") {
+                        signUpMode = true;
+                      }
+                    }),
+                    // ignore: library_private_types_in_public_api
+                    validator: (val) =>
+                        !val!.contains('@') ? 'Invalid Email' : null,
+                    // ignore: library_private_types_in_public_api
+                    decoration: InputDecoration(
+                      labelStyle: textStyle,
+                      // ignore: library_private_types_in_public_api
+                      border: const OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(150),
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Provider.of<ComindColorsNotifier>(context)
+                                .colorScheme
+                                .onBackground
+                                .withAlpha(50),
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

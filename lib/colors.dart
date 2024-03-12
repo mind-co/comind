@@ -147,16 +147,16 @@ class ComindColors {
   );
 
   static const fontScalar = 1.4;
-  static const double maxWidth = 600;
+  static const double maxWidth = 800;
   static const double bubbleRadius = 10;
 
   TextTheme textTheme = TextTheme(
     // Nunito is good
 
     // Label style
-    labelSmall: labelStyle.copyWith(fontSize: fontScalar * 8),
-    labelMedium: labelStyle.copyWith(fontSize: fontScalar * 12),
-    labelLarge: labelStyle.copyWith(fontSize: fontScalar * 14),
+    labelSmall: labelStyle.copyWith(fontSize: fontScalar * 6),
+    labelMedium: labelStyle.copyWith(fontSize: fontScalar * 10),
+    labelLarge: labelStyle.copyWith(fontSize: fontScalar * 12),
 
     // Body style
     bodySmall: bodyStyle.copyWith(fontSize: fontScalar * 10),

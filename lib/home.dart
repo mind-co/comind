@@ -106,21 +106,6 @@ class HomePage extends StatelessWidget {
                         text: "BUCKLE UP",
                         onPressed: () =>
                             {Navigator.pushNamed(context, '/login')}),
-                    // TextButtonSimple(
-                    //     text: "Terms of Service",
-                    //     onPressed: () => {
-                    //           Navigator.pushNamed(context, '/tos'),
-                    //         }),
-                    // Padding(
-                    //   padding: const EdgeInsets.all(8.0),
-                    //   child: Text(" | ",
-                    //       style: Theme.of(context).textTheme.bodyLarge),
-                    // ),
-                    // TextButtonSimple(
-                    //     text: "Privacy Policy",
-                    //     onPressed: () => {
-                    //           Navigator.pushNamed(context, '/privacy'),
-                    //         }),
                   ],
                 ),
               ),

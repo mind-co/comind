@@ -117,8 +117,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // coThought(context, "Welcome to Comind!"),
-
               // Email field
               Padding(
                 padding: edgeInsets,
