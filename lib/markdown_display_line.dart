@@ -179,11 +179,14 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                                  child: Text(widget.thought.username,
-                                      style: colors.textTheme.labelMedium)),
+                              Opacity(
+                                opacity: 0.7,
+                                child: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                    child: Text(widget.thought.username,
+                                        style: colors.textTheme.labelMedium)),
+                              ),
                               Opacity(
                                 opacity: 0.5,
                                 child: Text(
@@ -424,7 +427,7 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
                               TextSpan(
                                 text: widget.thought.title.isNotEmpty
                                     ? widget.thought.title.toLowerCase()
-                                    : "(we're still making a title)",
+                                    : "untitled",
                                 style: GoogleFonts.bungee(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w400,

@@ -96,6 +96,13 @@ class ThoughtsProvider extends ChangeNotifier {
 
   List<Thought> get relatedThoughts => _relatedThoughts;
 
+  // Set method for related thoughts
+  void setRelatedThoughts(List<Thought> thoughts) {
+    _relatedThoughts.clear();
+    _relatedThoughts.addAll(thoughts);
+    notifyListeners();
+  }
+
   // Only get thoughts not in the top of mind
   List<Thought> get thoughts {
     return _thoughts.where((element) {
@@ -214,6 +221,12 @@ class ThoughtsProvider extends ChangeNotifier {
   // Remove all thoughts/brain buffer
   void clearBrainBuffer() {
     brainBuffer.clear();
+    notifyListeners();
+  }
+
+  // Clear the related thoughts
+  void clearRelatedThoughts() {
+    _relatedThoughts.clear();
     notifyListeners();
   }
 

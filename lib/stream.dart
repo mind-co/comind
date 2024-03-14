@@ -85,6 +85,14 @@ class _StreamState extends State<Stream> {
     Provider.of<ThoughtsProvider>(context, listen: false)
         .addThoughts(fetchedThoughts);
 
+    // Clear the related thoughts and stick the new thoughts in there
+    Provider.of<ThoughtsProvider>(context, listen: false)
+        .clearRelatedThoughts();
+
+    // Add the thoughts to the related thoughts
+    Provider.of<ThoughtsProvider>(context, listen: false)
+        .setRelatedThoughts(fetchedThoughts);
+
     setState(() {
       // Set mode to public
       mode = Mode.public;
@@ -437,26 +445,28 @@ class _StreamState extends State<Stream> {
 
             // Most recent button
             TextButtonSimple(
-                text: "Everything",
+                text: "Your thoughts",
                 fontScalar: actionBarButtonFontScalar,
                 onPressed: () {
                   // Fetch related thoughts
                   fetchUserThoughts();
 
                   // Set mode to mythoughts
-                  mode = Mode.myThoughts;
+                  setState(() {
+                    mode = Mode.myThoughts;
+                  });
                 }),
 
             // Public thoughts button
             TextButtonSimple(
-              text: "Recent",
+              text: "The stream",
               fontScalar: actionBarButtonFontScalar,
               onPressed: () {
                 // Fetch related thoughts
                 _fetchStream(context);
 
                 // Set mode to stream
-                mode = Mode.public;
+                setState(() => mode = Mode.stream); // Set mode to stream
               },
             ),
 
@@ -564,8 +574,8 @@ class _StreamState extends State<Stream> {
   }
 
   Widget columnOfThings(BuildContext context) {
-    var brainBufferLength =
-        Provider.of<ThoughtsProvider>(context).brainBuffer.length;
+    var thoughtProvider = Provider.of<ThoughtsProvider>(context);
+    var brainBufferLength = thoughtProvider.brainBuffer.length;
     var displaySize = ThoughtsProvider.maxBufferDisplaySize;
 
     var min2 = min(displaySize, brainBufferLength);
@@ -672,11 +682,9 @@ class _StreamState extends State<Stream> {
             shrinkWrap: true,
             dragStartBehavior: DragStartBehavior.start,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: min(20,
-                Provider.of<ThoughtsProvider>(context).relatedThoughts.length),
+            itemCount: min(50, thoughtProvider.relatedThoughts.length),
             itemBuilder: (context, index) {
-              var thought =
-                  Provider.of<ThoughtsProvider>(context).relatedThoughts[index];
+              var thought = thoughtProvider.relatedThoughts[index];
               return MarkdownThought(
                 thought: thought,
                 linkable: true,
