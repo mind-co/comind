@@ -78,20 +78,18 @@ class _StreamState extends State<Stream> {
   // Get the public stream
   void _fetchStream(BuildContext context) async {
     // Replace with your API call
+    var thoughtProvider = Provider.of<ThoughtsProvider>(context, listen: false);
     List<Thought> fetchedThoughts = await getStream(context);
 
     // Add all thoughts to the provider
     // ignore: use_build_context_synchronously
-    Provider.of<ThoughtsProvider>(context, listen: false)
-        .addThoughts(fetchedThoughts);
+    thoughtProvider.addThoughts(fetchedThoughts);
 
     // Clear the related thoughts and stick the new thoughts in there
-    Provider.of<ThoughtsProvider>(context, listen: false)
-        .clearRelatedThoughts();
+    thoughtProvider.clearRelatedThoughts();
 
     // Add the thoughts to the related thoughts
-    Provider.of<ThoughtsProvider>(context, listen: false)
-        .setRelatedThoughts(fetchedThoughts);
+    thoughtProvider.setRelatedThoughts(fetchedThoughts);
 
     setState(() {
       // Set mode to public
@@ -168,6 +166,14 @@ class _StreamState extends State<Stream> {
         // Body
         body: Stack(
           children: [
+            // Make a box that is at least the size of the screen
+            // to catch mouse events
+            Container(
+              color: Colors.transparent,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+            ),
+
             // A screen-sized gradient background
             // Container(
             //   decoration: BoxDecoration(
@@ -218,6 +224,46 @@ class _StreamState extends State<Stream> {
                         "Num brain buffer thoughts: ${Provider.of<ThoughtsProvider>(context).brainBuffer.length}"),
                     Text(
                         "Num thoughts: ${Provider.of<ThoughtsProvider>(context).thoughts.length}"),
+                  ],
+                ),
+              ),
+            ),
+
+            // Text bar at the bottom
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                // color: Provider.of<ComindColorsNotifier>(context)
+                //     .currentColors
+                //     .primary
+                //     .withAlpha(128),
+// A screen-sized gradient background
+                decoration: BoxDecoration(
+                  color: Provider.of<ComindColorsNotifier>(context)
+                      .currentColors
+                      .colorScheme
+                      .background,
+                  // gradient: LinearGradient(
+                  //   begin: Alignment.bottomCenter,
+                  //   end: Alignment.topCenter,
+                  //   colors: [
+                  //     Provider.of<ComindColorsNotifier>(context)
+                  //         .currentColors
+                  //         .colorScheme
+                  //         .background,
+                  //     Colors.transparent,
+                  //   ],
+                  // ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    thinkBox(context),
+                    actionBar(context),
                   ],
                 ),
               ),
@@ -634,11 +680,21 @@ class _StreamState extends State<Stream> {
           ),
         ),
 
+        // Horizontal divider
+        const Padding(
+          padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+          child: Divider(
+            color: Colors.white38,
+            height: 0,
+            thickness: 0,
+          ),
+        ),
+
         // The main text box
-        thinkBox(context),
+        // thinkBox(context),
 
         // Widget for the action bar.
-        actionBar(context),
+        // actionBar(context),
 
         Visibility(
           visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,

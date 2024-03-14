@@ -56,7 +56,7 @@ class Thought {
 
   factory Thought.fromJson(Map<String, dynamic> json) {
     return Thought(
-        title: json['title'],
+        title: json['title'] ?? "",
         body: json['body'],
         username: json['username'],
         dateCreated: json['date_created'],

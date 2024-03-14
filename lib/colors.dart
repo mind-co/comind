@@ -154,7 +154,7 @@ class ComindColors {
     // Nunito is good
 
     // Label style
-    labelSmall: labelStyle.copyWith(fontSize: fontScalar * 6),
+    labelSmall: labelStyle.copyWith(fontSize: fontScalar * 8),
     labelMedium: labelStyle.copyWith(fontSize: fontScalar * 10),
     labelLarge: labelStyle.copyWith(fontSize: fontScalar * 12),
 
