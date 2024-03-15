@@ -933,7 +933,7 @@ class InfoCard extends StatelessWidget {
     return Visibility(
       visible: widget.infoMode,
       child: SizedBox(
-        width: double.infinity,
+        // width: `double.infinity`,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

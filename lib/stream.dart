@@ -124,6 +124,12 @@ class _StreamState extends State<Stream> {
     //     "I'm happy to have you here :smiley:", "Co", true,
     //     title: "Welcome to comind");
 
+    // Get the colors notifier
+    var colors = Provider.of<ComindColorsNotifier>(context);
+
+    // Retrieve the thought provider.
+    var thoughts = Provider.of<ThoughtsProvider>(context);
+
     // if (false) {
     if (!Provider.of<AuthProvider>(context).isLoggedIn) {
       return Scaffold(
@@ -138,30 +144,6 @@ class _StreamState extends State<Stream> {
 
         // Drawer
         drawer: MenuDrawer(),
-
-        // bottomSheet: Container(
-        //   color: Colors.red,
-        //   height: 120,
-        //   width: 800,
-        //   child: Column(
-        //     children: [
-        //       // The main text box
-        //       thinkBox(context),
-
-        //       // Widget for the action bar.
-        //       actionBar(context),
-
-        //       // // Padding(
-        //       // //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        //       // //   child: ComindBottomSheet(),
-        //       // // ),
-        //       // Padding(
-        //       //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        //       //   child: ComindBottomSheet(),
-        //       // ),
-        //     ],
-        //   ),
-        // ),
 
         // Body
         body: Stack(
@@ -181,14 +163,8 @@ class _StreamState extends State<Stream> {
             //       begin: Alignment.topLeft,
             //       end: Alignment.bottomRight,
             //       colors: [
-            //         Provider.of<ComindColorsNotifier>(context)
-            //             .currentColors
-            //             .primary
-            //             .withAlpha(128),
-            //         Provider.of<ComindColorsNotifier>(context)
-            //             .currentColors
-            //             .secondary
-            //             .withAlpha(128),
+            //         colors.currentColors.primary.withAlpha(128),
+            //         colors.currentColors.secondary.withAlpha(128),
             //       ],
             //     ),
             //   ),
@@ -219,11 +195,10 @@ class _StreamState extends State<Stream> {
                   children: [
                     Text("Mode: ${modeToTitle[mode] ?? "Unknown"}"),
                     Text(
-                        "Num related thoughts: ${Provider.of<ThoughtsProvider>(context).relatedThoughts.length}"),
+                        "Num related thoughts: ${thoughts.relatedThoughts.length}"),
                     Text(
-                        "Num brain buffer thoughts: ${Provider.of<ThoughtsProvider>(context).brainBuffer.length}"),
-                    Text(
-                        "Num thoughts: ${Provider.of<ThoughtsProvider>(context).thoughts.length}"),
+                        "Num brain buffer thoughts: ${thoughts.brainBuffer.length}"),
+                    Text("Num thoughts: ${thoughts.thoughts.length}"),
                   ],
                 ),
               ),
@@ -231,25 +206,26 @@ class _StreamState extends State<Stream> {
 
             // Text bar at the bottom
             Positioned(
-              bottom: 0,
+              bottom: thoughts.brainBuffer.isEmpty
+                  ? MediaQuery.of(context).size.height / 2
+                  : 0,
               left: 0,
               right: 0,
               child: Container(
-                // color: Provider.of<ComindColorsNotifier>(context)
+                // color: colors
                 //     .currentColors
                 //     .primary
                 //     .withAlpha(128),
 // A screen-sized gradient background
                 decoration: BoxDecoration(
-                  color: Provider.of<ComindColorsNotifier>(context)
-                      .currentColors
-                      .colorScheme
-                      .background,
+                  color: thoughts.brainBuffer.length > 0
+                      ? colors.currentColors.colorScheme.background
+                      : Colors.transparent,
                   // gradient: LinearGradient(
                   //   begin: Alignment.bottomCenter,
                   //   end: Alignment.topCenter,
                   //   colors: [
-                  //     Provider.of<ComindColorsNotifier>(context)
+                  //     colors
                   //         .currentColors
                   //         .colorScheme
                   //         .background,
@@ -262,7 +238,16 @@ class _StreamState extends State<Stream> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    thinkBox(context),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(8.0),
+                    //   child: Text("hey, welcome to"),
+                    // ),
+                    // ComindLogo(colors: colors),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(8.0),
+                    //   child: Text("what are you thinking about?"),
+                    // ),
+                    thinkBox(context, colors),
                     actionBar(context),
                   ],
                 ),
@@ -330,6 +315,19 @@ class _StreamState extends State<Stream> {
                     onPressed: () {
                       Provider.of<ThoughtsProvider>(context, listen: false)
                           .clear();
+
+                      // Clear the related thoughts
+                      Provider.of<ThoughtsProvider>(context, listen: false)
+                          .clearRelatedThoughts();
+
+                      // Clear the brain buffer
+                      Provider.of<ThoughtsProvider>(context, listen: false)
+                          .clearBrainBuffer();
+
+                      // Back to begin mode
+                      setState(() {
+                        mode = Mode.begin;
+                      });
                     }),
 
                 // Color picker button
@@ -446,23 +444,23 @@ class _StreamState extends State<Stream> {
           // verticalDirection: VerticalDirection.down,
           children: [
             // SOUL BLOB BABY
-            Material(
-              borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () async {
-                  await colorDialog(context);
-                },
-                borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-                child: // Soul blob
-                    Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SoulBlob(
-                    comindColors: colorNotifier.currentColors,
-                  ),
-                ),
-              ),
-            ),
+            // Material(
+            //   borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+            //   color: Colors.transparent,
+            //   child: InkWell(
+            //     onTap: () async {
+            //       await colorDialog(context);
+            //     },
+            //     borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+            //     child: // Soul blob
+            //         Padding(
+            //       padding: const EdgeInsets.all(8.0),
+            //       child: SoulBlob(
+            //         comindColors: colorNotifier.currentColors,
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
             // Notifications
             TextButtonSimple(
@@ -541,8 +539,10 @@ class _StreamState extends State<Stream> {
               text: "Clear",
               fontScalar: actionBarButtonFontScalar,
               onPressed: () {
-                Provider.of<ThoughtsProvider>(context, listen: false)
-                    .clearBrainBuffer();
+                Provider.of<ThoughtsProvider>(context, listen: false).clear();
+                setState(() {
+                  mode = Mode.begin;
+                });
               },
             ),
 
@@ -553,6 +553,20 @@ class _StreamState extends State<Stream> {
               onPressed: () {
                 Navigator.pushNamed(context, "/brainstacks");
               },
+            ),
+
+            // Log out
+            Visibility(
+              visible: Provider.of<AuthProvider>(context).isLoggedIn,
+              child: TextButtonSimple(
+                text: "Log out",
+                fontScalar: actionBarButtonFontScalar,
+                onPressed: () {
+                  // Clear all thoughts
+                  Provider.of<ThoughtsProvider>(context, listen: false).clear();
+                  Provider.of<AuthProvider>(context, listen: false).logout();
+                },
+              ),
             ),
 
             // // Color picker button
@@ -575,7 +589,7 @@ class _StreamState extends State<Stream> {
 
   Widget mainStream(BoxConstraints constraints, BuildContext context) {
     return MainLayout(
-      leftColumn: leftColumn(context),
+      // leftColumn: leftColumn(context),
       middleColumn: CenterColumn(context),
       // rightColumn: rightColumn(context),
     );
@@ -681,12 +695,16 @@ class _StreamState extends State<Stream> {
         ),
 
         // Horizontal divider
-        const Padding(
-          padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-          child: Divider(
-            color: Colors.white38,
-            height: 0,
-            thickness: 0,
+        Visibility(
+          visible:
+              Provider.of<ThoughtsProvider>(context).brainBuffer.isNotEmpty,
+          child: const Padding(
+            padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+            child: Divider(
+              color: Colors.white38,
+              height: 0,
+              thickness: 0,
+            ),
           ),
         ),
 
@@ -835,58 +853,82 @@ class _StreamState extends State<Stream> {
     );
   }
 
-  Column thinkBox(BuildContext context) {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Padding(
-            padding: Provider.of<ThoughtsProvider>(context).hasTopOfMind
-                ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-                : MediaQuery.of(context).size.height <= 400
-                    ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-                    : const EdgeInsets.fromLTRB(0, 64, 0, 0),
-            child: MainTextField(
-                colors: Provider.of<ComindColorsNotifier>(context),
-                primaryController: _primaryController,
+  Stack thinkBox(BuildContext context, ComindColorsNotifier colors) {
+    return Stack(
+      children: [
+        Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                child: MainTextField(
+                    colors: Provider.of<ComindColorsNotifier>(context),
+                    primaryController: _primaryController,
 
-                // Thought submission function
-                onThoughtSubmitted: (String body) {
-                  // Create a new thought
-                  final thought = Thought.fromString(
-                      body,
-                      Provider.of<AuthProvider>(context, listen: false)
-                          .username,
-                      Provider.of<ComindColorsNotifier>(context, listen: false)
-                          .publicMode);
+                    // Thought submission function
+                    onThoughtSubmitted: (String body) {
+                      // Create a new thought
+                      final thought = Thought.fromString(
+                          body,
+                          Provider.of<AuthProvider>(context, listen: false)
+                              .username,
+                          Provider.of<ComindColorsNotifier>(context,
+                                  listen: false)
+                              .publicMode);
 
-                  // Log the new ID
-                  Logger.root.info("{'new_id':${thought.id}}, 'body':'$body'");
+                      // Log the new ID
+                      Logger.root
+                          .info("{'new_id':${thought.id}}, 'body':'$body'");
 
-                  // Set the mode to stream if it is in begin mode
-                  if (mode == Mode.begin) {
-                    mode = Mode.stream;
-                  }
+                      // Set the mode to stream if it is in begin mode
+                      if (mode == Mode.begin) {
+                        mode = Mode.stream;
+                      }
 
-                  // Send the thought, add it to the top of mind
-                  saveThought(context, thought, newThought: true).then((value) {
-                    // Add the thought to the provider
-                    Provider.of<ThoughtsProvider>(context, listen: false)
-                        .addThought(thought);
+                      // Send the thought, add it to the top of mind
+                      saveThought(context, thought, newThought: true)
+                          .then((value) {
+                        // Add the thought to the provider
+                        Provider.of<ThoughtsProvider>(context, listen: false)
+                            .addThought(thought);
 
-                    // Search for related thoughts
-                    Provider.of<ThoughtsProvider>(context, listen: false)
-                        .fetchRelatedThoughts(context);
+                        // Search for related thoughts
+                        Provider.of<ThoughtsProvider>(context, listen: false)
+                            .fetchRelatedThoughts(context);
 
-                    // Lastly, update the UI
-                    setState(() {
-                      Provider.of<ThoughtsProvider>(context, listen: false)
-                          .addTopOfMind(context, thought);
-                    });
-                  });
-                }),
+                        // Lastly, update the UI
+                        setState(() {
+                          Provider.of<ThoughtsProvider>(context, listen: false)
+                              .addTopOfMind(context, thought);
+                        });
+                      });
+                    }),
+              ),
+            ]),
+
+        // SOUL BLOB BABY
+        Positioned(
+          child: Material(
+            borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () async {
+                await colorDialog(context);
+              },
+              borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+              child: // Soul blob
+                  Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SoulBlob(
+                  comindColors: colors.currentColors,
+                ),
+              ),
+            ),
           ),
-        ]);
+        ),
+      ],
+    );
   }
 }
 
