@@ -22,7 +22,7 @@ class TextButtonSimple extends StatelessWidget {
       this.noBackground = false,
       this.outlined = true,
       this.fontScalar = 1.0,
-      this.opacity = 0.4,
+      this.opacity = 0.7,
       this.opacityOnHover = 1.0,
       this.padding = const EdgeInsets.fromLTRB(4, 4, 4, 4),
       this.isHighlighted = false})

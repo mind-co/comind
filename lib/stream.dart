@@ -426,9 +426,6 @@ class _StreamState extends State<Stream> {
   }
 
   Widget actionBar(BuildContext context) {
-    // Cosmetic settings
-    const double actionIconSize = 28;
-
     // Get the color notifier
     var colorNotifier =
         Provider.of<ComindColorsNotifier>(context, listen: false);
@@ -436,162 +433,136 @@ class _StreamState extends State<Stream> {
     // The action bar container
     var container = Container(
       padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 6.0),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 12, 10, 0),
-        child: Wrap(
-          alignment: WrapAlignment.start,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          runSpacing: 0,
-          runAlignment: WrapAlignment.start,
+      width: ComindColors.maxWidth,
+      child: Wrap(
+        alignment: WrapAlignment.start,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        runSpacing: 0,
+        runAlignment: WrapAlignment.start,
+        children: [
+          // Notifications
+          TextButtonSimple(
+            text:
+                "${Provider.of<NotificationsProvider>(context).notifications.length} pings",
+            fontScalar: actionBarButtonFontScalar,
+            onPressed: () {
+              // Set the mode to notifications
+              mode = Mode.pings;
 
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          // mainAxisSize: MainAxisSize.max,
-          // verticalDirection: VerticalDirection.down,
-          children: [
-            // SOUL BLOB BABY
-            // Material(
-            //   borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-            //   color: Colors.transparent,
-            //   child: InkWell(
-            //     onTap: () async {
-            //       await colorDialog(context);
-            //     },
-            //     borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-            //     child: // Soul blob
-            //         Padding(
-            //       padding: const EdgeInsets.all(8.0),
-            //       child: SoulBlob(
-            //         comindColors: colorNotifier.currentColors,
-            //       ),
-            //     ),
-            //   ),
-            // ),
+              // Fetch notifications
+              fetchNotifications(context).then((value) =>
+                  Provider.of<NotificationsProvider>(context, listen: false)
+                      .addNotifications(value));
+            },
+          ),
 
-            // Notifications
-            TextButtonSimple(
-              text:
-                  "${Provider.of<NotificationsProvider>(context).notifications.length} pings",
+          // Concept button
+          TextButtonSimple(
+            text: "Concepts",
+            fontScalar: actionBarButtonFontScalar,
+            onPressed: () {
+              Navigator.pushNamed(context, "/concepts");
+            },
+          ),
+
+          // Most recent button
+          TextButtonSimple(
+              text: "Your thoughts",
               fontScalar: actionBarButtonFontScalar,
               onPressed: () {
-                // Set the mode to notifications
-                mode = Mode.pings;
+                // Clear related thoughts
+                Provider.of<ThoughtsProvider>(context, listen: false)
+                    .clearRelatedThoughts();
 
-                // Fetch notifications
-                final newNotifications = fetchNotifications(context).then(
-                    (value) => Provider.of<NotificationsProvider>(context,
-                            listen: false)
-                        .addNotifications(value));
-              },
-            ),
-
-            // Concept button
-            TextButtonSimple(
-              text: "Concepts",
-              fontScalar: actionBarButtonFontScalar,
-              onPressed: () {
-                Navigator.pushNamed(context, "/concepts");
-              },
-            ),
-
-            // Most recent button
-            TextButtonSimple(
-                text: "Your thoughts",
-                fontScalar: actionBarButtonFontScalar,
-                onPressed: () {
-                  // Clear related thoughts
-                  Provider.of<ThoughtsProvider>(context, listen: false)
-                      .clearRelatedThoughts();
-
-                  // Fetch related thoughts
-                  fetchUserThoughts();
-
-                  // Set mode to mythoughts
-                  setState(() {
-                    mode = Mode.myThoughts;
-                  });
-                }),
-
-            // Public thoughts button
-            TextButtonSimple(
-              text: "The stream",
-              fontScalar: actionBarButtonFontScalar,
-              onPressed: () {
                 // Fetch related thoughts
-                _fetchStream(context);
+                fetchUserThoughts();
 
-                // Set mode to stream
-                setState(() => mode = Mode.stream); // Set mode to stream
-              },
-            ),
-
-            // Dark mode button
-            TextButtonSimple(
-              text: colorNotifier.darkMode ? "Light" : "Dark",
-              fontScalar: actionBarButtonFontScalar,
-              onPressed: () {
-                colorNotifier.toggleTheme(!colorNotifier.darkMode);
-              },
-            ),
-
-            // Public / private button
-            TextButtonSimple(
-              text: colorNotifier.publicMode ? "Public" : "Private",
-              fontScalar: actionBarButtonFontScalar,
-              onPressed: () {
-                colorNotifier.togglePublicMode(
-                    !Provider.of<ComindColorsNotifier>(context, listen: false)
-                        .publicMode);
-              },
-            ),
-
-            // Clear button
-            TextButtonSimple(
-              text: "Clear",
-              fontScalar: actionBarButtonFontScalar,
-              onPressed: () {
-                Provider.of<ThoughtsProvider>(context, listen: false).clear();
+                // Set mode to mythoughts
                 setState(() {
-                  mode = Mode.empty;
+                  mode = Mode.myThoughts;
                 });
-              },
-            ),
+              }),
 
-            // Brainstacks button
-            TextButtonSimple(
-              text: "Brainstacks",
+          // Public thoughts button
+          TextButtonSimple(
+            text: "The stream",
+            fontScalar: actionBarButtonFontScalar,
+            onPressed: () {
+              // Fetch related thoughts
+              _fetchStream(context);
+
+              // Set mode to stream
+              setState(() => mode = Mode.stream); // Set mode to stream
+            },
+          ),
+
+          // Dark mode button
+          TextButtonSimple(
+            text: colorNotifier.darkMode ? "Light" : "Dark",
+            fontScalar: actionBarButtonFontScalar,
+            onPressed: () {
+              colorNotifier.toggleTheme(!colorNotifier.darkMode);
+            },
+          ),
+
+          // Public / private button
+          TextButtonSimple(
+            text: colorNotifier.publicMode ? "Public" : "Private",
+            fontScalar: actionBarButtonFontScalar,
+            onPressed: () {
+              colorNotifier.togglePublicMode(
+                  !Provider.of<ComindColorsNotifier>(context, listen: false)
+                      .publicMode);
+            },
+          ),
+
+          // Clear button
+          TextButtonSimple(
+            text: "Clear",
+            fontScalar: actionBarButtonFontScalar,
+            onPressed: () {
+              Provider.of<ThoughtsProvider>(context, listen: false).clear();
+              setState(() {
+                mode = Mode.empty;
+              });
+            },
+          ),
+
+          // Brainstacks button
+          TextButtonSimple(
+            text: "Brainstacks",
+            fontScalar: actionBarButtonFontScalar,
+            onPressed: () {
+              Navigator.pushNamed(context, "/brainstacks");
+            },
+          ),
+
+          // Log out
+          Visibility(
+            visible: Provider.of<AuthProvider>(context).isLoggedIn,
+            child: TextButtonSimple(
+              text: "Log out",
               fontScalar: actionBarButtonFontScalar,
               onPressed: () {
-                Navigator.pushNamed(context, "/brainstacks");
+                // Clear all thoughts
+                Provider.of<ThoughtsProvider>(context, listen: false).clear();
+                Provider.of<AuthProvider>(context, listen: false).logout();
               },
             ),
+          ),
 
-            // Log out
-            Visibility(
-              visible: Provider.of<AuthProvider>(context).isLoggedIn,
-              child: TextButtonSimple(
-                text: "Log out",
-                fontScalar: actionBarButtonFontScalar,
-                onPressed: () {
-                  // Clear all thoughts
-                  Provider.of<ThoughtsProvider>(context, listen: false).clear();
-                  Provider.of<AuthProvider>(context, listen: false).logout();
-                },
-              ),
-            ),
-
-            // // Color picker button
-            // HoverIconButton(
-            //   size: actionIconSize,
-            //   icon: Icons.color_lens,
-            //   onPressed: () async {
-            //     colorDialog(context).then((value) {
-            //       colorNotifier
-            //           .modifyColors(value);
-            //     });
-            //   },
-            // ),
-          ],
-        ),
+          // // Color picker button
+          // HoverIconButton(
+          //   size: actionIconSize,
+          //   icon: Icons.color_lens,
+          //   onPressed: () async {
+          //     colorDialog(context).then((value) {
+          //       colorNotifier
+          //           .modifyColors(value);
+          //     });
+          //   },
+          // ),
+        ],
       ),
     );
     return container;
