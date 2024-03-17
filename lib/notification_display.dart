@@ -1,4 +1,5 @@
 import 'package:comind/colors.dart';
+import 'package:comind/markdown_display_line.dart';
 import 'package:comind/misc/util.dart';
 import 'package:comind/providers.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,9 @@ class _NotificationDisplayState extends State<NotificationDisplay> {
               .onBackground,
         );
 
+    return coThought(
+        context, widget.notification.message ?? "", "Notification");
+
     return Material(
       child: InkWell(
         onTap: () {
@@ -77,57 +81,10 @@ class _NotificationDisplayState extends State<NotificationDisplay> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // trying title with some google fonts stuff
-                            Text(widget.notification.linkingTitle,
-                                style: titleStyle),
-
-                            // Linking thought title
-                            // Text(widget.notification.linkingTitle!,
-                            //     style:
-                            //         Provider.of<ComindColorsNotifier>(context)
-                            //             .textTheme
-                            //             .titleSmall),
-
-                            // Right arrow connection icon
-                            Text(
-                              widget.notification.type == "linked to"
-                                  ? ' → '
-                                  : ' ← ',
-                              style: titleStyle!.copyWith(
-                                  color:
-                                      Provider.of<ComindColorsNotifier>(context)
-                                          .secondary),
-                              // .withOpacity(0.7),
-                              // style: Provider.of<ComindColorsNotifier>(context)
-                              //     .textTheme
-                              //     .titleLarge!
-                              //     .copyWith(
-                              //       color: Provider.of<ComindColorsNotifier>(
-                              //               context)
-                              //           .secondary,
-                              //     ),
-                            ),
-                            // Icon(
-                            //   LineIcons.,
-                            // ),
-
-                            // User thought title
-                            Text(
-                              widget.notification.thoughtTitle,
-                              style: titleStyle,
-                              softWrap: true,
-                              maxLines: 2,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
                         padding: const EdgeInsets.fromLTRB(18, 0, 8, 0),
-                        child: Text(widget.notification.message,
+                        child: Text(
+                            widget.notification.message ??
+                                "Thinking about this notification...",
                             style: Provider.of<ComindColorsNotifier>(context)
                                 .textTheme
                                 .bodyMedium

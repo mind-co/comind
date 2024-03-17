@@ -33,8 +33,8 @@ Map<UIMode, String> modeToTitle = {
   UIMode.myThoughts: "My thoughts",
   UIMode.public: "Public stream",
   UIMode.consciousness: "Consciousness",
-  UIMode.begin: "?",
-  UIMode.notifications: "Notifications",
+  UIMode.empty: "?",
+  UIMode.pings: "Notifications",
 };
 
 class Stream extends StatefulWidget {

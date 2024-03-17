@@ -852,7 +852,7 @@ class TheMarkdownBox extends StatelessWidget {
             maxHeight: fullHeight ? double.infinity : 900,
           ),
           child: Markdown(
-            selectable: true,
+            selectable: false,
             onTapLink: (text, url, title) {
               launchUrl(Uri.parse(url!)); /*For url_launcher 6.1.0 and higher*/
               // launch(url);  /*For url_launcher 6.0.20 and lower*/

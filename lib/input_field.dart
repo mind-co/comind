@@ -155,20 +155,30 @@ class _MainTextFieldState extends State<MainTextField> {
       labelStyle: TextStyle(
         color: widget.colors.colorScheme.onPrimary.withAlpha(180),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(12, 16, 38, 16),
+      contentPadding: const EdgeInsets.fromLTRB(46, 16, 38, 16),
 
       // Top and bottom border only.
       // This is handled by the decoration for the container
       // wrapping the text field.
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(50),
+          bottomLeft: Radius.circular(50),
+          topRight: Radius.circular(ComindColors.bubbleRadius),
+          bottomRight: Radius.circular(ComindColors.bubbleRadius),
+        ),
         borderSide: BorderSide(
-          width: 0,
+          width: 1,
           color: widget.colors.colorScheme.onBackground.withAlpha(64),
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(50),
+          bottomLeft: Radius.circular(50),
+          topRight: Radius.circular(ComindColors.bubbleRadius),
+          bottomRight: Radius.circular(ComindColors.bubbleRadius),
+        ),
         borderSide: BorderSide(
           width: 1,
           color: widget.colors.colorScheme.onBackground.withAlpha(128),
@@ -289,8 +299,10 @@ class _MainTextFieldState extends State<MainTextField> {
                 // Text box
                 Material(
                   elevation: 0,
-                  borderRadius:
-                      BorderRadius.circular(ComindColors.bubbleRadius),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(100),
+                    bottomLeft: Radius.circular(ComindColors.bubbleRadius),
+                  ),
                   child: KeyboardListener(
                     focusNode: focusNode,
                     onKeyEvent: (KeyEvent event) {

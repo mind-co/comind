@@ -27,16 +27,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-enum Mode { stream, myThoughts, public, consciousness, begin, notifications }
+enum Mode { stream, myThoughts, stack, pings, concepts, empty }
 
 // Make a mode-to-title map
 Map<Mode, String> modeToTitle = {
   Mode.stream: "Stream",
   Mode.myThoughts: "My thoughts",
-  Mode.public: "Public stream",
-  Mode.consciousness: "Consciousness",
-  Mode.begin: "?",
-  Mode.notifications: "Notifications",
+  Mode.stack: "Stack",
+  Mode.pings: "Pings",
+  Mode.concepts: "Concepts",
 };
 
 class Stream extends StatefulWidget {
@@ -55,7 +54,7 @@ class _StreamState extends State<Stream> {
       "I'm happy to have you here :smiley:", "Co", true,
       title: "Welcome to comind");
 
-  Mode mode = Mode.begin;
+  Mode mode = Mode.empty;
 
   get actionBarButtonFontScalar => 0.8;
 
@@ -72,6 +71,10 @@ class _StreamState extends State<Stream> {
       // ignore: use_build_context_synchronously
       Provider.of<ThoughtsProvider>(context, listen: false)
           .addThoughts(fetchedThoughts);
+
+      // Stick them in the related thoughts
+      Provider.of<ThoughtsProvider>(context, listen: false)
+          .setRelatedThoughts(fetchedThoughts);
     });
   }
 
@@ -93,7 +96,7 @@ class _StreamState extends State<Stream> {
 
     setState(() {
       // Set mode to public
-      mode = Mode.public;
+      mode = Mode.stream;
     });
   }
 
@@ -129,6 +132,9 @@ class _StreamState extends State<Stream> {
 
     // Retrieve the thought provider.
     var thoughts = Provider.of<ThoughtsProvider>(context);
+
+    // Whether to center the text box
+    bool centerTextBox = mode == Mode.empty;
 
     // if (false) {
     if (!Provider.of<AuthProvider>(context).isLoggedIn) {
@@ -185,30 +191,29 @@ class _StreamState extends State<Stream> {
             ),
 
             // Debug mode on the bottom. Show UI mode
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text("Mode: ${modeToTitle[mode] ?? "Unknown"}"),
-                    Text(
-                        "Num related thoughts: ${thoughts.relatedThoughts.length}"),
-                    Text(
-                        "Num brain buffer thoughts: ${thoughts.brainBuffer.length}"),
-                    Text("Num thoughts: ${thoughts.thoughts.length}"),
-                  ],
-                ),
-              ),
-            ),
+            // Positioned(
+            //   bottom: 0,
+            //   right: 0,
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(8.0),
+            //     child: Column(
+            //       crossAxisAlignment: CrossAxisAlignment.end,
+            //       children: [
+            //         Text("Mode: ${modeToTitle[mode] ?? "Unknown"}"),
+            //         Text(
+            //             "Num related thoughts: ${thoughts.relatedThoughts.length}"),
+            //         Text(
+            //             "Num brain buffer thoughts: ${thoughts.brainBuffer.length}"),
+            //         Text("Num thoughts: ${thoughts.thoughts.length}"),
+            //       ],
+            //     ),
+            //   ),
+            // ),
 
             // Text bar at the bottom
             Positioned(
-              bottom: thoughts.brainBuffer.isEmpty
-                  ? MediaQuery.of(context).size.height / 2
-                  : 0,
+              bottom:
+                  centerTextBox ? MediaQuery.of(context).size.height / 2 : 0,
               left: 0,
               right: 0,
               child: Container(
@@ -218,17 +223,17 @@ class _StreamState extends State<Stream> {
                 //     .withAlpha(128),
 // A screen-sized gradient background
                 decoration: BoxDecoration(
-                  color: thoughts.brainBuffer.length > 0
+                  color: !centerTextBox
                       ? colors.currentColors.colorScheme.background
                       : Colors.transparent,
                   // gradient: LinearGradient(
                   //   begin: Alignment.bottomCenter,
                   //   end: Alignment.topCenter,
+                  //   stops: const [0.0, 0.5, 1.0],
                   //   colors: [
-                  //     colors
-                  //         .currentColors
-                  //         .colorScheme
-                  //         .background,
+                  //     colors.currentColors.colorScheme.background,
+                  //     colors.currentColors.colorScheme.background,
+                  //     // colors.currentColors.colorScheme.background,
                   //     Colors.transparent,
                   //   ],
                   // ),
@@ -326,7 +331,7 @@ class _StreamState extends State<Stream> {
 
                       // Back to begin mode
                       setState(() {
-                        mode = Mode.begin;
+                        mode = Mode.empty;
                       });
                     }),
 
@@ -432,7 +437,7 @@ class _StreamState extends State<Stream> {
     var container = Container(
       padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 6.0),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+        padding: const EdgeInsets.fromLTRB(10, 12, 10, 0),
         child: Wrap(
           alignment: WrapAlignment.start,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -464,11 +469,12 @@ class _StreamState extends State<Stream> {
 
             // Notifications
             TextButtonSimple(
-              text: "Pings",
+              text:
+                  "${Provider.of<NotificationsProvider>(context).notifications.length} pings",
               fontScalar: actionBarButtonFontScalar,
               onPressed: () {
                 // Set the mode to notifications
-                mode = Mode.notifications;
+                mode = Mode.pings;
 
                 // Fetch notifications
                 final newNotifications = fetchNotifications(context).then(
@@ -492,6 +498,10 @@ class _StreamState extends State<Stream> {
                 text: "Your thoughts",
                 fontScalar: actionBarButtonFontScalar,
                 onPressed: () {
+                  // Clear related thoughts
+                  Provider.of<ThoughtsProvider>(context, listen: false)
+                      .clearRelatedThoughts();
+
                   // Fetch related thoughts
                   fetchUserThoughts();
 
@@ -541,7 +551,7 @@ class _StreamState extends State<Stream> {
               onPressed: () {
                 Provider.of<ThoughtsProvider>(context, listen: false).clear();
                 setState(() {
-                  mode = Mode.begin;
+                  mode = Mode.empty;
                 });
               },
             ),
@@ -714,44 +724,42 @@ class _StreamState extends State<Stream> {
         // Widget for the action bar.
         // actionBar(context),
 
-        Visibility(
-          visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () async {
-                        mode = Mode.consciousness;
-                        // Provider.of<ComindColorsNotifier>(context, listen: false)
-                        //     .modifyColors(color);
-                      },
-                      child: // Soul blob
-                          ComindTextButton(
-                        lineLocation: LineLocation.bottom,
-                        onPressed: () {
-                          mode = Mode.consciousness;
-                        },
-                        text: '',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+        // Visibility(
+        //   visible: Provider.of<ThoughtsProvider>(context).thoughts.isNotEmpty,
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [
+        //       Row(
+        //         mainAxisAlignment: MainAxisAlignment.start,
+        //         crossAxisAlignment: CrossAxisAlignment.center,
+        //         children: [
+        //           Material(
+        //             color: Colors.transparent,
+        //             child: InkWell(
+        //               onTap: () async {
+        //                 mode = Mode.consciousness;
+        //                 // Provider.of<ComindColorsNotifier>(context, listen: false)
+        //                 //     .modifyColors(color);
+        //               },
+        //               child: // Soul blob
+        //                   ComindTextButton(
+        //                 lineLocation: LineLocation.bottom,
+        //                 onPressed: () {
+        //                   mode = Mode.consciousness;
+        //                 },
+        //                 text: '',
+        //               ),
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ],
+        //   ),
+        // ),
 
         // The rest of the thoughts, mode is not notifications
         Visibility(
-          visible: mode == Mode.stream ||
-              mode == Mode.myThoughts ||
-              mode == Mode.public,
+          visible: mode == Mode.stream || mode == Mode.myThoughts,
           child: ListView.builder(
             shrinkWrap: true,
             dragStartBehavior: DragStartBehavior.start,
@@ -770,7 +778,7 @@ class _StreamState extends State<Stream> {
 
         // Notifications
         Visibility(
-          visible: mode == Mode.notifications,
+          visible: mode == Mode.pings,
           child: ListView.builder(
             shrinkWrap: true,
             dragStartBehavior: DragStartBehavior.start,
@@ -860,68 +868,72 @@ class _StreamState extends State<Stream> {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-                child: MainTextField(
-                    colors: Provider.of<ComindColorsNotifier>(context),
-                    primaryController: _primaryController,
+              MainTextField(
+                  colors: Provider.of<ComindColorsNotifier>(context),
+                  primaryController: _primaryController,
 
-                    // Thought submission function
-                    onThoughtSubmitted: (String body) {
-                      // Create a new thought
-                      final thought = Thought.fromString(
-                          body,
-                          Provider.of<AuthProvider>(context, listen: false)
-                              .username,
-                          Provider.of<ComindColorsNotifier>(context,
-                                  listen: false)
-                              .publicMode);
+                  // Thought submission function
+                  onThoughtSubmitted: (String body) {
+                    // Create a new thought
+                    final thought = Thought.fromString(
+                        body,
+                        Provider.of<AuthProvider>(context, listen: false)
+                            .username,
+                        Provider.of<ComindColorsNotifier>(context,
+                                listen: false)
+                            .publicMode);
 
-                      // Log the new ID
-                      Logger.root
-                          .info("{'new_id':${thought.id}}, 'body':'$body'");
+                    // Log the new ID
+                    Logger.root
+                        .info("{'new_id':${thought.id}}, 'body':'$body'");
 
-                      // Set the mode to stream if it is in begin mode
-                      if (mode == Mode.begin) {
-                        mode = Mode.stream;
-                      }
+                    // Set the mode to stream if it is in begin mode
+                    if (mode == Mode.empty) {
+                      mode = Mode.stream;
+                    }
 
-                      // Send the thought, add it to the top of mind
-                      saveThought(context, thought, newThought: true)
-                          .then((value) {
-                        // Add the thought to the provider
+                    // Send the thought, add it to the top of mind
+                    saveThought(context, thought, newThought: true)
+                        .then((value) {
+                      // Add the thought to the provider
+                      Provider.of<ThoughtsProvider>(context, listen: false)
+                          .addThought(thought);
+
+                      // Search for related thoughts
+                      Provider.of<ThoughtsProvider>(context, listen: false)
+                          .fetchRelatedThoughts(context);
+
+                      // Lastly, update the UI
+                      setState(() {
                         Provider.of<ThoughtsProvider>(context, listen: false)
-                            .addThought(thought);
-
-                        // Search for related thoughts
-                        Provider.of<ThoughtsProvider>(context, listen: false)
-                            .fetchRelatedThoughts(context);
-
-                        // Lastly, update the UI
-                        setState(() {
-                          Provider.of<ThoughtsProvider>(context, listen: false)
-                              .addTopOfMind(context, thought);
-                        });
+                            .addTopOfMind(context, thought);
                       });
-                    }),
-              ),
+                    });
+                  }),
             ]),
 
         // SOUL BLOB BABY
-        Positioned(
-          child: Material(
-            borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () async {
-                await colorDialog(context);
-              },
-              borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
-              child: // Soul blob
-                  Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SoulBlob(
-                  comindColors: colors.currentColors,
+        Positioned.fill(
+          left: 0,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 0, 0),
+              child: Material(
+                borderRadius: BorderRadius.circular(ComindColors.bubbleRadius),
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () async {
+                    await colorDialog(context);
+                  },
+                  borderRadius: BorderRadius.circular(100),
+                  child: // Soul blob
+                      Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: SoulBlob(
+                      comindColors: colors.currentColors,
+                    ),
+                  ),
                 ),
               ),
             ),

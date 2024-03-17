@@ -134,13 +134,18 @@ class ThoughtsProvider extends ChangeNotifier {
     }
 
     // Any time the top of mind changes, we want to fetch related thoughts.
-    _relatedThoughts.clear();
+    // _relatedThoughts.clear();
 
     // Similarly, we want to send our current top of mind to the server.
-    sendTopOfMind(context);
+    // Send top of mind retrieves related thoughts and adds them to the provider.
+    sendTopOfMind(context).then((value) {
+      // Fetch related thoughts
+      _relatedThoughts.clear();
+      _relatedThoughts.addAll(value);
+    });
 
     // Update related thoughts
-    fetchRelatedThoughts(context);
+    // fetchRelatedThoughts(context);
 
     notifyListeners();
   }
@@ -308,7 +313,7 @@ class ComindNotification {
   final int id;
   final String userId;
   final String type;
-  final String message;
+  final String? message;
   final DateTime createdAt;
   bool readStatus;
   final String userThoughtId;
@@ -371,8 +376,11 @@ class NotificationsProvider extends ChangeNotifier {
   }
 
   void addNotification(ComindNotification notification) {
-    // Add notification if it doesn't already exist. Search by id.
+    // Remove the notification if it already exists and add the new one
     if (!_notifications.any((element) => element.id == notification.id)) {
+      _notifications.add(notification);
+    } else {
+      _notifications.removeWhere((element) => element.id == notification.id);
       _notifications.add(notification);
     }
 
@@ -389,87 +397,3 @@ class NotificationsProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-// UI provider
-enum UIMode { stream, myThoughts, public, consciousness, begin, notifications }
-
-class UIProvider extends ChangeNotifier {
-  // The current mode. Modes may be
-  // 1. the stream view
-  // 2. the user's thoughts
-  // 3. the user's top of mind
-  // 4. the user's notifications
-  // 5. the user's consciousness ("insight view")
-  UIMode _mode = UIMode.stream;
-
-  UIMode get mode => _mode;
-
-  void setMode(UIMode mode) {
-    _mode = mode;
-    notifyListeners();
-  }
-
-  void setStreamMode() {
-    _mode = UIMode.stream;
-    notifyListeners();
-  }
-
-  void setMyThoughtsMode() {
-    _mode = UIMode.myThoughts;
-    notifyListeners();
-  }
-
-  void setPublicMode() {
-    _mode = UIMode.public;
-    notifyListeners();
-  }
-
-  void setConsciousnessMode() {
-    _mode = UIMode.consciousness;
-    notifyListeners();
-  }
-
-  void setBeginMode() {
-    _mode = UIMode.begin;
-    notifyListeners();
-  }
-
-  void setNotificationsMode() {
-    _mode = UIMode.notifications;
-    notifyListeners();
-  }
-}
-
-// Webscocket provider
-// Websocket provider
-// class WebsocketProvider extends ChangeNotifier {
-//   final String _url = 'wss://nimbus.pfiffer.org/ws';
-//   late WebSocketChannel _channel;
-
-//   get stream => _channel.stream;
-
-//   void connect() async {
-//     // Connect to the websocket server
-//     _channel = WebSocketChannel.connect(
-//       Uri.parse(_url),
-//     );
-
-//     // Wait for it to be ready
-//     await _channel.ready;
-//   }
-
-//   void _handleMessage(dynamic message) {
-//     // Handle incoming message
-//     // TODO: Implement your logic here
-//     print("Received message: $message");
-//   }
-
-//   void sendMessage(dynamic message) {
-//     _channel.sink.add(message);
-//     _channel.sink.close(status.goingAway);
-//   }
-
-//   void close() {
-//     _channel.sink.close();
-//   }
-// }
