@@ -164,9 +164,8 @@ class _MarkdownThoughtState extends State<MarkdownThought> {
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
             child: SizedBox(
-              width: min(ComindColors.maxWidth,
-                      MediaQuery.of(context).size.width) -
-                  30,
+              width: ComindColors.maxWidth -
+                  36, // TODO #34 fix markdown thought width
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,

@@ -270,11 +270,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 // sorry(),
 
                 // Secret passphrase box
-                Divider(),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                  child: Divider(),
+                ),
+
                 coThought(
                     context,
                     "If you have the super secret code, you can sign up.",
                     "Secrets"),
+
                 Padding(
                   padding: edgeInsets,
                   child: TextFormField(
@@ -336,7 +341,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // ALERT DO NOT ENTER SENSITIVE PASSWORDS
                 coThought(
                     context,
-                    "This is a **test version** of Comind. Do not enter any sensitive passwords. HTTPs does not work yet, so your password will be sent in plain text.",
+                    "This is a **test version** of Comind. Do not enter any sensitive passwords that might compromise accounts on other platforms.",
                     "Warning"),
 
                 Text(
