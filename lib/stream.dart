@@ -117,7 +117,10 @@ class _StreamState extends State<Stream> {
           .addConcepts(newConcepts);
     });
 
-    //
+    // Fetch notifications
+    fetchNotifications(context).then((value) =>
+        Provider.of<NotificationsProvider>(context, listen: false)
+            .addNotifications(value));
   }
 
   @override
@@ -212,8 +215,8 @@ class _StreamState extends State<Stream> {
 
             // Text bar at the bottom
             Positioned(
-              bottom:
-                  centerTextBox ? MediaQuery.of(context).size.height / 2 : 0,
+              bottom: 0,
+              // centerTextBox ? MediaQuery.of(context).size.height / 2 : 0,
               left: 0,
               right: 0,
               child: Container(

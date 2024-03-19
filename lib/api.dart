@@ -717,8 +717,6 @@ Future<Brainstacks> fetchBrainstacks(BuildContext context) async {
     ),
   );
 
-  print(response.data);
-
   if (response.statusCode == 200) {
     final jsonResponse = json.decode(response.data);
     return Brainstacks.fromJson(jsonResponse);
@@ -727,33 +725,53 @@ Future<Brainstacks> fetchBrainstacks(BuildContext context) async {
   }
 }
 
-// Save brainstack metadata (title, description, color)
-Future<void> saveBrainstackMetadata(BuildContext context, String id,
-    {String? title, String? description, Color? color}) async {
-  final url = Uri.parse(endpoint('/api/brainstacks/'));
+Future<Brainstack> fetchBrainstack(BuildContext context, String id) async {
+  final url = Uri.parse(endpoint('/api/brainstacks/$id'));
 
   final headers = getBaseHeaders(context);
 
-  var body_map = <String, dynamic>{
+  final response = await dio.get(
+    url.toString(),
+    options: Options(
+      headers: headers,
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.data);
+    return Brainstack.fromJson(jsonResponse);
+  } else {
+    throw Exception('Failed to load brainstack');
+  }
+}
+
+// Save brainstack metadata (title, description, color)
+Future<void> saveBrainstackMetadata(BuildContext context, String id,
+    {String? title, String? description, Color? color}) async {
+  final url = Uri.parse(endpoint('/api/brainstacks/$id'));
+
+  final headers = getBaseHeaders(context);
+
+  var bodyMap = <String, dynamic>{
     'id': id,
   };
 
   // Add the values if they are not null
   if (title != null) {
-    body_map['title'] = title;
+    bodyMap['title'] = title;
   }
 
   if (description != null) {
-    body_map['description'] = description;
+    bodyMap['description'] = description;
   }
 
   if (color != null) {
-    body_map['color'] = color.value.toRadixString(16);
+    bodyMap['color'] = color.value.toRadixString(16);
   }
 
-  final body = jsonEncode(body_map);
+  final body = jsonEncode(bodyMap);
 
-  final response = await dio.post(
+  final response = await dio.patch(
     url.toString(),
     data: body,
     options: Options(
@@ -785,17 +803,31 @@ Future<void> deleteBrainstack(BuildContext context, String id) async {
 }
 
 // Create a brainstack
-Future<void> createBrainstack(BuildContext context, String title,
-    {String? description, Color? color, List<Thought>? thoughts}) async {
+Future<void> createBrainstack(BuildContext context,
+    {String? id,
+    String? title,
+    String? description,
+    Color? color,
+    List<Thought>? thoughts}) async {
   final url = Uri.parse(endpoint('/api/brainstacks/'));
 
   final headers = getBaseHeaders(context);
 
-  var body_map = <String, dynamic>{
-    'title': title,
-  };
+  var body_map = <String, dynamic>{};
 
   // Add the values if they are not null
+  if (id != null) {
+    body_map['id'] = id;
+  } else {
+    // Assign a new id if one is not provided
+    body_map['id'] = generateUUID4(
+        Provider.of<AuthProvider>(context, listen: false).username);
+  }
+
+  if (title != null) {
+    body_map['title'] = title;
+  }
+
   if (description != null) {
     body_map['description'] = description;
   }

@@ -5,6 +5,7 @@
 
 import 'package:comind/colors.dart';
 import 'package:comind/misc/bouncing_dots.dart';
+import 'package:comind/misc/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -43,35 +44,38 @@ class _LoadingState extends State<Loading> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-        animation: _animation,
-        builder: (context, child) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Text("Hey there. We're still loading that\n",
-                //     style: Provider.of<ComindColorsNotifier>(context)
-                //         .textTheme
-                //         .bodyLarge),
-                // Text('${widget.text}',
-                //     style: Provider.of<ComindColorsNotifier>(context)
-                //         .textTheme
-                //         .displaySmall),
-                // Text("\nfor you.",
-                //     style: Provider.of<ComindColorsNotifier>(context)
-                //         .textTheme
-                //         .bodyLarge),
+    return Scaffold(
+      appBar: comindAppBar(context, title: appBarTitle("Loading", context)),
+      body: AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Text("Hey there. We're still loading that\n",
+                  //     style: Provider.of<ComindColorsNotifier>(context)
+                  //         .textTheme
+                  //         .bodyLarge),
+                  // Text('${widget.text}',
+                  //     style: Provider.of<ComindColorsNotifier>(context)
+                  //         .textTheme
+                  //         .displaySmall),
+                  // Text("\nfor you.",
+                  //     style: Provider.of<ComindColorsNotifier>(context)
+                  //         .textTheme
+                  //         .bodyLarge),
 
-                // Box to separate the text from the dots
-                SizedBox(height: 80),
+                  // Box to separate the text from the dots
+                  SizedBox(height: 80),
 
-                // The dots
-                BouncingDotsWidget()
-              ],
-            ),
-          );
-        });
+                  // The dots
+                  BouncingDotsWidget()
+                ],
+              ),
+            );
+          }),
+    );
   }
 
   @override

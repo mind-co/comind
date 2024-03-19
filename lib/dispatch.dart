@@ -2,6 +2,7 @@
 // If not logged in, send them to the login page.
 // If logged in, send them to the home page.
 import 'package:comind/brainstack_list_view.dart';
+import 'package:comind/brainstack_view.dart';
 import 'package:comind/concept_page.dart';
 import 'package:comind/home.dart';
 import 'package:comind/login.dart';
@@ -53,6 +54,17 @@ class Dispatch extends StatelessWidget {
           if (settings.name == '/brainstacks') {
             return MaterialPageRoute(
               builder: (context) => const BrainStackListView(),
+            );
+          }
+
+          // Handle /brainstacks/:id
+          var brainstackUri = Uri.parse(settings.name!);
+          if (brainstackUri.pathSegments.length == 2 &&
+              brainstackUri.pathSegments.first == 'brainstacks') {
+            var id = brainstackUri.pathSegments[1];
+            // BrainstackLoader.loadBrainstack(context, id: id, brainstack: null);
+            return MaterialPageRoute(
+              builder: (context) => BrainstackLoader(id: id, brainstack: null),
             );
           }
 

@@ -1,12 +1,17 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:comind/api.dart';
+import 'package:comind/brainstack_display.dart';
 import 'package:comind/colors.dart';
 import 'package:comind/hover_icon_button.dart';
 import 'package:comind/misc/util.dart';
+import 'package:comind/providers.dart';
 import 'package:comind/text_button_simple.dart';
 import 'package:comind/types/brainstacks.dart';
+import 'package:comind/types/thought.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 
 class BrainStackListView extends StatefulWidget {
@@ -18,62 +23,7 @@ class BrainStackListView extends StatefulWidget {
 
 class _BrainStackListViewState extends State<BrainStackListView> {
   // The brainstacks
-  late Brainstacks brainstacks = const Brainstacks(brainstacks: [
-    Brainstack(
-        title: "Judy's criminal record",
-        description:
-            "A bunch of documents about Judy getting up to some stuff man",
-        brainstackId: "abc",
-        thoughtIds: ["a", "b", "c", "d", "d", "f"]),
-    Brainstack(
-        title: "Recipes",
-        description:
-            "Mostly Hungarian dishes, with a few chocolate-based deserts.",
-        brainstackId: "abc",
-        thoughtIds: ["a", "b", "c"]),
-    Brainstack(
-        title: "Evil stuff",
-        description:
-            "Plans to take over the world. Are you sure you should be doing that?",
-        brainstackId: "abc",
-        thoughtIds: ["a", "b"]),
-    Brainstack(
-        title: "Judy's criminal record",
-        description:
-            "A bunch of documents about Judy getting up to some stuff man",
-        brainstackId: "abc",
-        thoughtIds: ["a", "b", "c", "d", "d", "f"]),
-    Brainstack(
-        title: "Recipes",
-        description:
-            "Mostly Hungarian dishes, with a few chocolate-based deserts.",
-        brainstackId: "abc",
-        thoughtIds: ["a", "b", "c"]),
-    Brainstack(
-        title: "Evil stuff",
-        description:
-            "Plans to take over the world. Are you sure you should be doing that?",
-        brainstackId: "abc",
-        thoughtIds: ["a", "b"]),
-    Brainstack(
-        title: "Judy's criminal record",
-        description:
-            "A bunch of documents about Judy getting up to some stuff man",
-        brainstackId: "abc",
-        thoughtIds: ["a", "b", "c", "d", "d", "f"]),
-    Brainstack(
-        title: "Recipes",
-        description:
-            "Mostly Hungarian dishes, with a few chocolate-based deserts.",
-        brainstackId: "abc",
-        thoughtIds: ["a", "b", "c"]),
-    Brainstack(
-        title: "Evil stuff",
-        description:
-            "Plans to take over the world. Are you sure you should be doing that?",
-        brainstackId: "abc",
-        thoughtIds: ["a", "b"])
-  ]);
+  late Brainstacks brainstacks = const Brainstacks(brainstacks: []);
 
   // Method to get the brainstacks from the server
   Future<void> getBrainstacks() async {
@@ -100,7 +50,7 @@ class _BrainStackListViewState extends State<BrainStackListView> {
 
     // Return the brainstacks
     return Scaffold(
-      appBar: comindAppBar(context, title: appBarTitle("Brainstacks", context)),
+      appBar: comindAppBar(context, title: appBarTitle("Streams", context)),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -109,58 +59,31 @@ class _BrainStackListViewState extends State<BrainStackListView> {
             child: FloatingActionButton(
               backgroundColor: colors.colorScheme.surface,
               onPressed: () {
-                // Controllers for title + description
-                TextEditingController titleController = TextEditingController();
-                TextEditingController descriptionController =
-                    TextEditingController();
+                // Make a new brainstack
+                var newBrainstack = Brainstack(
+                    title: "untitled",
+                    description: "",
+                    brainstackId: generateUUID4(Provider.of<AuthProvider>(
+                            context,
+                            listen: false)
+                        .username), // Generate a new UUID for the brainstack
+                    thoughtIds: []);
 
-                // Make a dialog with a text field for the title
-                // and a text field for the description
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text("Create a new brainstack"),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            controller: titleController,
-                            decoration: InputDecoration(
-                              labelText: "Title",
-                            ),
-                          ),
-                          TextField(
-                            controller: descriptionController,
-                            decoration: InputDecoration(
-                              labelText: "Description",
-                            ),
-                          ),
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text("Cancel"),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // Create the brainstack
-                            createBrainstack(context, titleController.text,
-                                description: descriptionController.text,
-                                color: colors.primaryColor);
-                            Navigator.of(context).pop();
-                          },
-                          child: Text("Create"),
-                        ),
-                      ],
-                    );
-                  },
+                // Add a new brainstack to the list
+                brainstacks.add(newBrainstack);
+
+                // Save the brainstack to the server
+                createBrainstack(
+                  context,
+                  id: newBrainstack.brainstackId,
+                  title: newBrainstack.title,
+                  description: newBrainstack.description,
                 );
+
+                // Set the state
+                setState(() {});
               },
-              child: Icon(Icons.add),
+              child: Icon(LineIcons.plus),
             ),
           ),
           Padding(
@@ -184,6 +107,41 @@ class _BrainStackListViewState extends State<BrainStackListView> {
               final brainstack = brainstacks[index];
               return BrainstackDisplay(
                 brainstack: brainstack,
+                onDelete: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text("Confirm Delete"),
+                        content: Text(
+                            "Are you sure you want to delete this brainstack?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("Cancel"),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              // Delete the brainstack
+                              deleteBrainstack(
+                                  context, brainstack.brainstackId);
+
+                              // Remove the brainstack from the list
+                              setState(() {
+                                brainstacks.removeAt(index);
+                              });
+
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("Delete"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
                 backgroundColor: index == 0
                     ? ComindColors.primaryColorDefault
                     : index == 1
@@ -200,191 +158,5 @@ class _BrainStackListViewState extends State<BrainStackListView> {
         ),
       ),
     );
-  }
-}
-
-class BrainstackDisplay extends StatefulWidget {
-  final Brainstack brainstack;
-  final TextStyle style;
-  final TextStyle bodyStyle;
-  final TextStyle footerStyle;
-  final Color backgroundColor;
-
-  BrainstackDisplay({
-    Key? key,
-    required this.brainstack,
-    this.style = const TextStyle(fontSize: 24),
-    this.bodyStyle = const TextStyle(fontSize: 16),
-    this.footerStyle = const TextStyle(fontSize: 16),
-    this.backgroundColor = Colors.deepPurple,
-  }) : super(key: key);
-
-  @override
-  _BrainstackDisplayState createState() => _BrainstackDisplayState();
-}
-
-class _BrainstackDisplayState extends State<BrainstackDisplay> {
-  late TextEditingController _titleController;
-  late TextEditingController _descriptionController;
-  bool _titleEditable = false;
-  bool _descriptionEditable = false;
-
-  get actionBarFontScalar => 1.0;
-  get actionBarOutlined => false;
-
-  @override
-  void initState() {
-    super.initState();
-    _titleController = TextEditingController(text: widget.brainstack.title);
-    _descriptionController =
-        TextEditingController(text: widget.brainstack.description);
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    //
-    ComindColors colors =
-        Provider.of<ComindColorsNotifier>(context).currentColors;
-
-    //
-    final emptyBorder = OutlineInputBorder(
-        // Make the border onbackground
-        borderSide: BorderSide(color: colors.colorScheme.onBackground),
-
-        // Rounded borders
-        borderRadius:
-            BorderRadius.all(Radius.circular(ComindColors.bubbleRadius)));
-
-    var title = widget.brainstack.title;
-    var description = widget.brainstack.description;
-    var numThoughts = widget.brainstack.length;
-
-    var titleOrEditable = _titleEditable
-        ? TextField(
-            style: widget.style,
-            controller: _titleController,
-            autofocus: true,
-            cursorColor: Colors.white,
-            autocorrect: true,
-            onTap: () {
-              setState(() {
-                _titleEditable = true;
-              });
-            },
-            onSubmitted: (value) {
-              // Send the updated info to the server
-              saveBrainstackMetadata(
-                context,
-                widget.brainstack.brainstackId,
-                title: title,
-              );
-
-              setState(() {
-                _titleEditable = false;
-              });
-            },
-            onTapOutside: (_) {
-              setState(() {
-                _titleEditable = false;
-              });
-            },
-            decoration: InputDecoration(
-              focusedBorder: emptyBorder,
-              disabledBorder: emptyBorder,
-              enabledBorder: emptyBorder,
-              contentPadding: EdgeInsets.all(8),
-            ),
-          )
-        : GestureDetector(
-            onTap: () {
-              setState(() {
-                _titleEditable = true;
-              });
-            },
-            child: Text(title, style: widget.style),
-          );
-
-    var descriptionOrEditable = _descriptionEditable
-        ? TextField(
-            controller: _descriptionController,
-            style: widget.bodyStyle,
-            autofocus: true,
-            cursorColor: Colors.white,
-            maxLength: 200,
-            minLines: 1,
-            maxLines: 100,
-            onTap: () => {
-              setState(() {
-                _descriptionEditable = true;
-              })
-            },
-            onTapOutside: (_) {
-              setState(() {
-                _descriptionEditable = false;
-              });
-            },
-            decoration: InputDecoration(
-              disabledBorder: emptyBorder,
-              focusedBorder: emptyBorder,
-              enabledBorder: emptyBorder,
-              contentPadding: EdgeInsets.all(8),
-            ),
-          )
-        : GestureDetector(
-            onTap: () {
-              setState(() {
-                _descriptionEditable = true;
-              });
-            },
-            child: Text(description),
-          );
-
-    return SizedBox(
-        child: Card(
-      color: widget.backgroundColor.withOpacity(0.5),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: titleOrEditable,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: descriptionOrEditable,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Text(
-                  "$numThoughts thoughts",
-                  style: widget.footerStyle,
-                ),
-                Spacer(),
-
-                // Delete button
-                TextButtonSimple(
-                  onPressed: () {
-                    // Delete the brainstack
-                    // deleteBrainstack(context, widget.brainstack.brainstackId);
-                  },
-                  fontScalar: actionBarFontScalar,
-                  outlined: actionBarOutlined,
-                  text: "Delete",
-                  // style: widget.footerStyle,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ));
   }
 }
