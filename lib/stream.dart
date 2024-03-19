@@ -460,13 +460,13 @@ class _StreamState extends State<Stream> {
           ),
 
           // Concept button
-          TextButtonSimple(
-            text: "Concepts",
-            fontScalar: actionBarButtonFontScalar,
-            onPressed: () {
-              Navigator.pushNamed(context, "/concepts");
-            },
-          ),
+          // TextButtonSimple(
+          //   text: "Concepts",
+          //   fontScalar: actionBarButtonFontScalar,
+          //   onPressed: () {
+          //     Navigator.pushNamed(context, "/concepts");
+          //   },
+          // ),
 
           // Most recent button
           TextButtonSimple(
@@ -500,13 +500,13 @@ class _StreamState extends State<Stream> {
           ),
 
           // Dark mode button
-          TextButtonSimple(
-            text: colorNotifier.darkMode ? "Light" : "Dark",
-            fontScalar: actionBarButtonFontScalar,
-            onPressed: () {
-              colorNotifier.toggleTheme(!colorNotifier.darkMode);
-            },
-          ),
+          // TextButtonSimple(
+          //   text: colorNotifier.darkMode ? "Light" : "Dark",
+          //   fontScalar: actionBarButtonFontScalar,
+          //   onPressed: () {
+          //     colorNotifier.toggleTheme(!colorNotifier.darkMode);
+          //   },
+          // ),
 
           // Public / private button
           TextButtonSimple(
@@ -533,7 +533,7 @@ class _StreamState extends State<Stream> {
 
           // Brainstacks button
           TextButtonSimple(
-            text: "Brainstacks",
+            text: "Stacks",
             fontScalar: actionBarButtonFontScalar,
             onPressed: () {
               Navigator.pushNamed(context, "/brainstacks");
@@ -683,7 +683,7 @@ class _StreamState extends State<Stream> {
           visible:
               Provider.of<ThoughtsProvider>(context).brainBuffer.isNotEmpty,
           child: const Padding(
-            padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+            padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
             child: Divider(
               color: Colors.white38,
               height: 0,
