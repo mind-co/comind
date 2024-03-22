@@ -162,8 +162,8 @@ class _MainTextFieldState extends State<MainTextField> {
       // wrapping the text field.
       enabledBorder: OutlineInputBorder(
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(50),
-          bottomLeft: Radius.circular(50),
+          topLeft: Radius.circular(ComindColors.bubbleRadius),
+          bottomLeft: Radius.circular(ComindColors.bubbleRadius),
           topRight: Radius.circular(ComindColors.bubbleRadius),
           bottomRight: Radius.circular(ComindColors.bubbleRadius),
         ),
@@ -174,8 +174,8 @@ class _MainTextFieldState extends State<MainTextField> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(50),
-          bottomLeft: Radius.circular(50),
+          topLeft: Radius.circular(ComindColors.bubbleRadius),
+          bottomLeft: Radius.circular(ComindColors.bubbleRadius),
           topRight: Radius.circular(ComindColors.bubbleRadius),
           bottomRight: Radius.circular(ComindColors.bubbleRadius),
         ),

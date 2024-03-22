@@ -20,10 +20,6 @@ class Thought {
   bool isPublic;
   final bool isSynthetic;
   final String origin;
-  final int accepts;
-  final int rejects;
-  final int rethinks;
-  final int refs;
   final int? numLinks;
   final double? cosineSimilarity;
   final String? associatedId;
@@ -42,10 +38,6 @@ class Thought {
     required this.isPublic,
     required this.isSynthetic,
     required this.origin,
-    required this.accepts,
-    required this.rejects,
-    required this.rethinks,
-    required this.refs,
     this.numLinks = 0,
     this.cosineSimilarity = 0.0,
     this.associatedId = '',
@@ -66,10 +58,6 @@ class Thought {
         isPublic: json['public'],
         isSynthetic: json['synthetic'],
         origin: json['origin'],
-        accepts: json['accepts'],
-        rejects: json['rejects'],
-        rethinks: json['rethinks'],
-        refs: json['refs'],
         numLinks: json['numlinks'],
         cosineSimilarity: json['cosinesimilarity'],
         associatedId: json['associated_id'],
@@ -111,10 +99,6 @@ class Thought {
       isPublic: isPublic,
       isSynthetic: false,
       origin: '',
-      accepts: 0,
-      rejects: 0,
-      rethinks: 0,
-      refs: 0,
     );
   }
 

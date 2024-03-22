@@ -873,9 +873,9 @@ class _StreamState extends State<Stream> {
                       Provider.of<ThoughtsProvider>(context, listen: false)
                           .addThought(thought);
 
-                      // Search for related thoughts
-                      Provider.of<ThoughtsProvider>(context, listen: false)
-                          .fetchRelatedThoughts(context);
+                      // // Search for related thoughts
+                      // Provider.of<ThoughtsProvider>(context, listen: false)
+                      //     .fetchRelatedThoughts(context);
 
                       // Lastly, update the UI
                       setState(() {

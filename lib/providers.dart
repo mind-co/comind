@@ -191,8 +191,12 @@ class ThoughtsProvider extends ChangeNotifier {
     // Clear the related thoughts
     _relatedThoughts.clear();
 
-    // Set the related thoughts
-    _relatedThoughts.addAll(relatedThoughts);
+    // Set the related thoughts, but only if they are not in the buffer
+    relatedThoughts.forEach((element) {
+      if (!brainBuffer.any((brainElement) => brainElement.id == element.id)) {
+        _relatedThoughts.add(element);
+      }
+    });
 
     // Add the related thoughts to the provider
     Provider.of<ThoughtsProvider>(context, listen: false)
@@ -209,9 +213,6 @@ class ThoughtsProvider extends ChangeNotifier {
     if (!_thoughts.any((element) => element.id == thought.id)) {
       _thoughts.add(thought);
     }
-
-    // Sort the thoughts by date
-    _thoughts.sort((a, b) => b.dateUpdated.compareTo(a.dateUpdated));
 
     notifyListeners();
   }
@@ -367,7 +368,6 @@ class NotificationsProvider extends ChangeNotifier {
   final List<ComindNotification> _notifications = [];
 
   List<ComindNotification> get notifications {
-    _notifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return _notifications;
   }
 
