@@ -45,7 +45,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool signUpMode = false;
   bool usernameAvailable = false;
   bool emailAvailable = false;
-  static const double cursorWidth = 12;
 
   final edgeInsets = const EdgeInsets.fromLTRB(12, 16, 12, 16);
 
@@ -121,7 +120,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Padding(
                 padding: edgeInsets,
                 child: TextFormField(
-                  cursorWidth: cursorWidth,
                   controller: _emailController,
                   onChanged: (value) => setState(() {
                     // signUpMode = value.contains('@');
@@ -166,7 +164,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Padding(
                 padding: edgeInsets,
                 child: TextFormField(
-                  cursorWidth: cursorWidth,
                   controller: _passwordController,
                   // ignore: library_private_types_in_public_api
                   validator: (val) =>
@@ -266,7 +263,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Padding(
                 padding: edgeInsets,
                 child: TextFormField(
-                  cursorWidth: cursorWidth,
                   controller: _usernameController,
                   onChanged: (value) async {
                     usernameAvailable = (!await userExists(value));
@@ -323,7 +319,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Padding(
                 padding: edgeInsets,
                 child: TextFormField(
-                  cursorWidth: cursorWidth,
                   controller: _emailController,
                   onChanged: (value) async {
                     emailAvailable = (!await emailExists(value));
@@ -395,7 +390,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Padding(
                 padding: edgeInsets,
                 child: TextFormField(
-                  cursorWidth: cursorWidth,
                   controller: _passwordController,
                   // ignore: library_private_types_in_public_api
                   validator: (val) =>
@@ -444,7 +438,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Padding(
                     padding: edgeInsets,
                     child: TextFormField(
-                      cursorWidth: cursorWidth,
                       controller: _passwordConfirmationController,
                       // ignore: library_private_types_in_public_api
                       validator: (val) =>
