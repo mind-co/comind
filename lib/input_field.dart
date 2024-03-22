@@ -347,7 +347,6 @@ class _MainTextFieldState extends State<MainTextField> {
                       },
 
                       // Cursor stuff
-                      cursorWidth: 10,
                       cursorColor: widget.colors.colorScheme.onBackground,
                       decoration: widget.type == TextFieldType.main
                           ? mainInputDecoration

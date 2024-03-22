@@ -56,9 +56,6 @@ class _NotificationDisplayState extends State<NotificationDisplay> {
               .onBackground,
         );
 
-    return coThought(
-        context, widget.notification.message ?? "", "Notification");
-
     return Material(
       child: InkWell(
         onTap: () {
